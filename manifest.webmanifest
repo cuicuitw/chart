@@ -1,0 +1,20 @@
+{
+ "name": "翠脆的心・星盤與關鍵字卡",
+ "short_name": "翠脆的心",
+ "start_url": "./",
+ "display": "standalone",
+ "background_color": "#fdf8e5",
+ "theme_color": "#f19dbc",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}
