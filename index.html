@@ -319,23 +319,63 @@ body[data-par=n] #tabN,body[data-par=c] #tabC{background:var(--brown);color:#fff
 
 /* ===== 預約占星（沿用內容，套新配色） ===== */
 #vBook{max-width:880px;margin-inline:auto;padding:36px 24px 56px}
-/* ===== 翠誌（文章列表） ===== */
-#vBlog{max-width:880px;margin-inline:auto;padding:36px 24px 56px}
-.blg-lead{font-size:15px;color:#766f5e;margin:6px 0 18px}
-.blg-cats{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
-.blg-cats button{font:inherit;font-size:14px;border:1px solid #e6dfd0;background:#fff;color:#4a4536;border-radius:999px;padding:6px 14px;cursor:pointer}
-.blg-cats button.on{background:#337099;border-color:#337099;color:#fff}
-.blg-list{list-style:none;margin:0;padding:0}
-.blg-list li{border-bottom:1px solid #e6dfd0;padding:16px 0}
-.blg-list a{color:#4a4536;text-decoration:none;font-size:17px;font-weight:600}
-.blg-list a:hover{text-decoration:underline}
-.blg-list small{display:block;color:#766f5e;font-size:13px;margin-top:4px}
-.blg-empty{color:#766f5e;font-size:15px;padding:24px 0}
-#vPost{max-width:880px;margin-inline:auto;padding:36px 24px 56px}
-.blg-back a{color:#337099;font-size:14px}
-.blg-art h2{font-size:26px;margin:6px 0}
-.blg-meta{color:#766f5e;font-size:13px;margin:0 0 16px}
-.blg-body p{font-size:16px;line-height:1.9;margin:0 0 1em;font-family:sans-serif}
+/* ===== 翠誌（文章，2026-11-04 版面依設計稿座標） ===== */
+#vBlog .blg-arc{display:none}
+.blg-arcimg{position:absolute;z-index:0;left:50%;transform:translateX(-50%);width:100vw;height:auto;pointer-events:none;max-width:none}
+.blg-arcimg-d{top:0}
+.blg-banner{position:absolute;z-index:1;display:block;max-width:none;height:auto}
+.blg-banner-d{left:50%;top:0;width:min(1440px,100vw);transform:translateX(-50%)}
+.blg-banner-m{display:none}
+.blg-arcimg-m{display:none}
+
+
+
+body[data-view=blog] .top,body[data-view=post] .top{background:#a59c88}
+#vBlog{position:relative;overflow:hidden;padding:0 0 72px}
+.blg{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:#111;letter-spacing:.02em;max-width:670px;margin:0 auto}
+.blg-arc{position:absolute;z-index:0;left:50%;top:314px;bottom:0;width:100vw;transform:translateX(-50%);border-radius:50% 50% 0 0/750px 750px 0 0;background:#fefbf4;border:1px solid #f2a6c6;border-bottom:0;box-shadow:0 -26px 70px 0 rgba(246,186,206,.42);pointer-events:none}
+.blg-hero{position:relative;z-index:1;width:670px;height:0;margin:0 auto}
+.blg-list{position:relative;z-index:1;list-style:none;margin:0;padding:calc(100vw*368.1/1440) 0 0}
+.blg-item{border-bottom:1px solid #f2a6c6}
+.blg-go{display:flex;align-items:flex-start;gap:52px;width:100%;padding:40px 0;background:none;border:0;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.blg-thumb{display:block;flex:0 0 151px;aspect-ratio:1.44/1;background:#b5b5b6;margin-top:35px}
+.blg-txt{flex:1;min-width:0;display:grid;gap:8px}
+.blg-line{display:flex;justify-content:space-between;gap:12px;color:#e79dbd;font-size:14px;font-weight:500;line-height:1.5}
+.blg-tt{display:block;font-size:21px;font-weight:500;line-height:1.5;color:#111}
+.blg-sm{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:16px;line-height:1.7;color:#111}
+.blg-go:hover .blg-tt{color:#e79dbd}
+.blg-empty{padding:40px 0;color:#776f5e;text-align:center;font-size:16px}
+#vPost{position:relative;padding:0 0 72px}
+.blg-post{max-width:830px;margin:0 auto;padding:40px 24px 0}
+.blg-back a{font-size:15px;color:#776f5e;text-decoration:none}
+.blg-art{padding-top:56px}
+.blg-art-top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;color:#e79dbd;font-size:16px;font-weight:500}
+.blg-art h2{font-size:28px;font-weight:500;line-height:40px;margin:24px 0 0;color:#111}
+.blg-rule{border:0;border-top:1px solid #776f5e;width:100vw;position:relative;left:50%;transform:translateX(-50%);margin:56px 0 64px}
+.blg-body{font-size:18px;line-height:2;color:#111}
+.blg-body p{margin:0 0 1.1em}
+.blg-body h3{font-size:22px;font-weight:700;line-height:1.4;margin:2.2em 0 .8em;padding-left:18px;border-left:4px solid #111}
+@media (max-width:760px){
+    .blg-arcimg-d{display:none}
+  .blg-arcimg-m{display:block;top:0}
+  .blg-banner-d{display:none}
+  .blg-banner-m{display:block;left:50%;top:0;width:100vw;transform:translateX(-50%)}
+  .blg-banner-d{display:none}
+    .blg-hero{width:100%;margin:0;height:0}
+  #vBlog .blg-arc{top:179px;width:100vw;border-radius:50% 50% 0 0/291px 291px 0 0}
+  .blg-list{padding:calc(100vw*220.09/390) 17px 0}
+  .blg-go{gap:19px;padding:22px 0}
+  .blg-thumb{flex:0 0 69px;margin-top:29px}
+  .blg-line{font-size:11px}
+  .blg-tt{font-size:16px}
+  .blg-sm{font-size:13px;line-height:1.35}
+  .blg-post{padding:28px 26px 0}
+  .blg-art{padding-top:36px}
+  .blg-art-top{font-size:13px}
+  .blg-art h2{font-size:22px;line-height:29px}
+  .blg-rule{margin:36px 0 40px}
+  .blg-body{font-size:15px;line-height:1.9}
+}
 .adm-h{font-size:18px;margin:22px 0 8px}
 .adm-plist{list-style:none;padding:0;margin:10px 0}
 .adm-plist li{padding:8px 0;border-bottom:1px solid #e6dfd0;font-size:15px}
@@ -348,13 +388,6 @@ body[data-par=n] #tabN,body[data-par=c] #tabC{background:var(--brown);color:#fff
 .pe-hint{font-size:13px;color:#766f5e;margin:6px 0 0}
 .pe-prev{border:1.5px dashed #d9d0bd;border-radius:12px;padding:20px 22px;background:#fffdf8}
 .pe-prev .blg-art h2{font-size:24px;margin:4px 0}
-.blg-sub{font-size:16px;color:#4a4536;margin:0 0 6px;line-height:1.6}
-.blg-art .blg-sub{margin-bottom:14px}
-.blg-item{list-style:none;border-bottom:1px solid #e6dfd0}
-.blg-go{display:grid;gap:4px;width:100%;text-align:left;background:none;border:0;padding:16px 0;font:inherit;color:inherit;cursor:pointer}
-.blg-go b{font-size:18px}
-.blg-go small{color:#766f5e;font-size:13px}
-.blg-go span{font-size:15px;color:#4a4536;line-height:1.7}
 /* ===== 會員後台（站長專用，只讀） ===== */
 #vAdmin{max-width:1100px;margin-inline:auto;padding:36px 24px 56px}
 .adm-eye{font-size:13px;color:#766f5e;margin:0 0 4px}
@@ -602,7 +635,7 @@ body[data-par=n] #tabN,body[data-par=c] #tabC{background:var(--brown);color:#fff
 .ab-line-a{color:inherit;text-decoration:underline;text-decoration-color:#f2a6c6;text-decoration-thickness:2px;text-underline-offset:4px}
 .ab-face{display:block;width:min(170px,50%);height:auto;margin:6px auto 0}
 .abf h4:first-of-type{margin-top:34px}
-.abc{position:absolute;width:41cqw;height:auto;aspect-ratio:900/1482;border-radius:5.6%/3.4%;border:1px solid #766f5e;background:#fff}
+.abc{position:absolute;width:41cqw;height:auto;aspect-ratio:900/1545;border-radius:5.6%/3.4%;border:1px solid #766f5e;background:#fff}
 .abo .abin{padding-top:73cqw}
 .abo .c2{left:-1.8cqw;top:10.9cqw;transform:rotate(-13.5deg);z-index:1}
 .abo .c1{left:29.5cqw;top:3.8cqw;z-index:2}
@@ -1261,6 +1294,11 @@ body.co-on .desk .gest{display:none!important}
 @media (max-width:760px){.wtour{top:8px;right:10px}}
 @media (max-width:1023px){body[data-mt=w] .mview{overflow-y:hidden}}
 
+
+/* 手機：後台入口移到會員視窗（點頭像） */
+@media (max-width:760px){#admBtn{display:none!important}}
+.mem-adm{display:block;margin:16px auto 0;border:0;background:#766f5e;color:#fff;border-radius:99px;padding:11px 28px;font:inherit;font-weight:900;font-size:15px;letter-spacing:.1em;cursor:pointer}
+.mem-adm:hover{filter:brightness(1.06)}
 </style></head><body data-view="chart">
 <div class="boot" id="boot" role="status" aria-live="polite">
   <div class="boot-in">
@@ -1401,19 +1439,28 @@ body.co-on .desk .gest{display:none!important}
 
 <!-- ===== 預約占星 ===== -->
 <!-- ===== 翠誌（文章） ===== -->
-<section id="vBlog" aria-labelledby="blgT" hidden>
-<div class="bk blg">
-  <div class="bk-top"><p class="bk-eye"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 104 67" aria-hidden="true"><path d="M50 0C58 31 97 28 100 31.5C97 35 58 32 50 63C42 32 3 35 0 31.5C3 28 42 31 50 0Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>文章<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 104 67" aria-hidden="true"><path d="M50 0C58 31 97 28 100 31.5C97 35 58 32 50 63C42 32 3 35 0 31.5C3 28 42 31 50 0Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></p><h2 id="blgT">翠誌</h2></div>
-  <p class="blg-lead">這裡會整理占星的文章，依分類排列，方便你找到想看的主題。</p>
-  <nav class="blg-cats" id="blgCats" aria-label="文章分類"><button type="button" class="on" data-cat="">全部</button></nav>
+<section id="vBlog" aria-label="翠誌" hidden>
+<img class="blg-arcimg blg-arcimg-d" src="arc-desktop.svg" alt="" aria-hidden="true"><img class="blg-arcimg blg-arcimg-m" src="arc-mobile.svg" alt="" aria-hidden="true">
+<div class="blg">
+  <div class="blg-hero">
+    <img class="blg-banner blg-banner-d" src="banner-desktop.svg" width="1440" height="368" alt="翠誌"><img class="blg-banner blg-banner-m" src="banner-mobile.svg" width="390" height="220" alt="">
+    
+    
+    
+  </div>
   <ul class="blg-list" id="blgList"><li class="blg-empty">文章即將上架，敬請期待。</li></ul>
 </div>
 </section>
 <!-- ===== 翠誌：單篇文章 ===== -->
-<section id="vPost" aria-labelledby="pstT" hidden>
-<div class="bk blg">
+<section id="vPost" aria-label="文章" hidden>
+<div class="blg-post">
   <p class="blg-back"><a href="#blog" data-blogback>← 回翠誌</a></p>
-  <article class="blg-art"><p class="bk-eye" id="pstCat"></p><h2 id="pstT"></h2><p class="blg-sub" id="pstSub"></p><p class="blg-meta" id="pstMeta"></p><div class="blg-body" id="pstBody"></div></article>
+  <article class="blg-art">
+    <div class="blg-art-top"><span id="pstCat"></span><time id="pstMeta"></time></div>
+    <h2 id="pstT"></h2>
+    <hr class="blg-rule">
+    <div class="blg-body" id="pstBody"></div>
+  </article>
 </div>
 </section>
 <section id="vBook" aria-labelledby="bkT">
@@ -1478,10 +1525,10 @@ body.co-on .desk .gest{display:none!important}
 </div></article>
 <article class="abp abo" data-t="o" role="tabpanel" hidden><div class="abin">
   <svg class="ab-line" viewBox="0 0 1286 1395" preserveAspectRatio="none" aria-hidden="true"><path d="M1064 95C1170 150 1185 300 1120 470C1080 560 950 640 700 690C450 740 230 820 109 965" fill="none" stroke="#f2a6c6" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>
-  <img class="abc c1" src="card-pisces.webp" alt="" width="900" height="1482" loading="lazy">
-  <img class="abc c2" src="card-virgo.webp" alt="" width="900" height="1482" loading="lazy">
-  <img class="abc c3" src="card-aries.webp" alt="" width="900" height="1482" loading="lazy">
-  <img class="abc c4" src="card-libra.webp" alt="" width="900" height="1482" loading="lazy">
+  <img class="abc c1" src="card-pisces.webp" alt="" width="900" height="1545" loading="lazy">
+  <img class="abc c2" src="card-virgo.webp" alt="" width="900" height="1545" loading="lazy">
+  <img class="abc c3" src="card-aries.webp" alt="" width="900" height="1545" loading="lazy">
+  <img class="abc c4" src="card-libra.webp" alt="" width="900" height="1545" loading="lazy">
   <h3 class="ab-ttl">占星知識卡牌<i class="ab-spk" aria-hidden="true"></i>創作源起</h3>
   <div class="abs s1"><h4>一次挫敗，催生出一個想法</h4>
     <p>我和很多人一樣，都是從認識唐綺陽才認識占星的。<br>在2023年的因緣際會之下，我第一次花錢上了基礎占星課。</p>
@@ -1603,6 +1650,7 @@ body.co-on .desk .gest{display:none!important}
     </div>
     <div id="memIn" hidden>
       <div class="mem-me"><img id="memAv" alt="" width="44" height="44" referrerpolicy="no-referrer"><div><b id="memNm"></b><small id="memEm"></small></div></div>
+      <button type="button" class="mem-adm" id="memAdm" hidden>站長後台</button>
       <div class="mem-tabs" role="tablist"><button type="button" role="tab" data-mt="c" class="on" aria-selected="true">星盤存檔</button><button type="button" role="tab" data-mt="n" aria-selected="false">占星筆記</button></div>
       <p class="mem-msg" id="memMsg2" aria-live="polite"></p>
       <div id="memC"><ul class="mem-list" id="memList"></ul></div>
@@ -1970,8 +2018,7 @@ const NAV=[["chart","星盤查詢",true],["cards","占星卡牌",true],["blog","
 const VIEW={chart:"vChart",cards:"vCards",blog:"vBlog",post:"vPost",booking:"vBook",about:"vAbout",privacy:"vPriv",terms:"vTerms",admin:"vAdmin"},HASH={cards:"#cards",blog:"#blog",booking:"#booking",about:"#about",privacy:"#privacy",terms:"#terms",admin:"#admin"};
 $("nav").innerHTML=NAV.filter(n=>n[2]).map(n=>`<button type="button" data-v="${n[0]}">${n[1]}</button>`).join("");
 /* 翠誌暫時只有站長看得到：沒有站長登入紀錄的裝置，導覽不顯示，網址也不能進入 */
-const blogOK=()=>{try{return localStorage.getItem("cuicui-admin")==="1"}catch(e){return false}};
-if(!blogOK()){const nb=document.querySelector('#nav button[data-v="blog"]');if(nb)nb.hidden=true}
+const blogOK=()=>true; /* 翠誌公開：所有人都能看（不用登入） */
 $("nav").insertAdjacentHTML("beforeend",`<div class="nav-foot">${document.querySelector(".foot-in").innerHTML.replace(/id="fyr"/,"")}</div>`);
 function menu(o){$("nav").classList.toggle("open",o);$("menuBtn").setAttribute("aria-expanded",o)}
 $("menuBtn").onclick=e=>{e.stopPropagation();menu(!$("nav").classList.contains("open"))};
@@ -2264,9 +2311,9 @@ async function adminOpen(){
   postMgrOpen();
 }
 /* 後台按鈕：只有站長帳號登入時才顯示（非站長看不到） */
-function admBtnR(u){const ok=!!(u&&u.email===ADM_EMAIL&&u.emailVerified);const b=$("admBtn");if(b)b.hidden=!ok;
+function admBtnR(u){const ok=!!(u&&u.email===ADM_EMAIL&&u.emailVerified);const b=$("admBtn");if(b)b.hidden=!ok;const ma=$("memAdm");if(ma)ma.hidden=!ok;
   try{ok?localStorage.setItem("cuicui-admin","1"):localStorage.removeItem("cuicui-admin")}catch(e){}
-  const nb=document.querySelector('#nav button[data-v="blog"]');if(nb)nb.hidden=!ok}
+}
 
 /* 文章：站長後台管理 */
 const fmtD=t=>t?new Date(t).toLocaleDateString("zh-TW",{timeZone:"Asia/Taipei"}):"—";
@@ -2306,23 +2353,23 @@ function postEdit(p){const box=$("pEdit");p=p||{};
     try{await FB.postSave(p.id||null,data);await postMgrOpen()}catch(er){msg.textContent="儲存失敗，請稍後再試。"}};
 }
 /* 翠誌：公開列表與單篇文章 */
-async function blogOpen(){const L=$("blgList");if(BLOG){blogR();return}
+function blgFont(){try{if(document.getElementById("blgFontL"))return;const l=document.createElement("link");l.id="blgFontL";l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap";document.head.appendChild(l)}catch(e){}}
+const catTxt=p=>`${p.cat||""}${p.level?"・"+p.level:""}`;
+async function blogOpen(){blgFont();const L=$("blgList");if(BLOG){blogR();return}
   L.innerHTML='<li class="blg-empty">讀取中…</li>';
   try{await fbLoad();BLOG=(await FB.postsPub()).sort((a,b)=>(b.publishedAt||0)-(a.publishedAt||0));blogR()}
   catch(e){L.innerHTML='<li class="blg-empty">文章載入失敗，請重新整理後再試。</li>'}}
-function blogR(){const L=$("blgList"),C=$("blgCats");
-  const cats=[...new Set(BLOG.map(p=>p.cat).filter(Boolean))];
-  C.innerHTML=`<button type="button" class="${BCAT?"":"on"}" data-cat="">全部</button>`+cats.map(c=>`<button type="button" class="${BCAT==c?"on":""}" data-cat="${escH(c)}">${escH(c)}</button>`).join("");
-  const list=BLOG.filter(p=>!BCAT||p.cat==BCAT);
-  L.innerHTML=list.length?list.map(p=>`<li class="blg-item"><button type="button" class="blg-go" data-post="${escH(p.id)}"><b>${escH(p.title)}</b><small>${escH(p.cat||"")}${p.publishedAt?" ｜ "+fmtD(p.publishedAt):""}</small><span>${escH(p.summary||"")}</span></button></li>`).join(""):'<li class="blg-empty">文章即將上架，敬請期待。</li>'}
-function postView(p){if(!p)return;$("pstCat").textContent=p.cat||"";$("pstT").textContent=p.title||"";$("pstSub").textContent=p.summary||"";$("pstMeta").textContent=p.publishedAt?fmtD(p.publishedAt):"";
+function blogR(){const L=$("blgList");
+  const list=BLOG;
+  L.innerHTML=list.length?list.map(p=>`<li class="blg-item"><button type="button" class="blg-go" data-post="${escH(p.id)}"><span class="blg-thumb" aria-hidden="true"></span><span class="blg-txt"><span class="blg-line"><span>${escH(catTxt(p))}</span><time>${p.publishedAt?escH(fmtD(p.publishedAt)):""}</time></span><b class="blg-tt">${escH(p.title)}</b><span class="blg-sm">${escH(p.summary||"")}</span></span></button></li>`).join(""):'<li class="blg-empty">文章即將上架，敬請期待。</li>'}
+function postView(p){if(!p)return;$("pstCat").textContent=catTxt(p);$("pstT").textContent=p.title||"";$("pstMeta").textContent=p.publishedAt?fmtD(p.publishedAt):"";
   const B=$("pstBody");B.innerHTML="";
   String(p.body||"").split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean).forEach(t=>{const el=document.createElement("p");t.split("\n").forEach((ln,i)=>{if(i)el.appendChild(document.createElement("br"));el.appendChild(document.createTextNode(ln))});B.appendChild(el)});
   view("post")}
-$("blgCats").onclick=e=>{const b=e.target.closest("[data-cat]");if(!b||!BLOG)return;BCAT=b.dataset.cat;blogR()};
 $("blgList").onclick=e=>{const b=e.target.closest("[data-post]");if(b&&BLOG)postView(BLOG.find(p=>p.id==b.dataset.post))};
 $("vPost").onclick=e=>{if(e.target.closest("[data-blogback]")){e.preventDefault();view("blog")}};
 $("admBtn").onclick=()=>view("admin");
+$("memAdm").onclick=()=>{memClose();view("admin")};
 function memClose(){$("mem").hidden=true;document.body.classList.remove("mem-on");$("memCf").hidden=true;$("memMsg").textContent="";$("memMsg2").textContent=""}
 function memR(){$("memOut").hidden=!!ME;$("memIn").hidden=!ME;if(!ME)return;
   $("memAv").src=ME.photoURL||"";$("memAv").hidden=!ME.photoURL;$("memNm").textContent=ME.displayName||"會員";$("memEm").textContent=ME.email||"";
