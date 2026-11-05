@@ -799,8 +799,8 @@ async function edUpload(file,folder,msgEl){
   if(!/^image\//.test(file.type)){msgEl.textContent="請選擇圖片檔。";return null}
   if(file.size>5*1024*1024){msgEl.textContent="圖片請小於 5 MB。";return null}
   msgEl.textContent="上傳中…";
-  try{const url=await FB.upload(file,folder);msgEl.textContent="";return url}
-  catch(e){msgEl.textContent="上傳失敗，請確認 Storage 已開通並已部署規則。";return null}
+  try{const url=await Promise.race([FB.upload(file,folder),new Promise((_,rj)=>setTimeout(()=>rj(new Error("timeout")),20000))]);msgEl.textContent="";return url}
+  catch(e){msgEl.textContent=e&&e.message==="timeout"?"上傳逾時：請確認 Storage 已在控制台開通，並已發布 storage.rules。":"上傳失敗：請確認 Storage 已開通並已發布 storage.rules。";return null}
 }
 function edHrInsert(){
   const B=$("edB"),sel=window.getSelection();
