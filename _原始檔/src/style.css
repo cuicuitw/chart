@@ -1365,7 +1365,7 @@ body.co-on .desk .gest{display:none!important}
 .adm2-nav{position:sticky;top:89px;height:calc(100vh - 89px);align-self:start;overflow-y:auto}
 .adm2-tog{display:none}
 .adm2-main{width:1040px;max-width:calc(100vw - 232px);margin:0 auto}
-.adm2-main .ed2{grid-template-columns:minmax(0,1fr) 260px}
+@media (min-width:901px){.adm2-main .ed2{grid-template-columns:minmax(0,1fr) 260px}}
 @media (max-width:760px){
   .adm2{min-height:0}
   .adm2-nav{position:static;height:auto;display:block;padding:0;background:#a59c88}
