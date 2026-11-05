@@ -1,0 +1,252 @@
+<div class="boot" id="boot" role="status" aria-live="polite">
+  <div class="boot-in">
+    <img class="boot-face" src="face-about.webp" alt="" width="520" height="520">
+    <p class="boot-t">翠脆的心 ⟣ 會畫畫的占星師</p>
+    <div class="boot-bar"><i></i></div>
+    <p class="boot-s">星盤載入中…</p>
+  </div>
+</div>
+<div class="intro" id="intro" hidden role="dialog" aria-modal="true" aria-label="網站導覽">
+  <button type="button" class="intro-skip" data-iskip>略過</button>
+  <div class="intro-stage">
+    <section class="ist" data-s="0">
+      <div class="iv iv-face"><img src="face-about.webp" alt="" width="520" height="520"></div>
+      <p class="ieye">歡迎來到翠脆的心</p>
+      <h2 class="islo">把星盤<br>翻譯成你看得懂的語言</h2>
+      <p class="itx">這裡是為了占星初星者而造的學習網絡<span class="istar">__SPK__</span><br>我把自己理解的占星知識，透過創作轉譯成一張張卡牌提示詞，<br>陪你看懂自己的出生星圖。</p>
+    </section>
+  </div>
+  <div class="intro-nav">
+    <span class="icount" id="icount">01 / 08</span>
+    <div class="idots" id="idots"></div>
+    <div class="ibtns"><button type="button" class="iprev" id="iprev">上一步</button><button type="button" class="inext" id="inext">下一步</button></div>
+  </div>
+</div>
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#" data-go="chart" aria-label="翠脆的心 首頁">
+      <img src="header-logo.webp" alt="翠脆的心" width="173" height="55"><img class="brand-face" src="face-logo.webp" alt="" width="53" height="55">
+      <span class="brand-sp">__SPK__</span>
+      <span class="brand-tx">會畫畫的占星師</span>
+    </a>
+    <button type="button" id="menuBtn" aria-expanded="false" aria-controls="nav" aria-label="開啟選單"><span></span><span></span><span></span></button>
+    <nav id="nav" aria-label="網站頁面"></nav>
+    <button type="button" class="acct" id="acct" aria-label="會員登入"><span class="acct-i"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.2" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 20.5c.8-4 3.8-6 7.5-6s6.7 2 7.5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span class="acct-t">登入</span></button>
+    <a class="ig" href="https://www.instagram.com/cuicui.tw/" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.3" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg>
+    </a>
+  </div>
+</header>
+
+<!-- ===== 星盤查詢 ===== -->
+<section id="vChart" class="view">
+  <form id="f" class="paper" autocomplete="off" novalidate>
+    <div class="frow">
+      <label class="fld"><span>姓名</span><input id="nm" placeholder="王小明" maxlength="20"></label>
+      <label class="fld"><span>性別</span><select id="gen"><option value="">未填</option><option value="女">女</option><option value="男">男</option></select></label>
+      <label class="fld"><span>出生日期</span><input type="date" id="date" required></label>
+      <label class="fld"><span>出生時間</span><input type="time" id="time" required></label>
+      <label class="fld fld-place"><span>出生地點（國家／縣市）</span>
+        <span class="pin"><input id="place" list="cities" value="台北" placeholder="輸入城市名稱"></span>
+      </label>
+    </div>
+    <div class="frow frow2">
+      <div class="fld"><span id="hsl">宮位系統</span>
+        <div class="seg" id="hsg" role="radiogroup" aria-labelledby="hsl">
+          <button type="button" role="radio" aria-checked="true" class="on" data-v="P"><b>Placidus</b> 外顯世界</button>
+          <button type="button" role="radio" aria-checked="false" data-v="W"><b>Whole Sign</b> 內在真我</button>
+        </div>
+        <input type="hidden" id="hs" value="P">
+      </div>
+      <button type="button" class="btn-go" id="go" disabled>載入中…</button>
+      <button type="button" class="btn-now" id="now">現在天象</button>
+      <button type="button" class="btn-save" id="saveC"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span>存星盤</span></button>
+    </div>
+    <details class="adv" id="adv"><summary>進階設定<span id="advs" hidden></span></summary>
+      <p id="msg" class="msg ok" aria-live="polite"></p>
+      <div class="advf">
+        <label class="fld"><span>緯度（北為正）</span><input type="number" id="lat" step="0.01" value="25.04"></label>
+        <label class="fld"><span>經度（東為正）</span><input type="number" id="lon" step="0.01" value="121.56"></label>
+        <label class="fld"><span>時區</span><input id="tz" list="zones" value="Asia/Taipei"></label>
+      </div>
+    </details>
+    <p class="fsum" id="fsum" hidden></p>
+    <button type="button" class="fbtn ffold" id="fold" aria-expanded="true">收合 <span aria-hidden="true">︿</span></button>
+    <button type="button" class="fbtn ftour" id="tour">？ 網站導覽</button>
+    <datalist id="cities"></datalist>
+    <datalist id="zones"><option value="Asia/Taipei"><option value="Asia/Hong_Kong"><option value="Asia/Shanghai"><option value="Asia/Tokyo"><option value="Asia/Seoul"><option value="Asia/Singapore"><option value="Asia/Kuala_Lumpur"><option value="Asia/Bangkok"><option value="Europe/London"><option value="Europe/Paris"><option value="America/New_York"><option value="America/Chicago"><option value="America/Los_Angeles"><option value="Australia/Sydney"><option value="Pacific/Auckland"></datalist>
+  </form>
+
+  <div class="split">
+    <section class="pane pane-l" aria-label="星盤與參數">
+      <button type="button" class="wtour" data-tour>？ 網站導覽</button>
+      <div class="mview" id="mview">
+      <div class="wheel-wrap">
+        <p class="who" id="who"></p>
+        <div id="wheel"><div class="empty">星曆載入中…</div></div>
+      </div>
+      <div id="parN" class="par">
+        <h3 class="st">星體位置</h3>
+        <table class="tbl" id="tb"></table>
+        <div id="grid"></div>
+      </div>
+      <div id="parC" class="par" hidden>
+        <h3 class="st">先天尊貴</h3>
+        <div class="tscroll"><table class="tbl dig" id="dig"></table></div>
+        <div class="two">
+          <div><h3 class="st st-l">互容接納</h3><ul class="rec" id="rec"></ul></div>
+          <div><h3 class="st st-l">光線圍攻</h3><table class="tbl bes" id="bes"></table></div>
+        </div>
+      </div>
+      </div>
+      <div class="mvrow"><button type="button" class="mvtour" data-tour>？ 網站導覽</button><button type="button" class="mvfold" id="mvFold" aria-expanded="true">收合 <span aria-hidden="true">︿</span></button></div>
+      <div class="tog" role="tablist" aria-label="參數">
+        <button type="button" role="tab" id="tabW" aria-selected="false" data-p="w">星盤</button>
+        <button type="button" role="tab" id="tabN" aria-selected="true" data-p="n">常用參數</button>
+        <button type="button" role="tab" id="tabC" aria-selected="false" data-p="c">古典參數</button>
+      </div>
+    </section>
+    <section class="pane pane-r" aria-label="卡牌與相位">
+      <div class="desk" id="deskC"><div class="desk-in">
+      <div class="sumrow"><h2 class="ttl" id="sum"></h2><button type="button" class="pill" id="send" hidden>把這三張加入卡牌頁</button></div>
+      <div class="trio" id="cards"></div>
+      <div id="asp"></div>
+      </div><div class="abar" id="abar"></div><button type="button" class="dreset" data-tip="恢復原本大小與位置" aria-label="恢復原本大小與位置"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10a6 6 0 1 0 2-4.5M4 3v3.5h3.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="gest" aria-hidden="true"><div class="g-pc"><span class="g-mouse"><i></i></span><b>滾輪縮放・按住左鍵拖曳</b></div><div class="g-mb"><span class="g-f g1"></span><span class="g-f g2"></span><b>兩指縮放・拖曳移動</b></div></div></div>
+    </section>
+  </div>
+</section>
+
+<!-- ===== 占星卡牌 ===== -->
+<section id="vCards" class="view">
+  <div class="split split-c">
+    <aside class="pane pane-lib paper" aria-label="卡牌符號">
+      <div class="lbars"><button type="button" class="libbar" id="libBtn" aria-expanded="false" aria-controls="lib">占星卡牌<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="libbar notebar" id="noteBtn" aria-expanded="false" aria-controls="notes">占星筆記<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 7.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      <div class="ltog" role="tablist" aria-label="切換"><button type="button" role="tab" data-lt="lib" aria-selected="true" class="on">占星卡牌</button><button type="button" role="tab" data-lt="note" aria-selected="false">占星筆記</button></div>
+      <div class="libhead"><h2>占星卡牌</h2><span>選擇符號加入卡牌</span><button type="button" class="helpq" data-how data-tip="使用方式" aria-label="使用方式">?</button></div>
+      <div class="lib" id="lib"></div>
+      <div class="notes" id="notes"></div>
+    </aside>
+    <section class="pane pane-board" aria-label="排列區">
+      <div class="desk" id="deskB"><div class="desk-in">
+      <div id="board"></div>
+      <div class="board-foot"><button type="button" class="pill" id="clearB">清空排列區</button></div>
+      </div><button type="button" class="dreset" data-tip="恢復原本大小與位置" aria-label="恢復原本大小與位置"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10a6 6 0 1 0 2-4.5M4 3v3.5h3.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="gest" aria-hidden="true"><div class="g-pc"><span class="g-mouse"><i></i></span><b>滾輪縮放・按住左鍵拖曳</b></div><div class="g-mb"><span class="g-f g1"></span><span class="g-f g2"></span><b>兩指縮放・拖曳移動</b></div></div></div>
+    </section>
+  </div>
+</section>
+
+<!-- ===== 預約占星 ===== -->
+<!-- ===== 翠誌（文章） ===== -->
+<section id="vBlog" aria-label="翠誌" hidden>
+<img class="blg-arcimg blg-arcimg-d" src="arc-desktop.svg" alt="" aria-hidden="true"><img class="blg-arcimg blg-arcimg-m" src="arc-mobile.svg" alt="" aria-hidden="true">
+<div class="blg">
+  <div class="blg-hero">
+    <img class="blg-banner blg-banner-d" src="banner-desktop.svg" width="1440" height="368" alt="翠誌"><img class="blg-banner blg-banner-m" src="banner-mobile.svg" width="390" height="220" alt="">
+    
+    
+    
+  </div>
+  <ul class="blg-list" id="blgList"><li class="blg-empty">文章即將上架，敬請期待。</li></ul>
+</div>
+</section>
+<!-- ===== 翠誌：單篇文章 ===== -->
+<section id="vPost" aria-label="文章" hidden>
+<div class="blg-post">
+  <p class="blg-back"><a href="#blog" data-blogback>← 回翠誌</a></p>
+  <article class="blg-art">
+    <div class="blg-art-top"><span id="pstCat"></span><time id="pstMeta"></time></div>
+    <h2 id="pstT"></h2>
+    <hr class="blg-rule">
+    <div class="blg-body" id="pstBody"></div>
+  </article>
+</div>
+</section>
+__BOOKING__
+__ABOUT__
+__PRIVACY__
+<section id="vAdmin" aria-labelledby="admT" hidden>
+<div class="adm">
+  <div class="adm-top"><p class="adm-eye">站長專用</p><h2 id="admT">會員後台</h2><p class="adm-lead">這裡只讀取資料，不能修改或刪除會員的星盤與筆記。筆記內容不顯示，只顯示每位會員的筆記數量。</p></div>
+  <div id="admMsg" class="adm-msg" aria-live="polite"></div>
+  <div id="admOut"></div>
+  <div id="pstMgr"></div>
+</div>
+</section>
+
+<button type="button" id="toTop" aria-label="回到最上方"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 12.5l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<!-- ===== 頁尾 ===== -->
+<footer class="foot">
+  <div class="foot-in">
+    <p class="f-cr"><span>星曆計算：Swiss Ephemeris</span><span class="f-dot">・</span><span>© <span id="fyr">2026</span> 翠脆的心 All rights reserved.</span><span class="f-dot">・</span><span><a class="f-pv" href="#privacy" data-pv>隱私權說明</a>｜<a class="f-pv" href="#terms" data-tm>服務條款</a></span></p>
+    <div class="f-sns">
+      <a href="https://www.instagram.com/cuicui.tw/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.3" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg></a>
+      <a href="https://lin.ee/rAkQNZt" target="_blank" rel="noopener" aria-label="官方 LINE"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5s5.9-3.5 8-6c1.4-1.6 2-3.2 2-4.8C22 6.6 17.5 3 12 3Z"/></svg></a>
+    </div>
+  </div>
+</footer>
+
+<div class="how" id="how" hidden role="dialog" aria-modal="true" aria-labelledby="howT">
+  <div class="how-bg" data-close></div>
+  <div class="how-box">
+    <button type="button" class="how-x" data-close aria-label="關閉">✕</button>
+    <p class="how-eye">使用方式 01 / 06</p>
+    <h2 id="howT">把占星當作一套語言</h2>
+    <div class="hg">
+      <img class="hg-img" src="guide.webp" alt="" width="312" height="470">
+      <p>初步學習占星，可以先把占星當作一套語言系統，將星盤中出現的符號當作單詞，加入排列區。</p>
+      <p>透過卡牌關鍵字與自我覺察，幫助聯想與解讀。</p>
+      <div class="hfx">
+        <div class="hr"><span class="hfn">①</span><i><b>行星</b><small>原始人格</small></i><em>＋</em><i><b>星座</b><small>表現方式</small></i><em>＋</em><i><b>宮位</b><small>人生領域</small></i></div>
+        <div class="hr hr2"><span class="hfn">②</span><i><b>行星</b><small>原始人格</small></i><em>＋</em><i><b>星座</b><small>表現方式</small></i><em>＋</em><i><b>宮位</b><small>人生領域</small></i></div>
+        <div class="hr hr-mid"><i><b>相位</b><small>互動方式</small></i></div>
+        <div class="hr"><i><b>行星</b><small>原始人格</small></i><em>＋</em><i><b>星座</b><small>表現方式</small></i><em>＋</em><i><b>宮位</b><small>人生領域</small></i></div>
+      </div>
+    </div>
+    <div class="how-nav"><button type="button" class="how-skip" data-close>略過</button><button type="button" class="how-ok" id="howGo">下一步：實際操作看看 →</button></div>
+  </div>
+</div>
+
+<div class="mem" id="mem" hidden role="dialog" aria-modal="true" aria-labelledby="memT">
+  <div class="how-bg" data-mclose></div>
+  <div class="mem-box">
+    <button type="button" class="how-x" data-mclose aria-label="關閉">✕</button>
+    <div id="memOut">
+      <p class="how-eye">會員</p>
+      <h2 id="memT">我的帳號</h2>
+      <p class="mem-lead" id="memLead">登入後，就能把星盤和占星筆記存起來，換手機或電腦也看得到。</p>
+      <button type="button" class="mem-g" id="memLogin"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.6 13.2l7.8 6.1C12.3 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.1-10 7.1-17.5z"/><path fill="#FBBC05" d="M10.4 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.3.8-4.7l-7.8-6.1C1 16.5 0 20.1 0 24s1 7.5 2.6 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.7-4.1-13.6-9.8l-7.8 6.1C6.6 42.6 14.6 48 24 48z"/></svg>用 Google 帳號登入</button>
+      <p class="mem-msg" id="memMsg" aria-live="polite"></p>
+      <p class="mem-pv">登入即表示你同意本站的<a href="#privacy" data-pv>隱私權說明</a>與<a href="#terms" data-tm>服務條款</a>。</p>
+    </div>
+    <div id="memIn" hidden>
+      <div class="mem-me"><img id="memAv" alt="" width="44" height="44" referrerpolicy="no-referrer"><div><b id="memNm"></b><small id="memEm"></small></div></div>
+      <button type="button" class="mem-adm" id="memAdm" hidden>站長後台</button>
+      <div class="mem-tabs" role="tablist"><button type="button" role="tab" data-mt="c" class="on" aria-selected="true">星盤存檔</button><button type="button" role="tab" data-mt="n" aria-selected="false">占星筆記</button></div>
+      <p class="mem-msg" id="memMsg2" aria-live="polite"></p>
+      <div id="memC"><ul class="mem-list" id="memList"></ul></div>
+      <div id="memN" hidden><div class="notes notes-m" id="notesM"></div></div>
+      <div class="mem-ft">
+        <button type="button" class="mem-lk" id="memOutBtn">登出</button>
+        <a class="mem-lk" href="#privacy" data-pv>隱私權說明</a>
+        <a class="mem-lk" href="#terms" data-tm>服務條款</a>
+        <button type="button" class="mem-lk mem-del" id="memDelAcc">刪除會員帳號</button>
+      </div>
+      <div class="mem-cf" id="memCf" hidden><p>確定要刪除會員帳號嗎？你存的所有星盤都會一起刪除，刪除後無法復原。</p><div><button type="button" class="pill" id="memCfNo">取消</button><button type="button" class="pill mem-cf-y" id="memCfYes">確定刪除</button></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="npanel" id="npanel" hidden role="dialog" aria-label="占星筆記"><div class="np-head"><button type="button" class="np-grab" id="npGrab" aria-label="收起筆記"><i></i></button><b>占星筆記</b><button type="button" class="np-x" id="npX" aria-label="收起筆記">✕</button></div><div class="np-body" id="npBody"></div></div>
+<div class="mbar" id="mbar" hidden></div>
+<div class="msheet" id="msheet" hidden><div class="ms-bg" data-msclose></div><div class="ms-panel" role="dialog" aria-modal="true" aria-label="查詢與卡牌清單"><button type="button" class="ms-grab" data-msclose aria-label="收起"><i></i></button><div class="ms-body"><div id="msF"></div><div id="msL"></div></div></div></div>
+<div class="coach" id="coach" hidden aria-live="polite">
+  <div class="co-hole" id="coHole"></div>
+  <div class="co-tip" id="coTip" role="dialog" aria-label="使用方式">
+    <p class="co-n" id="coN"></p>
+    <h3 id="coH"></h3>
+    <p class="co-t" id="coT"></p>
+    <div class="co-ex" id="coEx" hidden></div>
+    <div class="co-g gest on" id="coG" hidden></div>
+    <div class="co-nav"><button type="button" class="co-skip" id="coSkip">略過</button><span><button type="button" class="co-prev" id="coPrev">上一步</button><button type="button" class="co-next" id="coNext">下一步</button></span></div>
+  </div>
+</div>

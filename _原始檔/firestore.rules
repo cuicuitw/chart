@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 站長帳號（只讀後台用）
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email == "cuicui.tw@gmail.com"
+        && request.auth.token.email_verified == true;
+    }
+
+    // 會員資料文件（email 與名稱）：本人可讀寫，站長可讀
+    match /users/{uid} {
+      allow read: if (request.auth != null && request.auth.uid == uid) || isAdmin();
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // 會員的星盤與筆記：本人可讀寫，站長可讀
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read: if isAdmin();
+    }
+
+    // 後台：讀取所有會員的星盤與筆記（collection group 查詢）
+    match /{path=**}/charts/{chartId} {
+      allow read: if isAdmin();
+    }
+    match /{path=**}/notes/{noteId} {
+      allow read: if isAdmin();
+    }
+
+    // 網站閱覽人數：任何人只能把人數加一，只有站長可以讀取
+    match /stats/{docId} {
+      allow read: if isAdmin();
+      allow create: if request.resource.data.views == 1 && request.resource.data.keys().hasOnly(['views']);
+      allow update: if request.resource.data.views == resource.data.views + 1 && request.resource.data.keys().hasOnly(['views']);
+    }
+
+    // 翠誌文章：目前只有站長可以讀取（翠誌尚未公開）；只有站長可以新增、修改、刪除
+    // 翠誌公開時，把下面的 read 改為：resource.data.status == "published" || isAdmin()
+    match /posts/{postId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+  }
+}
