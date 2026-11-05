@@ -1519,8 +1519,9 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 @media (max-width:760px){
   .co-tip.dock{display:grid;grid-template-columns:1fr auto;gap:6px 10px;padding:12px 14px 10px;text-align:center}
   .co-tip.dock>*{grid-column:1/-1;margin:0}
-  .co-tip.dock .co-n{grid-column:2;grid-row:1;justify-self:end;font-size:11px}
-  .co-tip.dock h3{grid-column:1;grid-row:1;font-size:16px;margin:0}
+  .co-tip.dock{position:fixed;padding-top:30px}
+  .co-tip.dock .co-n{position:absolute;top:10px;right:14px;margin:0;font-size:11px}
+  .co-tip.dock h3{grid-column:1/-1;font-size:16px;margin:0;text-align:center}
   .co-tip.dock .co-t{font-size:13px;line-height:1.6}
   .co-tip.dock .co-ex{font-size:12.5px;line-height:1.6;padding:8px 10px;text-align:left}
   .co-tip.dock .co-nav{justify-content:center;gap:10px;margin-top:4px}

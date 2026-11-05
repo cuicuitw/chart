@@ -409,7 +409,10 @@ function coRect(el){let L,T,Rr,B;const r0=el.getBoundingClientRect();[L,T,Rr,B]=
 function coPos(){if(COI<0)return;if(COS.steps[COI].anim)COS.steps[COI].anim();const el=COS.steps[COI].t(),H=$("coHole"),T=$("coTip");if(!el){H.style.cssText="left:50%;top:50%;width:0;height:0";}else{
   const r=coRect(el),p=8,hl=Math.max(4,r.left-p),ht=r.top-p,hr=Math.min(innerWidth-4,r.right+p);H.style.cssText=`left:${hl}px;top:${ht}px;width:${hr-hl}px;height:${r.height+p*2}px`;
   if(COS.steps[COI].ex&&!MSQ.matches&&innerWidth-316>r.right+12){T.style.width="300px";T.style.left=(innerWidth-316)+"px";T.style.bottom="auto";T.style.top=Math.max(80,Math.min(r.top,innerHeight-T.offsetHeight-16))+"px";T.classList.remove("in");void T.offsetWidth;T.classList.add("in");return}
-  if(COS.steps[COI].ex&&MSQ.matches){const b=el.closest(".brow")||el;b.style.transform="";const r0=b.getBoundingClientRect();const cw=Math.max(b.scrollWidth,r0.width);const z=Math.min(1,(innerWidth-12)/cw);const dx=(innerWidth-cw*z)/2-r0.left;b.style.transformOrigin="0 0";b.style.transform=`translateX(${dx}px) scale(${z})`;
+  if(COS.steps[COI].ex&&MSQ.matches){const b=el.closest(".brow")||el;b.style.transform="";const kids=[...b.children];const L=b.getBoundingClientRect().left;
+    const first=kids.length?kids[0].getBoundingClientRect().left:L,last=kids.length?kids[kids.length-1].getBoundingClientRect().right:b.getBoundingClientRect().right;const cw=Math.max(1,last-first);
+    const z=Math.min(1.6,(innerWidth-16)/cw);const targetLeft=(innerWidth-cw*z)/2;const dx=targetLeft-L-z*(first-L);
+    b.style.transformOrigin="0 0";b.style.transform=`translate(${dx}px,0) scale(${z})`;
     T.style.width=(innerWidth-16)+"px";T.style.left="8px";T.style.top="auto";T.style.bottom=((($("mbar")&&!$("mbar").hidden)?$("mbar").offsetHeight:0)+8)+"px";T.style.maxHeight="46vh";T.style.overflowY="auto";T.classList.add("dock");T.classList.remove("in");void T.offsetWidth;T.classList.add("in");return}
   T.classList.remove("dock");T.style.maxHeight="";T.style.overflowY="";
   const tw=Math.min(340,innerWidth-24);T.style.width=tw+"px";const th=T.offsetHeight;let left=Math.min(Math.max(12,r.left+r.width/2-tw/2),innerWidth-tw-12),top;
