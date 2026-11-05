@@ -1455,3 +1455,16 @@ body.co-on .desk .gest{display:none!important}
 }
 html{scrollbar-width:none;-ms-overflow-style:none}
 html::-webkit-scrollbar{display:none;width:0;height:0}
+
+/* v10：手機版星盤表單排版，存星盤移到出生地點旁，消除空白 */
+@media (max-width:760px){
+  #f{grid-template-columns:1fr 1fr;gap:12px;justify-items:stretch;width:100%}
+  #f>.frow,#f>.frow2{display:contents}
+  #f>.adv,#f>.fsum,#f>.fbtn,#f>.fbtn.ftour,#f>datalist{grid-column:1/-1}
+  #f>.adv{order:2}
+  #f>.frow2>.fld{order:1;grid-column:1/-1}
+  #f>.frow2>.btn-go,#f>.frow2>.btn-now{display:none}
+  #f>.frow2>#saveC{order:0;justify-self:stretch;justify-content:center;height:44px}
+  #f>.fbtn{justify-self:center;order:3}
+  #f.folded>.frow,#f.folded>.adv{display:none}
+}
