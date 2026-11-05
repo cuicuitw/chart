@@ -388,7 +388,7 @@ function coStart(T){if(!T)T=CARDS_T;COS=T;if(T===CARDS_T&&typeof ltSet=="functio
   document.body.classList.add("co-on");document.querySelectorAll(".desk .gest.on").forEach(g=>g.classList.remove("on"));$("coach").hidden=false;const g=document.querySelector(".gest");$("coG").innerHTML=g?g.innerHTML:"";coGo(0,1)}
 function coEnd(){if($("coach").hidden)return;coAnimStop();$("coach").hidden=true;document.body.classList.remove("co-on","co-kw");COI=-1;
   if(COBAK){R=COBAK;COBAK=null;renderB()}if(COS&&COS.fin)COS.fin();scrollTo(0,0)}
-function coGo(i,dir){coAnimStop();if(typeof msClose=="function")msClose();const L=COS.steps;while(L[i]&&L[i].skip&&L[i].skip())i+=dir||1;if(i<0){coEnd();COS.back();return}if(i>=L.length){coEnd();return}
+function coGo(i,dir){coAnimStop();const bb=document.querySelector("#board .brow");if(bb)bb.style.transform="";if(typeof msClose=="function")msClose();const L=COS.steps;while(L[i]&&L[i].skip&&L[i].skip())i+=dir||1;if(i<0){coEnd();COS.back();return}if(i>=L.length){coEnd();return}
   COI=i;const S=L[i];document.body.classList.toggle("co-kw",!!(S.ex&&MSQ.matches));$("coN").textContent=COS.name+" "+String(i+1+COS.off).padStart(2,"0")+" / "+String(COS.total).padStart(2,"0");$("coH").textContent=S.h;$("coT").textContent=S.x();
   $("coEx").hidden=!S.ex;$("coEx").innerHTML=S.ex||"";$("coG").hidden=!S.g;$("coPrev").textContent="上一步";$("coNext").textContent=S.last||"下一步";
   const el=S.t();if(el&&el.scrollIntoView){const r=el.getBoundingClientRect();if(r.top<(parseFloat(getComputedStyle(document.body).getPropertyValue("--topH"))||70)+20||r.bottom>innerHeight-80)el.scrollIntoView({block:"center"})}
@@ -409,7 +409,9 @@ function coRect(el){let L,T,Rr,B;const r0=el.getBoundingClientRect();[L,T,Rr,B]=
 function coPos(){if(COI<0)return;if(COS.steps[COI].anim)COS.steps[COI].anim();const el=COS.steps[COI].t(),H=$("coHole"),T=$("coTip");if(!el){H.style.cssText="left:50%;top:50%;width:0;height:0";}else{
   const r=coRect(el),p=8,hl=Math.max(4,r.left-p),ht=r.top-p,hr=Math.min(innerWidth-4,r.right+p);H.style.cssText=`left:${hl}px;top:${ht}px;width:${hr-hl}px;height:${r.height+p*2}px`;
   if(COS.steps[COI].ex&&!MSQ.matches&&innerWidth-316>r.right+12){T.style.width="300px";T.style.left=(innerWidth-316)+"px";T.style.bottom="auto";T.style.top=Math.max(80,Math.min(r.top,innerHeight-T.offsetHeight-16))+"px";T.classList.remove("in");void T.offsetWidth;T.classList.add("in");return}
-  if(COS.steps[COI].ex&&MSQ.matches){T.style.width=(innerWidth-16)+"px";T.style.left="8px";T.style.top="auto";T.style.bottom="8px";T.style.maxHeight="52vh";T.style.overflowY="auto";T.classList.remove("in");void T.offsetWidth;T.classList.add("in");return}
+  if(COS.steps[COI].ex&&MSQ.matches){const b=el.closest(".brow")||el;b.style.transform="";const r0=b.getBoundingClientRect();const cw=Math.max(b.scrollWidth,r0.width);const z=Math.min(1,(innerWidth-12)/cw);const dx=(innerWidth-cw*z)/2-r0.left;b.style.transformOrigin="0 0";b.style.transform=`translateX(${dx}px) scale(${z})`;
+    T.style.width=(innerWidth-16)+"px";T.style.left="8px";T.style.top="auto";T.style.bottom="8px";T.style.maxHeight="52vh";T.style.overflowY="auto";T.classList.add("dock");T.classList.remove("in");void T.offsetWidth;T.classList.add("in");return}
+  T.classList.remove("dock");T.style.maxHeight="";T.style.overflowY="";
   const tw=Math.min(340,innerWidth-24);T.style.width=tw+"px";const th=T.offsetHeight;let left=Math.min(Math.max(12,r.left+r.width/2-tw/2),innerWidth-tw-12),top;
   if(r.right+tw+24<innerWidth&&!MSQ.matches){left=r.right+18;top=Math.min(Math.max(80,r.top),innerHeight-th-12)}
   else if(r.bottom+th+20<innerHeight)top=r.bottom+16;else if(r.top-th-20>60)top=r.top-th-16;else top=Math.max(70,innerHeight-th-90);
