@@ -339,6 +339,7 @@ $("menuBtn").onclick=e=>{e.stopPropagation();menu(!$("nav").classList.contains("
 document.addEventListener("click",e=>{if(!e.target.closest(".top"))menu(false)});
 /* ---------- 動態：進場由下往上淡入 ---------- */
 const RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const TQ=matchMedia("(pointer:coarse) and (min-width:761px)");
 const RVSEL='.brand,#nav,.ig,#f .fld,#f .adv,#f .frow2>*,.wheel-wrap,.tog,.par>*,.note,.sumrow,.trio>div,#asp>*,#asp li,.infobar,.lcol,.guide,.gdots,.board-foot,.bk-top,.bk h3,.plan,.cta,.faq details,.ab .tog,.abp>*';
 const IO=("IntersectionObserver" in window&&!RM)?new IntersectionObserver(es=>{let k=0;es.forEach(e=>{if(e.isIntersecting){const el=e.target;el.style.setProperty("--d",Math.min(k++,6)*60+"ms");el.classList.add("in");IO.unobserve(el)}})},{rootMargin:"0px 0px -5% 0px"}):null;
 function arm(root,extra,mark){if(!IO)return;root.querySelectorAll(RVSEL+(extra?","+extra:"")).forEach(el=>{if(el.closest(".rv:not(.in)")&&el.closest(".rv")!==el)return;el.classList.add("rv");if(mark)return;if(!el.classList.contains("in")||extra)IO.observe(el)})}
@@ -408,16 +409,21 @@ function coRect(el){let L,T,Rr,B;const r0=el.getBoundingClientRect();[L,T,Rr,B]=
   L=Math.max(L,12);Rr=Math.min(Rr,innerWidth-12);return {left:L,top:T,right:Rr,bottom:B,width:Math.max(0,Rr-L),height:Math.max(0,B-T)}}
 function coPos(){if(COI<0)return;if(COS.steps[COI].anim)COS.steps[COI].anim();const el=COS.steps[COI].t(),H=$("coHole"),T=$("coTip");if(!el){H.style.cssText="left:50%;top:50%;width:0;height:0";}else{
   const r=coRect(el),p=8,hl=Math.max(4,r.left-p),ht=r.top-p,hr=Math.min(innerWidth-4,r.right+p);H.style.cssText=`left:${hl}px;top:${ht}px;width:${hr-hl}px;height:${r.height+p*2}px`;
+  T.style.height="";T.style.bottom="auto";
   if(COS.steps[COI].ex&&!MSQ.matches&&innerWidth-316>r.right+12){T.style.width="300px";T.style.left=(innerWidth-316)+"px";T.style.bottom="auto";T.style.top=Math.max(80,Math.min(r.top,innerHeight-T.offsetHeight-16))+"px";T.classList.remove("in");void T.offsetWidth;T.classList.add("in");return}
-  if(COS.steps[COI].ex&&MSQ.matches){const b=el.closest(".brow")||el;b.style.transform="";const kids=[...b.children];const L=b.getBoundingClientRect().left;
+  if(COS.steps[COI].ex&&(MSQ.matches||TQ.matches)){const b=el.closest(".brow")||el;b.style.transform="";const kids=[...b.children];const L=b.getBoundingClientRect().left;
+    const P=b.parentElement||b,pr=P.getBoundingClientRect();
     const first=kids.length?kids[0].getBoundingClientRect().left:L,last=kids.length?kids[kids.length-1].getBoundingClientRect().right:b.getBoundingClientRect().right;const cw=Math.max(1,last-first);
-    const z=Math.min(1.6,(innerWidth-16)/cw);const targetLeft=(innerWidth-cw*z)/2;const dx=targetLeft-L-z*(first-L);
+    const cap=(TQ.matches&&!MSQ.matches)?1:1.6;const z=Math.min(cap,(Math.min(innerWidth,pr.width)-16)/cw);const targetLeft=(pr.left+pr.width/2)-cw*z/2;const dx=targetLeft-L-z*(first-L);
     b.style.transformOrigin="0 0";b.style.transform=`translate(${dx}px,0) scale(${z})`;
-    T.style.width=(innerWidth-16)+"px";T.style.left="8px";T.style.top="auto";T.style.bottom=((($("mbar")&&!$("mbar").hidden)?$("mbar").offsetHeight:0)+8)+"px";T.style.maxHeight="46vh";T.style.overflowY="auto";T.classList.add("dock");T.classList.remove("in");void T.offsetWidth;T.classList.add("in");return}
+    const dw=(TQ.matches&&!MSQ.matches)?Math.min(560,innerWidth-16):innerWidth-16;
+    T.style.width=dw+"px";T.style.left=((innerWidth-dw)/2)+"px";T.style.top="auto";T.style.bottom=((($("mbar")&&!$("mbar").hidden)?$("mbar").offsetHeight:0)+8)+"px";T.style.maxHeight="46vh";T.style.overflowY="auto";T.classList.add("dock");T.classList.remove("in");void T.offsetWidth;T.classList.add("in");return}
   T.classList.remove("dock");T.style.maxHeight="";T.style.overflowY="";
   const tw=Math.min(340,innerWidth-24);T.style.width=tw+"px";const th=T.offsetHeight;let left=Math.min(Math.max(12,r.left+r.width/2-tw/2),innerWidth-tw-12),top;
   if(r.right+tw+24<innerWidth&&!MSQ.matches){left=r.right+18;top=Math.min(Math.max(80,r.top),innerHeight-th-12)}
   else if(r.bottom+th+20<innerHeight)top=r.bottom+16;else if(r.top-th-20>60)top=r.top-th-16;else top=Math.max(70,innerHeight-th-90);
+  if(TQ.matches&&MSQ.matches){const sh=$("msheet");if(sh&&!sh.hidden&&sh.offsetHeight){const st=sh.getBoundingClientRect().top;top=Math.max(12,st-th-14);left=Math.max(12,Math.min(left,innerWidth-tw-12))}}
+  if(TQ.matches&&!MSQ.matches){T.style.bottom="auto";T.style.maxHeight=(innerHeight-24)+"px";T.style.overflowY="auto";const hh=Math.min(T.offsetHeight,innerHeight-24);top=Math.max(12,Math.min(top,innerHeight-hh-12))}else T.style.bottom="auto";
   T.style.left=left+"px";T.style.top=top+"px";T.classList.remove("in");void T.offsetWidth;T.classList.add("in")}}
 $("coNext").onclick=()=>{if(COS.steps[COI].last)coEnd();else coGo(COI+1,1)};
 $("coPrev").onclick=()=>coGo(COI-1,-1);
