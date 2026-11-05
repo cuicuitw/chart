@@ -1,7 +1,7 @@
 import {initializeApp} from "firebase/app";
 import {getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged,reauthenticateWithPopup,deleteUser,browserLocalPersistence,setPersistence} from "firebase/auth";
 import {getFirestore,collection,collectionGroup,doc,getDocs,addDoc,setDoc,updateDoc,deleteDoc,serverTimestamp,query,orderBy,writeBatch,where,increment,getDoc} from "firebase/firestore";
-const app=initializeApp({apiKey:"AIzaSyAQqpG61B23KMk0erWcAWZzNyUaJBckgTc",authDomain:"cuicui-chart.firebaseapp.com",projectId:"cuicui-chart",storageBucket:"cuicui-chart.firebasestorage.app",messagingSenderId:"1095786794782",appId:"1:1095786794782:web:cc57f83c16421fd9d0030f"});
+const app=initializeApp({apiKey:"AIzaSyAQqpG61B23KMk0erWcAWZzNyUaJBckgTc",authDomain:"cuicui-chart.firebaseapp.com",projectId:"cuicui-chart",storageBucket:"cuicui-chart-images",messagingSenderId:"1095786794782",appId:"1:1095786794782:web:cc57f83c16421fd9d0030f"});
 const auth=getAuth(app),db=getFirestore(app);setPersistence(auth,browserLocalPersistence).catch(()=>{});
 const prov=()=>{const p=new GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});return p};
 const col=()=>collection(db,"users",auth.currentUser.uid,"charts");

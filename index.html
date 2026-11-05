@@ -2400,7 +2400,7 @@ $("f").addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.tagName=="INPU
 let LASTQ=null,ME=null,MLIST=[],PEND=false,FBL=null;
 const MKEY="cuicui-signed";
 function fbLoad(){if(FBL)return FBL;if(!window.FB&&location.protocol=="file:")return Promise.reject(new Error("file"));
-  FBL=(window.FB?Promise.resolve():new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="fb.js?v=8f9a39b3";sc.async=true;sc.onload=()=>{window.FB?ok():no(new Error("fb"))};sc.onerror=()=>{FBL=null;no(new Error("net"))};document.head.appendChild(sc)}))
+  FBL=(window.FB?Promise.resolve():new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="fb.js?v=3fbafd38";sc.async=true;sc.onload=()=>{window.FB?ok():no(new Error("fb"))};sc.onerror=()=>{FBL=null;no(new Error("net"))};document.head.appendChild(sc)}))
     .then(()=>{FB.onUser(u=>{ME=u;try{u?localStorage.setItem(MKEY,"1"):localStorage.removeItem(MKEY)}catch(e){}acctR();admBtnR(u);if(u){memLoad();if(PEND){PEND=false;saveChart()}}else{MLIST=[];memR()}notesOnUser(u)})});
   return FBL}
 const escH=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
