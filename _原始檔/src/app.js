@@ -744,7 +744,7 @@ function postEditorOpen(p){
       <label>子分類<select id="edSub"></select></label>
       <details class="ed2-seo" id="edCatD"><summary>管理分類（新增、改名、刪除）</summary><div id="edCatBox"></div></details>
       <label>摘要（列表上顯示）<textarea id="edSum" rows="3" maxlength="300">${escH(p.summary||"")}</textarea></label>
-      <div class="ed2-cov"><span>封面圖</span><div class="ed2-covp" id="edCovP">${p.cover&&ED_IMG.test(p.cover)?`<img src="${escH(p.cover)}" alt="">`:"<em>尚未設定</em>"}</div><label class="ed2-cover-box" for="edCovF">點擊上傳封面</label><input type="file" id="edCovF" accept="image/*"><button type="button" class="pill" id="edCovX"${p.cover?"":" hidden"}>移除封面</button></div>
+      <div class="ed2-cov"><span>封面圖</span><div class="ed2-covp" id="edCovP">${p.cover&&ED_IMG.test(p.cover)?`<img src="${escH(p.cover)}" alt="">`:"<em>尚未設定</em>"}</div><label class="ed2-cover-box" for="edCovF">點擊上傳封面</label><input type="file" id="edCovF" accept="image/*"><button type="button" class="pill" id="edCovB">從內文選封面</button> <button type="button" class="pill" id="edCovX"${p.cover?"":" hidden"}>移除封面</button><div id="edCovPick" class="ed2-covpick" hidden></div></div>
       <details class="ed2-seo"><summary>SEO 設定（可留空）</summary>
         <label>SEO 標題<input id="edSt" maxlength="70" value="${escH(p.seoTitle||"")}"></label>
         <label>SEO 描述<textarea id="edSd" rows="2" maxlength="180">${escH(p.seoDesc||"")}</textarea></label></details>
@@ -766,6 +766,7 @@ function postEditorOpen(p){
   $("edPM").onclick=e=>{const b=e.target.closest("[data-eplus]");if(!b)return;$("edPM").hidden=true;if(b.dataset.eplus==="hr"){edHrInsert();return}edPickImage(async f=>{const url=await edUpload(f,"posts/images",$("edMsg"));if(url)edImgInsert(url)})};
   $("edCovF").onchange=async e=>{const f=e.target.files[0];if(!f)return;const url=await edUpload(f,"posts/covers",$("edMsg"));e.target.value="";if(!url)return;
     EDP.cover=url;$("edCovP").innerHTML=`<img src="${escH(url)}" alt="">`;$("edCovX").hidden=false;$("edMsg").textContent="封面已上傳，記得按存檔。"};
+  $("edCovB").onclick=()=>edCovPick(false);
   $("edCovX").onclick=()=>{EDP.cover="";$("edCovP").innerHTML="<em>尚未設定</em>";$("edCovX").hidden=true;$("edMsg").textContent="封面已移除，記得按存檔。"};
   $("edBtns").onclick=e=>{const b=e.target.closest("[data-es]");if(b)edSave(b.dataset.es)};
 }
@@ -827,7 +828,19 @@ function edImgInsert(url){
   const rg=document.createRange();rg.setStart(nx,0);rg.collapse(true);const s=window.getSelection();s.removeAllRanges();s.addRange(rg);
 }
 function makeSlug(){return "p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-async function edSave(a){
+function edCovPick(force){
+  const box=$("edCovPick");const imgs=[...$("edB").querySelectorAll("img")].map(i=>i.getAttribute("src")).filter(x=>ED_IMG.test(x||""));
+  if(!imgs.length){box.hidden=true;$("edMsg").textContent="內文還沒有圖片，請先在內文插入圖片。";return}
+  box.hidden=false;
+  box.innerHTML=`<p class="ed2-covhint">${force?"發布前請點一張內文圖片當封面：":"點一張內文圖片當封面："}</p><div class="ed2-covgrid">${imgs.map((x,i)=>`<button type="button" class="ed2-covitem${x===EDP.cover?" on":""}" data-cp="${i}"><img src="${escH(x)}" alt=""></button>`).join("")}</div>${force?'<button type="button" class="pill" id="edNoCov">不設封面，直接發布</button>':""}`;
+  box.onclick=e=>{
+    const b=e.target.closest("[data-cp]");
+    if(b){EDP.cover=imgs[+b.dataset.cp];$("edCovP").innerHTML=`<img src="${escH(EDP.cover)}" alt="">`;$("edCovX").hidden=false;box.hidden=true;box.innerHTML="";
+      if(force)edSave("published",true);else $("edMsg").textContent="已設為封面，記得按上架或存檔。";return}
+    if(e.target.closest("#edNoCov")){box.hidden=true;box.innerHTML="";edSave("published",true)}
+  };
+}
+async function edSave(a,skipCov){
   const msg=$("edMsg");
   if(a==="back"){admGo("list");return}
   if(a==="del"){if(!EDP||!EDP.id)return;if(!confirm("確定要刪除這篇文章嗎？刪除後無法復原。"))return;
@@ -836,6 +849,7 @@ async function edSave(a){
   if(!title){msg.textContent="請先填寫標題。";return}
   if(a==="preview"){openPreview();return}
   const status=a==="draft"?"draft":"published";
+  if(status==="published"&&!EDP.cover&&!skipCov&&$("edB").querySelector("img")){edCovPick(true);msg.textContent="";return}
   const data={title,slug:EDP.slug||makeSlug(),cat:$("edCat").value,sub:$("edSub").value,summary:$("edSum").value.trim(),cover:EDP.cover||"",body:sanitizeBody($("edB").innerHTML),seoTitle:$("edSt").value.trim(),seoDesc:$("edSd").value.trim(),status,publishedAt:EDP.publishedAt||(status==="published"?Date.now():null)};
   msg.textContent="儲存中…";
   try{const id=await FB.postSave(EDP.id||null,data);EDP={...EDP,...data,id};edBtns(EDP);
