@@ -605,16 +605,18 @@ function memOpen(lead){if(typeof npClose=="function")npClose();$("mem").hidden=f
 /* ---------- 會員後台（站長專用，只讀；權限由 Firestore 規則把關） ---------- */
 function ageOf(s){if(!s)return null;const [y,m,d]=String(s).split("-").map(Number);if(!y||!m||!d)return null;const n=new Date(Date.now()+8*3600e3);const cm=n.getUTCMonth()+1,cd=n.getUTCDate();let a=n.getUTCFullYear()-y;if(cm<m||(cm===m&&cd<d))a--;return a>=0?a:null}
 /* ---------- 後台（站長專用）：左側選單 翠誌文章｜新增文章｜會員資料 ---------- */
-let EDP=null,ADM_NAV=false,PCATS=[];
+let EDP=null,ADM_NAV=false,PCATS=[],ADM_FONT=false,EDSEL=null;
+function admFont(){if(ADM_FONT)return;ADM_FONT=true;try{const l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap";document.head.appendChild(l)}catch(e){}}
 const ED_IMG=/^https:\/\/firebasestorage\.googleapis\.com\//;
 const fmtD=t=>t?new Date(t).toLocaleDateString("zh-TW",{timeZone:"Asia/Taipei"}):"—";
 const catLabel=p=>[p.cat,p.sub].filter(Boolean).join("・");
 async function adminOpen(){
+  admFont();
   let ok=false;
   for(let i=0;i<2&&!ok;i++){try{await fbLoad();ok=true}catch(e){FBL=null;if(i==0)await new Promise(r=>setTimeout(r,1500))}}
   if(!ok){$("admMsg").textContent="後台載入失敗，請檢查網路後再試一次。";return}
   const u=await new Promise(r=>{let un=null;un=FB.onUser(x=>{if(un)un();r(x)})});
-  if(!ADM_NAV){ADM_NAV=true;document.querySelectorAll("#vAdmin [data-an]").forEach(b=>b.addEventListener("click",()=>admGo(b.dataset.an)));document.addEventListener("selectionchange",edSelChange)}
+  if(!ADM_NAV){ADM_NAV=true;$("admPvX").onclick=()=>{$("admPv").hidden=true};document.querySelectorAll("#vAdmin [data-an]").forEach(b=>b.addEventListener("click",()=>admGo(b.dataset.an)));document.addEventListener("selectionchange",edSelChange)}
   if(!u){admGo("list",true);$("anList").innerHTML=`<button type="button" class="pill" id="admLogin">用 Google 帳號登入</button>`;$("admLogin").onclick=()=>memOpen("登入後才能使用後台。");return}
   admGo("list");
 }
@@ -660,7 +662,6 @@ async function admMembersOpen(){
   draw();
 }
 /* 後台按鈕：只有站長帳號登入時才顯示（非站長看不到） */
-/* 後台按鈕：只有站長帳號登入時才顯示（非站長看不到） */
 function admBtnR(u){const ok=!!(u&&u.email===ADM_EMAIL&&u.emailVerified);const b=$("admBtn");if(b)b.hidden=!ok;const ma=$("memAdm");if(ma)ma.hidden=!ok;
   try{ok?localStorage.setItem("cuicui-admin","1"):localStorage.removeItem("cuicui-admin")}catch(e){}
 }
@@ -671,7 +672,7 @@ async function postListOpen(){
   try{[POSTS,PCATS]=await Promise.all([FB.postsAll(),FB.catsAll()])}catch(e){box.innerHTML='<p class="adm-msg">文章讀取失敗，請重新整理後再試。</p>';return}
   POSTS.sort((a,b)=>(b.updated||0)-(a.updated||0));
   box.innerHTML=`<div class="adm2-row"><h3 class="adm-h">翠誌文章</h3><div><button type="button" class="pill" id="pCats">分類管理</button> <button type="button" class="pill" id="pNew">＋ 新增文章</button></div></div><div id="pCatBox"></div>`+
-    (POSTS.length?`<table class="adm-t adm2-t"><thead><tr><th>標題</th><th>分類</th><th>狀態</th><th>更新</th></tr></thead><tbody>${POSTS.map(p=>`<tr><td><button type="button" class="adm-link" data-pe="${escH(p.id)}">${escH(p.title||"未命名文章")}</button></td><td>${escH(catLabel(p)||"未分類")}</td><td>${p.status==="published"?"已上架":"草稿"}</td><td>${fmtD(p.updated)}</td></tr>`).join("")}</tbody></table>`:'<p class="adm-lead">還沒有文章。</p>');
+    (POSTS.length?`<div class="adm-tw"><table class="adm-t adm2-t"><thead><tr><th>標題</th><th>分類</th><th>狀態</th><th>更新</th><th></th></tr></thead><tbody>${POSTS.map(p=>`<tr><td>${escH(p.title||"未命名文章")}</td><td>${escH(catLabel(p)||"未分類")}</td><td><span class="tag${p.status==="published"?"":" draft"}">${p.status==="published"?"已發佈":"草稿"}</span></td><td>${fmtD(p.updated)}</td><td><button type="button" class="pill" data-pe="${escH(p.id)}">編輯</button></td></tr>`).join("")}</tbody></table></div>`:'<p class="adm-lead">還沒有文章。</p>');
   $("pNew").onclick=()=>admGo("new");
   $("pCats").onclick=()=>catPanel();
   box.onclick=e=>{const b=e.target.closest("[data-pe]");if(!b)return;const p=POSTS.find(x=>x.id==b.dataset.pe);admGo("new",true);postEditorOpen(p)};
@@ -718,7 +719,7 @@ const legacyToHtml=s=>String(s||"").split(/\n\s*\n/).map(t=>t.trim()).filter(Boo
 function edSubs(){const top=PCATS.find(c=>!c.parent&&c.name===$("edCat").value);return top?PCATS.filter(c=>c.parent===top.id):[]}
 function edSubFill(cur){$("edSub").innerHTML=`<option value="">無</option>`+edSubs().map(c=>`<option value="${escH(c.name)}"${c.name===cur?" selected":""}>${escH(c.name)}</option>`).join("")}
 function edBtns(p){
-  $("edBtns").innerHTML=`<button type="button" class="pill" data-es="draft">存成草稿</button><button type="button" class="pill" data-es="published">${p.status==="published"?"更新上架":"上架發布"}</button>${p.status==="published"?'<button type="button" class="pill" data-es="draft">改回草稿</button>':""}${p.id?'<button type="button" class="pill" data-es="del">刪除文章</button>':""}<button type="button" class="pill" data-es="back">回列表</button>`;
+  $("edBtns").innerHTML=`<button type="button" class="pill" data-es="preview">預覽</button><button type="button" class="pill" data-es="draft">存成草稿</button><button type="button" class="pill" data-es="published">${p.status==="published"?"更新上架":"上架發布"}</button>${p.status==="published"?'<button type="button" class="pill" data-es="draft">改回草稿</button>':""}${p.id?'<button type="button" class="pill" data-es="del">刪除文章</button>':""}<button type="button" class="pill" data-es="back">回列表</button>`;
 }
 function postEditorOpen(p){
   p=p||{};EDP=p;const box=$("anNew");
@@ -728,6 +729,7 @@ function postEditorOpen(p){
     <div class="ed2-main">
       <textarea id="edT" class="ed2-title" rows="1" maxlength="120" placeholder="文章標題">${escH(p.title||"")}</textarea>
       <div class="ed2-body" id="edB" contenteditable="true" spellcheck="false" aria-label="文章內文"></div>
+      <button type="button" class="ed2-del" id="edDel" hidden>刪除</button>
       <button type="button" class="ed2-plus" id="edPlus" hidden aria-label="加入內容">+</button>
       <div class="ed2-pm" id="edPM" hidden><button type="button" data-eplus="img">圖片</button><button type="button" data-eplus="hr">分隔線（· · ·）</button></div>
       <div class="ed2-tb" id="edTB" hidden role="toolbar" aria-label="文字格式"><button type="button" data-ec="h3">副標</button><button type="button" data-ec="p">內文</button><button type="button" data-ec="blockquote">引言</button><button type="button" data-ec="bold"><b>B</b></button><button type="button" data-ec="italic"><i>I</i></button></div>
@@ -737,7 +739,7 @@ function postEditorOpen(p){
       <label>分類<select id="edCat"><option value="">未分類</option>${tops.map(c=>`<option value="${escH(c.name)}"${c.name===p.cat?" selected":""}>${escH(c.name)}</option>`).join("")}</select></label>
       <label>子分類<select id="edSub"></select></label>
       <label>摘要（列表上顯示）<textarea id="edSum" rows="3" maxlength="300">${escH(p.summary||"")}</textarea></label>
-      <div class="ed2-cov"><span>封面圖</span><div class="ed2-covp" id="edCovP">${p.cover&&ED_IMG.test(p.cover)?`<img src="${escH(p.cover)}" alt="">`:"<em>尚未設定</em>"}</div><label class="pill ed2-pick" for="edCovF">選擇封面圖</label><input type="file" id="edCovF" accept="image/*"><button type="button" class="pill" id="edCovX"${p.cover?"":" hidden"}>移除封面</button></div>
+      <div class="ed2-cov"><span>封面圖</span><div class="ed2-covp" id="edCovP">${p.cover&&ED_IMG.test(p.cover)?`<img src="${escH(p.cover)}" alt="">`:"<em>尚未設定</em>"}</div><label class="ed2-cover-box" for="edCovF">點擊上傳封面</label><input type="file" id="edCovF" accept="image/*"><button type="button" class="pill" id="edCovX"${p.cover?"":" hidden"}>移除封面</button></div>
       <details class="ed2-seo"><summary>SEO 設定（可留空）</summary>
         <label>SEO 標題<input id="edSt" maxlength="70" value="${escH(p.seoTitle||"")}"></label>
         <label>SEO 描述<textarea id="edSd" rows="2" maxlength="180">${escH(p.seoDesc||"")}</textarea></label></details>
@@ -750,6 +752,7 @@ function postEditorOpen(p){
   edBtns(p);
   const t=$("edT");const fit=()=>{t.style.height="auto";t.style.height=t.scrollHeight+"px"};t.addEventListener("input",fit);fit();
   $("edCat").onchange=()=>edSubFill("");
+  $("edB").addEventListener("click",edSelect);$("edDel").onclick=()=>{if(EDSEL)EDSEL.remove();EDSEL=null;$("edDel").hidden=true};
   $("edB").addEventListener("keyup",edPlace);$("edB").addEventListener("click",edPlace);$("edB").addEventListener("input",edPlace);
   $("edTB").addEventListener("mousedown",e=>{const b=e.target.closest("[data-ec]");if(!b)return;e.preventDefault();edFmt(b.dataset.ec)});
   $("edPlus").onclick=()=>{$("edPM").hidden=!$("edPM").hidden};
@@ -758,6 +761,15 @@ function postEditorOpen(p){
     EDP.cover=url;$("edCovP").innerHTML=`<img src="${escH(url)}" alt="">`;$("edCovX").hidden=false;$("edMsg").textContent="封面已上傳，記得按存檔。"};
   $("edCovX").onclick=()=>{EDP.cover="";$("edCovP").innerHTML="<em>尚未設定</em>";$("edCovX").hidden=true;$("edMsg").textContent="封面已移除，記得按存檔。"};
   $("edBtns").onclick=e=>{const b=e.target.closest("[data-es]");if(b)edSave(b.dataset.es)};
+}
+function edSelect(e){const t=e.target,del=$("edDel");
+  if(t.tagName==="IMG"||t.tagName==="HR"){EDSEL=t;const r=t.getBoundingClientRect(),pr=$("edB").parentElement.getBoundingClientRect();del.style.top=(r.top-pr.top+4)+"px";del.style.left=Math.max(0,r.right-pr.left-80)+"px";del.hidden=false}
+  else{del.hidden=true;EDSEL=null}}
+function openPreview(){
+  const sub=$("edSub").value,cats=[$("edCat").value,sub&&sub!=="無"?sub:""].filter(Boolean).join("・");
+  const cover=EDP&&EDP.cover&&ED_IMG.test(EDP.cover)?`<img class="blg-cover" src="${escH(EDP.cover)}" alt="">`:"";
+  $("admPvBody").innerHTML=`<div class="pv-cat2"><span>${escH(cats||"未分類")}</span><span>${escH(fmtD(Date.now()))}</span></div>${cover}<h1 class="pv-t2">${escH($("edT").value||"（未填標題）")}</h1><hr class="pv-rule2"><div class="blg-body">${sanitizeBody($("edB").innerHTML)}</div>`;
+  $("admPv").hidden=false;
 }
 function edSelChange(){
   const tb=$("edTB"),B=$("edB");if(!tb||!B)return;
@@ -815,6 +827,7 @@ async function edSave(a){
     try{await FB.postDel(EDP.id);admGo("list")}catch(e){msg.textContent="刪除失敗，請稍後再試。"}return}
   const title=$("edT").value.trim();
   if(!title){msg.textContent="請先填寫標題。";return}
+  if(a==="preview"){openPreview();return}
   const status=a==="draft"?"draft":"published";
   const data={title,slug:EDP.slug||makeSlug(),cat:$("edCat").value,sub:$("edSub").value,summary:$("edSum").value.trim(),cover:EDP.cover||"",body:sanitizeBody($("edB").innerHTML),seoTitle:$("edSt").value.trim(),seoDesc:$("edSd").value.trim(),status,publishedAt:EDP.publishedAt||(status==="published"?Date.now():null)};
   msg.textContent="儲存中…";
