@@ -679,25 +679,39 @@ async function postListOpen(){
   $("pCats").onclick=()=>catPanel();
   box.onclick=e=>{const b=e.target.closest("[data-pe]");if(!b)return;const p=POSTS.find(x=>x.id==b.dataset.pe);admGo("new",true);postEditorOpen(p)};
 }
+let CAT_OPEN=new Set();
 function catPanel(boxId="pCatBox",after){
   const box=$(boxId);if(!box)return;
   const tops=PCATS.filter(c=>!c.parent);
-  const row=c=>`<li class="${c.parent?"sub":""}"><input data-cn="${escH(c.id)}" value="${escH(c.name)}" maxlength="30"> <button type="button" class="pill" data-cs="${escH(c.id)}">儲存名稱</button> <button type="button" class="pill" data-cd="${escH(c.id)}">刪除</button></li>`;
-  const ordered=[...tops,...PCATS.filter(c=>c.parent)];
-  box.innerHTML=`<div class="adm2-cbox"><h4 class="adm-h">分類管理</h4>
-    <form id="catF" class="adm2-cadd"><input name="name" maxlength="30" placeholder="新分類名稱" required>
-    <select name="parent"><option value="">新增為大分類</option>${tops.map(c=>`<option value="${escH(c.id)}">新增為「${escH(c.name)}」的子分類</option>`).join("")}</select>
-    <button type="submit" class="pill">新增</button></form>
-    <ul class="adm2-clist">${ordered.map(row).join("")||"<li class='adm-lead'>還沒有分類。</li>"}</ul>
-    <p class="adm-lead">例如：先新增大分類「占星知識」，再新增子分類「幼幼班」。刪除大分類時，它的子分類也會一起刪除；文章不會被刪除，文章上的分類名稱會保留。</p></div>`;
-  $("catF").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.target);const name=String(fd.get("name")||"").trim();if(!name)return;
-    try{await FB.catSave(null,{name,parent:String(fd.get("parent")||"")||null});PCATS=await FB.catsAll();catPanel(boxId,after);if(after)after()}catch(er){$("admMsg").textContent="分類儲存失敗，請稍後再試。"}};
+  const subsOf=id=>PCATS.filter(c=>c.parent===id);
+  const nameRow=c=>`<div class="adm2-crow"><input data-cn="${escH(c.id)}" value="${escH(c.name)}" maxlength="30" aria-label="分類名稱"><button type="button" class="pill" data-cs="${escH(c.id)}">改名</button><button type="button" class="pill" data-cd="${escH(c.id)}">刪除</button></div>`;
+  box.innerHTML=`<div class="adm2-cbox">
+    <form class="adm2-cadd adm2-cadd-top" data-top="1"><input name="name" maxlength="30" placeholder="新增大分類名稱" required aria-label="新增大分類名稱"><button type="submit" class="pill">新增大分類</button></form>
+    ${tops.length?"":'<p class="adm-lead">還沒有分類，先新增一個大分類。</p>'}
+    ${tops.map(t=>`<details class="adm2-ctop" data-id="${escH(t.id)}"${CAT_OPEN.has(t.id)?" open":""}>
+      <summary><span class="adm2-cname">${escH(t.name)}</span><span class="adm2-cnum">${subsOf(t.id).length} 個子分類</span></summary>
+      <div class="adm2-cbody">
+        <div class="adm2-clabel">大分類</div>${nameRow(t)}
+        <div class="adm2-clabel">子分類</div>
+        ${subsOf(t.id).map(c=>nameRow(c)).join("")||'<p class="adm-lead">還沒有子分類。</p>'}
+        <form class="adm2-cadd" data-sub="${escH(t.id)}"><input name="name" maxlength="30" placeholder="新增子分類名稱" required aria-label="新增子分類名稱"><button type="submit" class="pill">新增子分類</button></form>
+      </div></details>`).join("")}
+    <p class="adm-lead">刪除大分類時，它底下的子分類也會一起刪除；文章不會被刪除，文章上的分類名稱會保留。</p>
+  </div>`;
+  if(!box._catBound){box._catBound=1;box.addEventListener("toggle",e=>{const d=e.target;if(!d.dataset||!d.dataset.id)return;d.open?CAT_OPEN.add(d.dataset.id):CAT_OPEN.delete(d.dataset.id)},true)}
+  const refresh=async()=>{PCATS=await FB.catsAll();catPanel(boxId,after);if(after)after()};
+  const fail=()=>{$("admMsg").textContent="分類儲存失敗，請稍後再試。"};
+  box.onsubmit=async e=>{
+    e.preventDefault();const f=e.target;const name=String(new FormData(f).get("name")||"").trim();if(!name)return;
+    const parent=f.dataset.sub||null;if(parent)CAT_OPEN.add(parent);
+    try{await FB.catSave(null,{name,parent});await refresh()}catch(er){fail()}
+  };
   box.onclick=async e=>{
     const s=e.target.closest("[data-cs]"),d=e.target.closest("[data-cd]");
     if(s){const inp=box.querySelector(`[data-cn="${s.dataset.cs}"]`);const name=inp?inp.value.trim():"";if(!name)return;
-      try{await FB.catSave(s.dataset.cs,{name});PCATS=await FB.catsAll();catPanel(boxId,after);if(after)after()}catch(er){$("admMsg").textContent="分類儲存失敗，請稍後再試。"}return}
+      try{await FB.catSave(s.dataset.cs,{name});await refresh()}catch(er){fail()}return}
     if(d){if(!confirm("確定要刪除這個分類嗎？如果是大分類，它的子分類也會一起刪除。文章不會被刪除。"))return;
-      try{await FB.catDel(d.dataset.cd);PCATS=await FB.catsAll();catPanel(boxId,after);if(after)after()}catch(er){$("admMsg").textContent="刪除失敗，請稍後再試。"}}
+      try{await FB.catDel(d.dataset.cd);CAT_OPEN.delete(d.dataset.cd);await refresh()}catch(er){$("admMsg").textContent="刪除失敗，請稍後再試。"}}
   };
 }
 /* 內文格式：只保留副標 h3、內文 p、引言 blockquote、粗體 b、斜體 i、圖片 img（網址必須來自 Firebase Storage） */
@@ -776,7 +790,7 @@ function edSelect(e){const t=e.target,del=$("edDel");
 function openPreview(){
   const sub=$("edSub").value,cats=[$("edCat").value,sub&&sub!=="無"?sub:""].filter(Boolean).join("・");
   const cover=EDP&&EDP.cover&&ED_IMG.test(EDP.cover)?`<img class="blg-cover" src="${escH(EDP.cover)}" alt="">`:"";
-  $("admPvBody").innerHTML=`<div class="pv-cat2"><span>${escH(cats||"未分類")}</span><span>${escH(fmtD(Date.now()))}</span></div>${cover}<h1 class="pv-t2">${escH($("edT").value||"（未填標題）")}</h1><hr class="pv-rule2"><div class="blg-body">${sanitizeBody($("edB").innerHTML)}</div>`;
+  $("admPvBody").innerHTML=`<div class="pv-cat2"><span>${escH(cats||"未分類")}</span><span>${escH(fmtD(Date.now()))}</span></div><h1 class="pv-t2">${escH($("edT").value||"（未填標題）")}</h1><hr class="pv-rule2"><div class="blg-body">${sanitizeBody($("edB").innerHTML)}</div>`;
   $("admPv").hidden=false;
 }
 function edSelChange(){
@@ -867,7 +881,7 @@ function blogR(){const L=$("blgList");
   const list=BLOG;
   L.innerHTML=list.length?list.map(p=>`<li class="blg-item"><button type="button" class="blg-go" data-post="${escH(p.id)}"><span class="blg-thumb" aria-hidden="true">${p.cover&&ED_IMG.test(p.cover)?`<img src="${escH(p.cover)}" alt="">`:""}</span><span class="blg-txt"><span class="blg-line"><span>${escH(catTxt(p))}</span><time>${p.publishedAt?escH(fmtD(p.publishedAt)):""}</time></span><b class="blg-tt">${escH(p.title)}</b><span class="blg-sm">${escH(p.summary||"")}</span></span></button></li>`).join(""):'<li class="blg-empty">文章即將上架，敬請期待。</li>'}
 function postView(p){if(!p)return;$("pstCat").textContent=catTxt(p);$("pstT").textContent=p.title||"";$("pstMeta").textContent=p.publishedAt?fmtD(p.publishedAt):"";
-  const cv=$("pstCover");if(cv){cv.hidden=!(p.cover&&ED_IMG.test(p.cover));if(!cv.hidden)cv.src=p.cover}
+  const cv=$("pstCover");if(cv){cv.hidden=true;cv.removeAttribute("src")}
   const B=$("pstBody");B.innerHTML="";
   if(bodyIsHtml(p.body)){B.innerHTML=sanitizeBody(p.body)}
   else String(p.body||"").split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean).forEach(t=>{const el=document.createElement("p");t.split("\n").forEach((ln,i)=>{if(i)el.appendChild(document.createElement("br"));el.appendChild(document.createTextNode(ln))});B.appendChild(el)});

@@ -1389,3 +1389,19 @@ body.co-on .desk .gest{display:none!important}
 .ed2-covitem{padding:0;border:2px solid transparent;border-radius:8px;background:none;cursor:pointer;aspect-ratio:1/1;overflow:hidden}
 .ed2-covitem.on,.ed2-covitem:hover{border-color:#e79dbd}
 .ed2-covitem img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* v6：分類管理（大分類可展開，子分類在裡面） */
+.adm2-cbox{display:grid;gap:12px}
+.adm2-cadd{display:flex;gap:8px;flex-wrap:wrap}
+.adm2-cadd input{flex:1 1 180px;min-width:0}
+.adm2-ctop{border:1px solid #e2d6bf;border-radius:10px;background:#fff}
+.adm2-ctop summary{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;list-style:none;font-weight:700}
+.adm2-ctop summary::-webkit-details-marker{display:none}
+.adm2-ctop summary::before{content:"▸";margin-right:8px;color:#776f5e;transition:transform .2s}
+.adm2-ctop[open] summary::before{transform:rotate(90deg)}
+.adm2-cname{flex:1}
+.adm2-cnum{font-size:12px;font-weight:500;color:#776f5e}
+.adm2-cbody{display:grid;gap:8px;padding:0 14px 14px}
+.adm2-clabel{font-size:12px;color:#776f5e;margin-top:4px}
+.adm2-crow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.adm2-crow input{flex:1 1 160px;min-width:0;font:inherit;font-size:15px;border:1px solid #d9d0bd;border-radius:8px;padding:6px 9px;background:#fff}
