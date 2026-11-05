@@ -753,7 +753,7 @@ function postEditorOpen(p){
       <div class="ed2-tb" id="edTB" hidden role="toolbar" aria-label="文字格式"><button type="button" data-ec="h3">副標</button><button type="button" data-ec="p">內文</button><button type="button" data-ec="blockquote">引言</button><button type="button" data-ec="bold"><b>B</b></button><button type="button" data-ec="italic"><i>I</i></button></div>
       <p class="pe-hint">選取文字會出現格式工具。在空白行按「＋」可加入圖片。</p>
     </div>
-    <aside class="ed2-side is-closed"><button type="button" class="ed2-stog" id="edSTog" aria-expanded="false">文章設定（分類、封面、摘要、SEO）</button>
+    <aside class="ed2-side is-closed"><button type="button" class="ed2-stog" id="edSTog" aria-expanded="false"><span>文章設定（分類、封面、摘要、SEO）</span><i class="ed2-sico" aria-hidden="true"></i></button>
       <label>分類<select id="edCat"><option value="">未分類</option>${tops.map(c=>`<option value="${escH(c.name)}"${c.name===p.cat?" selected":""}>${escH(c.name)}</option>`).join("")}</select></label>
       <label>子分類<select id="edSub"></select></label>
       <details class="ed2-seo" id="edCatD"><summary>管理分類（新增、改名、刪除）</summary><div id="edCatBox"></div></details>
