@@ -14,5 +14,8 @@
   },
   "firestore": {
     "rules": "_原始檔/firestore.rules"
+  },
+  "storage": {
+    "rules": "_原始檔/storage.rules"
   }
 }

@@ -30,7 +30,12 @@ def sub(src,txt,unicodes=None):
     s.subset(f); b=io.BytesIO(); f.flavor='woff2'; f.save(b); return b.getvalue()
 sizes={}
 for w,n in [(400,'R'),(500,'M'),(700,'B'),(900,'H')]:
-    data=sub(FD+f'GenSenRounded2TW-{n}.otf',zh); sizes['GenSen'+n]=len(data)
+    if os.path.exists(FD+f'GenSenRounded2TW-{n}.otf'):
+        data=sub(FD+f'GenSenRounded2TW-{n}.otf',zh)
+    else:
+        # 字體原檔不在倉庫內：沿用現有的字型子集（新增文字若缺字會退回系統字體）
+        data=open(OUT+f'font-zh-{w}.woff2','rb').read()
+    sizes['GenSen'+n]=len(data)
     fn=f'font-zh-{w}.woff2';open(OUT+fn,'wb').write(data);u=f'{fn}?v={H(data)}'
     if w in (400,700):PRE.append(f'<link rel="preload" href="{u}" as="font" type="font/woff2" crossorigin>')
     faces.append(f'@font-face{{font-family:"GenSen";font-weight:{w};font-display:block;src:url({u}) format("woff2")}}')
