@@ -155,6 +155,7 @@
   <p class="blg-back"><a href="#blog" data-blogback>← 回翠誌</a></p>
   <article class="blg-art">
     <div class="blg-art-top"><span id="pstCat"></span><time id="pstMeta"></time></div>
+    <img id="pstCover" class="blg-cover" alt="" hidden>
     <h2 id="pstT"></h2>
     <hr class="blg-rule">
     <div class="blg-body" id="pstBody"></div>
@@ -165,11 +166,23 @@ __BOOKING__
 __ABOUT__
 __PRIVACY__
 <section id="vAdmin" aria-labelledby="admT" hidden>
-<div class="adm">
-  <div class="adm-top"><p class="adm-eye">站長專用</p><h2 id="admT">會員後台</h2><p class="adm-lead">這裡只讀取資料，不能修改或刪除會員的星盤與筆記。筆記內容不顯示，只顯示每位會員的筆記數量。</p></div>
-  <div id="admMsg" class="adm-msg" aria-live="polite"></div>
-  <div id="admOut"></div>
-  <div id="pstMgr"></div>
+<div class="adm2">
+  <nav class="adm2-nav" aria-label="後台選單">
+    <h2 id="admT">翠誌後台</h2>
+    <button type="button" data-an="list" class="on">翠誌文章</button>
+    <button type="button" data-an="new">新增文章</button>
+    <button type="button" data-an="mem">會員資料</button>
+  </nav>
+  <div class="adm2-main">
+    <p id="admMsg" class="adm-msg" aria-live="polite"></p>
+    <div id="anList"></div>
+    <div id="anNew" hidden></div>
+    <div id="anMem" hidden>
+      <p class="adm-eye">站長專用</p>
+      <p class="adm-lead">這裡只讀取資料，不能修改或刪除會員的星盤與筆記。筆記內容不顯示，只顯示每位會員的筆記數量。</p>
+      <div id="admOut"></div>
+    </div>
+  </div>
 </div>
 </section>
 
