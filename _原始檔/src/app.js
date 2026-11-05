@@ -123,7 +123,7 @@ const gsvg=g=>{GC.font='100px AstroSym,"Apple Symbols","Segoe UI Symbol",sans-se
 const om=o=>{const m=Math.round(o*60);return Math.floor(m/60)+"°"+String(m%60).padStart(2,"0")+"′"};
 
 /* 星盤 */
-const MQ=matchMedia("(max-width:760px)");MQ.addEventListener&&MQ.addEventListener("change",()=>{if(typeof ST!=="undefined"&&ST)draw()});
+const MQ=matchMedia("(max-width:760px), (orientation:portrait) and (max-width:1100px)");MQ.addEventListener&&MQ.addEventListener("change",()=>{if(typeof ST!=="undefined"&&ST)draw()});
 function draw(){
   const {pl,cu,asc,mc,sel}=ST,cx=300,cy=300;
   const A=l=>(180+l-cu[1])*Math.PI/180,pt=(l,r)=>[cx+r*Math.cos(A(l)),cy-r*Math.sin(A(l))];
@@ -345,7 +345,7 @@ function arm(root,extra,mark){if(!IO)return;root.querySelectorAll(RVSEL+(extra?"
 function replay(root){if(!IO)return;arm(root,".brow .bcard",true);const els=[...root.querySelectorAll(".rv")];els.forEach(el=>{IO.unobserve(el);el.classList.add("rv0");el.classList.remove("in")});void root.offsetHeight;requestAnimationFrame(()=>{els.forEach(el=>el.classList.remove("rv0"));requestAnimationFrame(()=>{els.forEach(el=>IO.observe(el));arm(root,".brow .bcard")})})}
 if(IO){new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType!==1)return;const host=n.parentElement;if(host&&!n.closest("#board"))arm(host)}))}).observe(document.body,{childList:true,subtree:true})}
 /* ---------- 點卡牌放大（所有裝置） ---------- */
-(()=>{const MQ=matchMedia("(max-width:760px)");const z=document.createElement("div");z.className="zoom";z.id="zoom";z.hidden=true;
+(()=>{const MQ=matchMedia("(max-width:760px), (orientation:portrait) and (max-width:1100px)");const z=document.createElement("div");z.className="zoom";z.id="zoom";z.hidden=true;
   z.innerHTML='<div class="zoom-c"></div><button type="button" class="zoom-x" aria-label="關閉">✕</button>';document.body.appendChild(z);
   const box=z.querySelector(".zoom-c");
   function close(){z.classList.remove("on");setTimeout(()=>{z.hidden=true;box.innerHTML=""},180);document.body.classList.remove("zoom-on")}
@@ -489,7 +489,7 @@ function zoomArea(areas,key,target,prop){let z=1;try{z=+localStorage.getItem(key
     let g0=1;el.addEventListener("gesturestart",e=>{e.preventDefault();g0=z});
     el.addEventListener("gesturechange",e=>{e.preventDefault();if(!TOUCH)set(g0*e.scale)});})}
 /* ---------- 桌面式卡牌區：整區一起放大縮小、拖曳移動 ---------- */
-var MQM=matchMedia("(max-width:760px)");
+var MQM=matchMedia("(max-width:760px), (orientation:portrait) and (max-width:1100px)");
 function desk(id,key,skip){const D=$(id);if(!D)return null;const I=D.querySelector(".desk-in");let z=1,x=0,y=0,st=0,userZ=false;try{if(!MQM.matches){z=+localStorage.getItem(key)||1;userZ=!!localStorage.getItem(key)}}catch(e){}
   const W=()=>D.clientWidth,H=()=>D.clientHeight,ap=()=>{I.style.transform=`translate(${x}px,${y}px) scale(${z})`;I.style.setProperty("--dz",z)};
   const fit=()=>{if(!MQM.matches){D.style.height="";return}D.style.height=Math.round(Math.max(240,I.offsetHeight*z+16))+"px"};
@@ -557,7 +557,7 @@ document.addEventListener("keydown",e=>{if($("intro").hidden)return;if(e.key=="A
 $("tour").onclick=introOpen;document.querySelectorAll("[data-tour]").forEach(b=>b.onclick=introOpen);
 var NOTESVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h9l3.5 3.5v13.5H6z M14.5 3.5V7.5H18.5 M9 12h6.5M9 15.5h6.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>';
 /* ---------- 手機：下方工作列＋從下方拉出的面板（星盤頁＝輸入星盤資料、卡牌頁＝卡牌清單） ---------- */
-var MSQ=matchMedia("(max-width:760px)");
+var MSQ=matchMedia("(max-width:760px), (orientation:portrait) and (max-width:1100px)");
 var HOMEF={p:$("f").parentNode,n:$("f").nextSibling},HOMEL={p:$("lib").parentNode,n:$("lib").nextSibling};
 function msOpen(){const v=document.body.dataset.view;if(v!="chart"&&v!="cards")return;if(typeof npClose=="function")npClose();const s=$("msheet");$("msF").hidden=v!="chart";$("msL").hidden=v!="cards";s.hidden=false;document.body.classList.add("ms-on");requestAnimationFrame(()=>s.classList.add("on"))}
 function msClose(){const s=$("msheet");if(!s)return;if(s.hidden)return;s.classList.remove("on");document.body.classList.remove("ms-on");setTimeout(()=>{if(!s.classList.contains("on"))s.hidden=true},280)}
