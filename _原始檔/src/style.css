@@ -1515,13 +1515,9 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
   .ed2-body blockquote{margin:1em 0;padding-left:16px;border-left:3px solid #e79dbd;color:#776f5e;font-style:italic}
 }
 
-/* v13：卡牌使用方式「照著關鍵字造句」步驟：手機卡牌等比縮放至貼齊左右並置中，說明固定在下方 */
+/* v13：卡牌使用方式「照著關鍵字造句」手機版：卡牌貼齊左右，說明框固定在底部功能列上方 */
 @media (max-width:760px){
-  .co-tip.dock{display:grid;grid-template-columns:1fr auto;gap:6px 10px;padding:12px 14px 10px;text-align:center}
-  .co-tip.dock>*{grid-column:1/-1;margin:0}
-  .co-tip.dock{position:fixed;padding-top:30px}
-  .co-tip.dock .co-n{position:absolute;top:10px;right:14px;margin:0;font-size:11px}
-  .co-tip.dock h3{grid-column:1/-1;font-size:16px;margin:0;text-align:center}
+  .co-tip.dock{position:fixed;text-align:center;padding:12px 14px 10px}
   .co-tip.dock .co-t{font-size:13px;line-height:1.6}
   .co-tip.dock .co-ex{font-size:12.5px;line-height:1.6;padding:8px 10px;text-align:left}
   .co-tip.dock .co-nav{justify-content:center;gap:10px;margin-top:4px}
