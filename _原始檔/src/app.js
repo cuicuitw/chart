@@ -616,12 +616,14 @@ async function adminOpen(){
   for(let i=0;i<2&&!ok;i++){try{await fbLoad();ok=true}catch(e){FBL=null;if(i==0)await new Promise(r=>setTimeout(r,1500))}}
   if(!ok){$("admMsg").textContent="後台載入失敗，請檢查網路後再試一次。";return}
   const u=await new Promise(r=>{let un=null;un=FB.onUser(x=>{if(un)un();r(x)})});
-  if(!ADM_NAV){ADM_NAV=true;$("admPvX").onclick=()=>{$("admPv").hidden=true};document.querySelectorAll("#vAdmin [data-an]").forEach(b=>b.addEventListener("click",()=>admGo(b.dataset.an)));document.addEventListener("selectionchange",edSelChange)}
+  if(!ADM_NAV){ADM_NAV=true;$("admPvX").onclick=()=>{$("admPv").hidden=true};$("admTog").onclick=()=>document.querySelector(".adm2-nav").classList.toggle("open");document.querySelectorAll("#vAdmin [data-an]").forEach(b=>b.addEventListener("click",()=>admGo(b.dataset.an)));document.addEventListener("selectionchange",edSelChange)}
   if(!u){admGo("list",true);$("anList").innerHTML=`<button type="button" class="pill" id="admLogin">用 Google 帳號登入</button>`;$("admLogin").onclick=()=>memOpen("登入後才能使用後台。");return}
   admGo("list");
 }
 function admGo(p,skip){
   document.querySelectorAll("#vAdmin [data-an]").forEach(b=>b.classList.toggle("on",b.dataset.an===p));
+  const nv=document.querySelector(".adm2-nav"),tg=$("admTog");if(nv)nv.classList.remove("open");
+  if(tg){const cur=document.querySelector('#vAdmin [data-an="'+p+'"]');tg.textContent=(cur?cur.textContent:"選單")+" ▾"}
   $("anList").hidden=p!=="list";$("anNew").hidden=p!=="new";$("anMem").hidden=p!=="mem";
   $("admMsg").textContent="";
   if(skip)return;
@@ -669,7 +671,7 @@ function admBtnR(u){const ok=!!(u&&u.email===ADM_EMAIL&&u.emailVerified);const b
 /* 翠誌文章：列表、分類管理、編輯器 */
 async function postListOpen(){
   const box=$("anList");box.innerHTML='<p class="adm-lead">讀取中…</p>';
-  try{[POSTS,PCATS]=await Promise.all([FB.postsAll(),FB.catsAll()])}catch(e){box.innerHTML='<p class="adm-msg">文章讀取失敗，請重新整理後再試。</p>';return}
+  try{[POSTS,PCATS]=await Promise.all([FB.postsAll(),FB.catsAll().catch(()=>[])])}catch(e){box.innerHTML='<p class="adm-msg">文章讀取失敗，請重新整理後再試。</p>';return}
   POSTS.sort((a,b)=>(b.updated||0)-(a.updated||0));
   box.innerHTML=`<div class="adm2-row"><h3 class="adm-h">翠誌文章</h3><div><button type="button" class="pill" id="pCats">分類管理</button> <button type="button" class="pill" id="pNew">＋ 新增文章</button></div></div><div id="pCatBox"></div>`+
     (POSTS.length?`<div class="adm-tw"><table class="adm-t adm2-t"><thead><tr><th>標題</th><th>分類</th><th>狀態</th><th>更新</th><th></th></tr></thead><tbody>${POSTS.map(p=>`<tr><td>${escH(p.title||"未命名文章")}</td><td>${escH(catLabel(p)||"未分類")}</td><td><span class="tag${p.status==="published"?"":" draft"}">${p.status==="published"?"已發佈":"草稿"}</span></td><td>${fmtD(p.updated)}</td><td><button type="button" class="pill" data-pe="${escH(p.id)}">編輯</button></td></tr>`).join("")}</tbody></table></div>`:'<p class="adm-lead">還沒有文章。</p>');

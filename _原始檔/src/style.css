@@ -1359,3 +1359,20 @@ body.co-on .desk .gest{display:none!important}
 .adm2-t th,.adm2-t td{white-space:nowrap}
 .adm2-t td:first-child{white-space:normal;min-width:180px}
 @media (max-width:760px){.adm2-t{min-width:600px}}
+
+/* 後台 v4：左側選單固定到底、中間寬度固定、手機版改為展開式選單 */
+.adm2{min-height:calc(100vh - 89px);align-items:stretch}
+.adm2-nav{position:sticky;top:89px;height:calc(100vh - 89px);align-self:start;overflow-y:auto}
+.adm2-tog{display:none}
+.adm2-main{width:1040px;max-width:calc(100vw - 232px);margin:0 auto}
+.adm2-main .ed2{grid-template-columns:minmax(0,1fr) 260px}
+@media (max-width:760px){
+  .adm2{min-height:0}
+  .adm2-nav{position:static;height:auto;display:block;padding:0;background:#a59c88}
+  .adm2-tog{display:block;width:100%;text-align:left;background:#a59c88;color:#fff;border:0;padding:14px 16px;font:inherit;font-size:16px;font-weight:500;cursor:pointer}
+  .adm2-nav h2{display:none}
+  .adm2-nav button[data-an]{display:none}
+  .adm2-nav.open button[data-an]{display:block;width:100%;padding:12px 16px;border-radius:0}
+  .adm2-nav.open{padding-bottom:8px}
+  .adm2-main{width:auto;max-width:none}
+}
