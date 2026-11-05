@@ -1490,3 +1490,27 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
   .ed2-plus{left:-6px}
 }
 @media (prefers-reduced-motion:reduce){.ed2-sico::after{transition:none}}
+
+/* v12：手機編輯頁完整對齊設計稿（上方寫文章、下方文章設定） */
+@media (max-width:900px){
+  .ed2{display:flex;flex-direction:column;gap:0;margin-top:0}
+  .ed2-main{padding-left:0;order:1}
+  .ed2-side{order:2;display:block;border-left:0;padding:0;border-top:1px solid #eadfcf;margin-top:8px}
+  .ed2-side>*+*{margin-top:14px}
+  .ed2-side label{display:grid;gap:6px;font-size:13px;color:#776f5e}
+  .ed2-side input,.ed2-side select,.ed2-side textarea{width:100%;border:1px solid #cdbfa8;border-radius:8px;padding:8px 10px;background:#fff;font-size:15px;color:#111}
+  .ed2-side input[type=file]{display:none}
+  .ed2-side .ed2-sico{width:34px;height:34px}
+  .ed2-cov{display:grid;gap:8px;font-size:13px;color:#776f5e}
+  .ed2-covp img{width:100%;border-radius:8px;display:block}
+  .ed2-cover-box{height:110px;border:1px dashed #776f5e;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#776f5e;font-size:13px}
+  .ed2-side .pe-btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .ed2-side .pe-btns .pill{height:40px;padding:0 16px;border:1px solid #766f5e;border-radius:8px;font-size:14px;letter-spacing:.08em;background:#fff;color:#111}
+  .ed2-side .pe-btns .pill[data-es=published]{background:#e79dbd;border-color:#e79dbd;color:#fff}
+  .ed2-side .pe-btns .pill[data-es=preview]{border-color:#766f5e}
+  .ed2-title{font-size:26px;line-height:1.4}
+  .ed2-body{min-height:340px;font-size:18px;font-weight:300;line-height:1.9}
+  .ed2-body:empty::before{content:"開始寫你的文章…";color:#aaa}
+  .ed2-body h3{font-size:24px;font-weight:500;margin:.8em 0 .4em}
+  .ed2-body blockquote{margin:1em 0;padding-left:16px;border-left:3px solid #e79dbd;color:#776f5e;font-style:italic}
+}
