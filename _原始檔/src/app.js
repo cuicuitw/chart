@@ -647,7 +647,7 @@ async function admMembersOpen(){
     `<label>出生地區<input id="fPlace" placeholder="例如：台北" maxlength="20"></label>`+
     `<label>年齡<span><input id="fAgeMin" type="number" min="0" max="120" placeholder="最小" style="width:72px"> ～ <input id="fAgeMax" type="number" min="0" max="120" placeholder="最大" style="width:72px"></span></label>`+
     `<label>搜尋<input id="fQ" type="search" placeholder="Email、名稱、星盤名稱"></label></div>`+
-    `<p class="adm-sum" id="admSum"></p><div class="adm-tw"><table class="adm-t"><thead><tr><th>Email</th><th>會員代號</th><th>出生地區</th><th>會員性別</th><th>會員名稱</th><th>星盤名稱</th><th>年齡</th></tr></thead><tbody id="admTb"></tbody></table></div>`;
+    `<p class="adm-sum" id="admSum"></p><div class="adm-tw"><table class="adm-t mem-t"><thead><tr><th>Email</th><th>會員代號</th><th>出生地區</th><th>會員性別</th><th>會員名稱</th><th>星盤名稱</th><th>年齡</th></tr></thead><tbody id="admTb"></tbody></table></div>`;
   const draw=()=>{
     const g=$("fGen").value,pl=$("fPlace").value.trim(),mn=$("fAgeMin").value,mx=$("fAgeMax").value,q=$("fQ").value.trim().toLowerCase();
     const list=rows.filter(r=>{
@@ -658,7 +658,7 @@ async function admMembersOpen(){
       if(q&&!(r.email+r.name+r.nm).toLowerCase().includes(q))return false;
       return true});
     $("admSum").textContent=`符合 ${list.length} 筆`;
-    $("admTb").innerHTML=list.length?list.map(r=>`<tr><td>${escH(r.email||"—")}</td><td>${escH(r.id.slice(0,8))}</td><td>${escH(r.place||"—")}</td><td>${escH(r.gen||"未填")}</td><td>${escH(r.name)}</td><td>${escH(r.nm||"（沒有存星盤）")}</td><td>${r.age==null?"—":r.age}</td></tr>`).join(""):`<tr><td colspan="7">沒有符合條件的會員。</td></tr>`;
+    $("admTb").innerHTML=list.length?list.map(r=>`<tr><td data-label="Email">${escH(r.email||"—")}</td><td data-label="會員代號">${escH(r.id.slice(0,8))}</td><td data-label="出生地區">${escH(r.place||"—")}</td><td data-label="會員性別">${escH(r.gen||"未填")}</td><td data-label="會員名稱">${escH(r.name)}</td><td data-label="星盤名稱">${escH(r.nm||"（沒有存星盤）")}</td><td data-label="年齡">${r.age==null?"—":r.age}</td></tr>`).join(""):`<tr><td colspan="7">沒有符合條件的會員。</td></tr>`;
   };
   ["fGen","fPlace","fAgeMin","fAgeMax","fQ"].forEach(i=>$(i).addEventListener("input",draw));
   draw();
@@ -753,7 +753,7 @@ function postEditorOpen(p){
       <div class="ed2-tb" id="edTB" hidden role="toolbar" aria-label="文字格式"><button type="button" data-ec="h3">副標</button><button type="button" data-ec="p">內文</button><button type="button" data-ec="blockquote">引言</button><button type="button" data-ec="bold"><b>B</b></button><button type="button" data-ec="italic"><i>I</i></button></div>
       <p class="pe-hint">選取文字會出現格式工具。在空白行按「＋」可加入圖片。</p>
     </div>
-    <aside class="ed2-side">
+    <aside class="ed2-side is-closed"><button type="button" class="ed2-stog" id="edSTog" aria-expanded="false">文章設定（分類、封面、摘要、SEO）</button>
       <label>分類<select id="edCat"><option value="">未分類</option>${tops.map(c=>`<option value="${escH(c.name)}"${c.name===p.cat?" selected":""}>${escH(c.name)}</option>`).join("")}</select></label>
       <label>子分類<select id="edSub"></select></label>
       <details class="ed2-seo" id="edCatD"><summary>管理分類（新增、改名、刪除）</summary><div id="edCatBox"></div></details>
@@ -769,6 +769,7 @@ function postEditorOpen(p){
   $("edB").innerHTML=sanitizeBody(bodyIsHtml(p.body)?p.body:legacyToHtml(p.body));
   edCatFill(p.cat||"");
   edSubFill(p.sub||"");
+  $("edSTog").onclick=()=>{const a=$("edSTog").closest(".ed2-side");const closed=a.classList.toggle("is-closed");$("edSTog").setAttribute("aria-expanded",String(!closed))};
   $("edCatD").addEventListener("toggle",()=>{if($("edCatD").open)catPanel("edCatBox",edRefreshSel)});
   edBtns(p);
   const t=$("edT");const fit=()=>{t.style.height="auto";t.style.height=t.scrollHeight+"px"};t.addEventListener("input",fit);fit();

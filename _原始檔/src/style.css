@@ -1456,15 +1456,34 @@ body.co-on .desk .gest{display:none!important}
 html{scrollbar-width:none;-ms-overflow-style:none}
 html::-webkit-scrollbar{display:none;width:0;height:0}
 
-/* v10：手機版星盤表單排版，存星盤移到出生地點旁，消除空白 */
+/* v10：手機版星盤表單（宮位在上，出生地點與存星盤在最下面、同高對齊） */
 @media (max-width:760px){
   #f{grid-template-columns:1fr 1fr;gap:12px;justify-items:stretch;width:100%}
   #f>.frow,#f>.frow2{display:contents}
-  #f>.adv,#f>.fsum,#f>.fbtn,#f>.fbtn.ftour,#f>datalist{grid-column:1/-1}
-  #f>.adv{order:2}
+  #f>.adv,#f>.fsum,#f>.fbtn,#f>datalist{grid-column:1/-1}
   #f>.frow2>.fld{order:1;grid-column:1/-1}
+  #f>.frow>.fld-place{order:2;align-self:end}
+  #f>.frow2>#saveC{order:2;align-self:end;justify-self:stretch;justify-content:center;height:44px;border-color:var(--maroon);color:var(--maroon);border-radius:999px;font-size:16px;font-weight:900}
+  #f>.frow>.fld-place input{height:44px;box-sizing:border-box}
   #f>.frow2>.btn-go,#f>.frow2>.btn-now{display:none}
-  #f>.frow2>#saveC{order:0;justify-self:stretch;justify-content:center;height:44px}
-  #f>.fbtn{justify-self:center;order:3}
+  #f>.adv{order:3}
+  #f>.fsum{order:4}
+  #f>.fbtn{justify-self:center;order:5}
   #f.folded>.frow,#f.folded>.adv{display:none}
+}
+
+/* v11：後台文章設定可收合、會員資料手機卡片 */
+.ed2-stog{display:none}
+@media (max-width:900px){
+  .ed2-stog{display:block;width:100%;text-align:left;background:#fefbf4;border:1.5px solid #d9d0bd;border-radius:10px;padding:12px 14px;font:inherit;font-size:15px;color:#4a4536;cursor:pointer}
+  .ed2-side.is-closed>label,.ed2-side.is-closed>details,.ed2-side.is-closed>.ed2-cov{display:none}
+}
+@media (max-width:760px){
+  .mem-t{min-width:0}
+  .mem-t thead{display:none}
+  .mem-t,.mem-t tbody{display:block;width:100%}
+  .mem-t tr{display:grid;gap:6px;padding:14px 6px;border-bottom:1px solid #e2d6bf}
+  .mem-t td{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:0;border:0;font-size:14px;white-space:normal;word-break:break-all;min-width:0}
+  .mem-t td::before{content:attr(data-label);color:#776f5e;flex:0 0 auto}
+  .mem-t td:first-child{font-weight:700;font-size:15px}
 }
