@@ -1376,3 +1376,10 @@ body.co-on .desk .gest{display:none!important}
   .adm2-nav.open{padding-bottom:8px}
   .adm2-main{width:auto;max-width:none}
 }
+
+/* v5：列表縮圖、預覽字體、編輯頁分類管理 */
+.blg-thumb{overflow:hidden}
+.blg-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.adm-pv{font-family:"Noto Sans TC",system-ui,sans-serif;color:#111}
+#edCatBox .adm2-clist li{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0}
+#edCatBox .adm2-cadd{display:grid;gap:6px;margin-bottom:10px}
