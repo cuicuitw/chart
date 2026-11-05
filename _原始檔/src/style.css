@@ -1405,3 +1405,23 @@ body.co-on .desk .gest{display:none!important}
 .adm2-clabel{font-size:12px;color:#776f5e;margin-top:4px}
 .adm2-crow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .adm2-crow input{flex:1 1 160px;min-width:0;font:inherit;font-size:15px;border:1px solid #d9d0bd;border-radius:8px;padding:6px 9px;background:#fff}
+
+/* v7：翠誌分類下拉選單與列表微動畫 */
+.blg{position:relative}
+.blg-filter{position:absolute;right:0;top:calc(100vw*0.19);z-index:2}
+.blg-filter[hidden]{display:none}
+.blg-sel-wrap{position:relative}
+.blg-sel{appearance:none;-webkit-appearance:none;font:inherit;font-size:15px;letter-spacing:.08em;color:#7f0f3d;background:#fefbf4;border:1.5px solid #f2a6c6;border-radius:99px;padding:9px 42px 9px 22px;min-width:200px;cursor:pointer;box-shadow:0 4px 14px rgba(246,186,206,.35);transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s,border-color .3s}
+.blg-sel:hover,.blg-sel:focus-visible{transform:translateY(-2px);box-shadow:0 8px 22px rgba(246,186,206,.55);border-color:#dd76a5;outline:none}
+.blg-sel-wrap::after{content:"";position:absolute;right:20px;top:50%;width:7px;height:7px;border-right:1.5px solid #7f0f3d;border-bottom:1.5px solid #7f0f3d;transform:translateY(-70%) rotate(45deg);pointer-events:none;transition:transform .3s}
+.blg-sel-wrap:focus-within::after{transform:translateY(-30%) rotate(225deg)}
+@keyframes blgIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.blg-item{animation:blgIn .65s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*70ms)}
+.blg-thumb img{transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.blg-go:hover .blg-thumb img{transform:scale(1.06)}
+.blg-tt{transition:color .3s ease}
+@media (max-width:760px){
+  .blg-filter{left:50%;right:auto;transform:translateX(-50%);top:calc(100vw*0.48);width:max-content}
+  .blg-sel{min-width:170px;font-size:14px;padding:8px 38px 8px 18px}
+}
+@media (prefers-reduced-motion:reduce){.blg-item,.blg-thumb img,.blg-sel,.blg-sel-wrap::after{animation:none;transition:none}}

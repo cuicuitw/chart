@@ -875,17 +875,26 @@ function blgFont(){try{if(document.getElementById("blgFontL"))return;const l=doc
 const catTxt=p=>[p.cat,p.sub||p.level].filter(Boolean).join("・");
 async function blogOpen(){blgFont();const L=$("blgList");if(BLOG){blogR();return}
   L.innerHTML='<li class="blg-empty">讀取中…</li>';
-  try{await fbLoad();BLOG=(await FB.postsPub()).sort((a,b)=>(b.publishedAt||0)-(a.publishedAt||0));blogR()}
+  try{await fbLoad();BLOG=(await FB.postsPub()).sort((a,b)=>(b.publishedAt||0)-(a.publishedAt||0));blgFilterR();blogR()}
   catch(e){L.innerHTML='<li class="blg-empty">文章載入失敗，請重新整理後再試。</li>'}}
+let BLOG_F="";
+function blgMatch(p){if(!BLOG_F)return true;if(BLOG_F.startsWith("c:"))return p.cat===BLOG_F.slice(2);const [c,sub]=BLOG_F.slice(2).split("|");return p.cat===c&&p.sub===sub}
+function blgFilterR(){const sel=$("blgSel");if(!sel)return;const m=new Map();
+  BLOG.forEach(p=>{if(!p.cat)return;if(!m.has(p.cat))m.set(p.cat,new Set());if(p.sub)m.get(p.cat).add(p.sub)});
+  let h='<option value="">全部文章</option>';
+  m.forEach((subs,c)=>{h+=`<option value="c:${escH(c)}"${BLOG_F==="c:"+c?" selected":""}>${escH(c)}</option>`;
+    subs.forEach(sb=>{const v=`s:${c}|${sb}`;h+=`<option value="${escH(v)}"${BLOG_F===v?" selected":""}>　${escH(c)}・${escH(sb)}</option>`})});
+  sel.innerHTML=h;$("blgFilter").hidden=!BLOG.length;}
 function blogR(){const L=$("blgList");
-  const list=BLOG;
-  L.innerHTML=list.length?list.map(p=>`<li class="blg-item"><button type="button" class="blg-go" data-post="${escH(p.id)}"><span class="blg-thumb" aria-hidden="true">${p.cover&&ED_IMG.test(p.cover)?`<img src="${escH(p.cover)}" alt="">`:""}</span><span class="blg-txt"><span class="blg-line"><span>${escH(catTxt(p))}</span><time>${p.publishedAt?escH(fmtD(p.publishedAt)):""}</time></span><b class="blg-tt">${escH(p.title)}</b><span class="blg-sm">${escH(p.summary||"")}</span></span></button></li>`).join(""):'<li class="blg-empty">文章即將上架，敬請期待。</li>'}
+  const all=BLOG,list=all.filter(blgMatch);
+  L.innerHTML=list.length?list.map((p,i)=>`<li class="blg-item" style="--i:${i}"><button type="button" class="blg-go" data-post="${escH(p.id)}"><span class="blg-thumb" aria-hidden="true">${p.cover&&ED_IMG.test(p.cover)?`<img src="${escH(p.cover)}" alt="">`:""}</span><span class="blg-txt"><span class="blg-line"><span>${escH(catTxt(p))}</span><time>${p.publishedAt?escH(fmtD(p.publishedAt)):""}</time></span><b class="blg-tt">${escH(p.title)}</b><span class="blg-sm">${escH(p.summary||"")}</span></span></button></li>`).join(""):`<li class="blg-empty">${all.length?"這個分類還沒有文章。":"文章即將上架，敬請期待。"}</li>`}
 function postView(p){if(!p)return;$("pstCat").textContent=catTxt(p);$("pstT").textContent=p.title||"";$("pstMeta").textContent=p.publishedAt?fmtD(p.publishedAt):"";
   const cv=$("pstCover");if(cv){cv.hidden=true;cv.removeAttribute("src")}
   const B=$("pstBody");B.innerHTML="";
   if(bodyIsHtml(p.body)){B.innerHTML=sanitizeBody(p.body)}
   else String(p.body||"").split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean).forEach(t=>{const el=document.createElement("p");t.split("\n").forEach((ln,i)=>{if(i)el.appendChild(document.createElement("br"));el.appendChild(document.createTextNode(ln))});B.appendChild(el)});
   view("post")}
+$("blgSel").onchange=e=>{BLOG_F=e.target.value;blogR()};
 $("blgList").onclick=e=>{const b=e.target.closest("[data-post]");if(b&&BLOG)postView(BLOG.find(p=>p.id==b.dataset.post))};
 $("vPost").onclick=e=>{if(e.target.closest("[data-blogback]")){e.preventDefault();view("blog")}};
 {const ab=$("admBtn");if(ab)ab.onclick=()=>view("admin");}
