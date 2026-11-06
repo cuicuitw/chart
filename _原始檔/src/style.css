@@ -1536,3 +1536,15 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
   .how .hg-img{left:50cqw;width:48cqw;top:-7cqw}
   .how .hg>p:first-of-type{padding-top:14cqw}
 }
+/* 星盤查詢：導覽結束後，卡牌「＋」的引導 */
+.cadd-hint{position:absolute;inset:0;pointer-events:none;z-index:6}
+.cadd-hint i{position:absolute;left:-9px;top:-9px;width:40px;height:40px;border-radius:50%;border:2px solid #f2a6c6;animation:hint 2s infinite}
+.cadd-hint b{position:absolute;right:34px;top:-8px;white-space:nowrap;background:#fff;border:2px solid #f2a6c6;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:900;letter-spacing:.04em;color:var(--maroon)}
+/* iPad 直式：說明視窗的插畫放在文字上方，文字不被壓住 */
+@media (pointer:coarse) and (min-width:761px) and (max-width:1100px) and (orientation:portrait){
+  .how .hg{width:min(100%,calc((100dvh - 330px) / 1.9))}
+  .how .hg-img{left:50%;transform:translateX(-50%);width:44cqw;top:-2cqw}
+  .how .hg>p{width:86cqw;margin-left:7cqw;font-size:4.4cqw;line-height:1.6}
+  .how .hg>p:first-of-type{padding-top:68cqw}
+}
+
