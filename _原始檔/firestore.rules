@@ -36,15 +36,15 @@ service cloud.firestore {
       allow update: if request.resource.data.views == resource.data.views + 1 && request.resource.data.keys().hasOnly(['views']);
     }
 
-    // 翠誌文章：目前只有站長可以讀取（翠誌尚未公開）；只有站長可以新增、修改、刪除
-    // 翠誌公開時，把下面的 read 改為：resource.data.status == "published" || isAdmin()
-    // 翠誌分類：只有站長可以讀寫（分類由站長後台管理）
+    // 翠誌文章：所有人可讀已上架（published）的文章；草稿只有站長可讀；只有站長可以新增、修改、刪除
+    // 翠誌分類：所有人可讀（前台篩選用）；只有站長可以寫入（分類由站長後台管理）
     match /postCats/{catId} {
-      allow read, write: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     match /posts/{postId} {
-      allow read: if isAdmin();
+      allow read: if resource.data.status == "published" || isAdmin();
       allow write: if isAdmin();
     }
   }
