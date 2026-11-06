@@ -412,7 +412,7 @@ function coPos(){if(COI<0)return;if(COS.steps[COI].anim)COS.steps[COI].anim();co
   const r=coRect(el),p=8,hl=Math.max(4,r.left-p),ht=r.top-p,hr=Math.min(innerWidth-4,r.right+p);H.style.cssText=`left:${hl}px;top:${ht}px;width:${hr-hl}px;height:${r.height+p*2}px`;
   T.style.height="";T.style.bottom="auto";
   if(COS.steps[COI].ex&&!MSQ.matches&&innerWidth-316>r.right+12){T.style.width="300px";T.style.left=(innerWidth-316)+"px";T.style.bottom="auto";T.style.top=Math.max(80,Math.min(r.top,innerHeight-T.offsetHeight-16))+"px";T.classList.remove("in");void T.offsetWidth;T.classList.add("in");return}
-  if(COS.steps[COI].ex&&(MSQ.matches||TQ.matches)&&!(TQ.matches&&MSQ.matches)){const b=el.closest(".brow")||el;b.style.transform="";const kids=[...b.children];const L=b.getBoundingClientRect().left;
+  if(COS.steps[COI].ex&&!MSQ.matches&&TQ.matches){const b=el.closest(".brow")||el;b.style.transform="";const kids=[...b.children];const L=b.getBoundingClientRect().left;
     const P=b.parentElement||b,pr=P.getBoundingClientRect();
     const first=kids.length?kids[0].getBoundingClientRect().left:L,last=kids.length?kids[kids.length-1].getBoundingClientRect().right:b.getBoundingClientRect().right;const cw=Math.max(1,last-first);
     const cap=(TQ.matches&&!MSQ.matches)?1:1.6;const z=Math.min(cap,(Math.min(innerWidth,pr.width)-16)/cw);const targetLeft=(pr.left+pr.width/2)-cw*z/2;const dx=targetLeft-L-z*(first-L);
