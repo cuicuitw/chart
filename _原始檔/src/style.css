@@ -1542,14 +1542,11 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 .cadd-hint svg{position:absolute;left:18px;top:16px;width:26px;height:26px;fill:#fff;stroke:#2b2b2b;stroke-width:.9;stroke-linejoin:round;animation:taph 1.3s ease-in-out infinite;overflow:visible}
 .cadd-hint b{position:absolute;right:-8px;top:calc(100% + 10px);white-space:nowrap;background:#fff;border:2px solid #f2a6c6;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:900;letter-spacing:.04em;color:var(--maroon)}
 @media (prefers-reduced-motion:reduce){.cadd-hint i,.cadd-hint svg{animation:none}}
-/* 後台會員資料：手機與平板直式改為直式卡片（每位會員一張卡，欄位名稱在左、內容在右） */
+/* 後台會員資料：手機與平板維持表格（不用卡片），欄位不換字、表格可左右滑動，Email 欄固定在左邊方便對照 */
 @media (max-width:760px), (orientation:portrait) and (max-width:1100px){
-  .adm-tw:has(.mem-t){overflow:visible}
-  .adm-t.mem-t,.adm-t.mem-t tbody{display:block;width:100%}
-  .adm-t.mem-t thead{display:none}
-  .adm-t.mem-t tr{display:block;background:#fff;border:1.5px solid #766f5e;border-radius:14px;padding:4px 14px;margin:0 0 12px}
-  .adm-t.mem-t td{display:flex;justify-content:space-between;align-items:baseline;gap:14px;border:0;border-bottom:1px solid #e6dfd0;padding:9px 0;text-align:right;white-space:normal;word-break:break-all;font-size:14px}
-  .adm-t.mem-t td:last-child{border-bottom:0}
-  .adm-t.mem-t td::before{content:attr(data-label);flex:none;color:#766f5e;font-weight:700;font-size:13px;text-align:left;letter-spacing:.04em}
+  .adm-tw:has(.mem-t){overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .adm-t.mem-t{width:max-content;min-width:100%}
+  .adm-t.mem-t th,.adm-t.mem-t td{white-space:nowrap;font-size:14px;padding:9px 12px;vertical-align:middle}
+  .adm-t.mem-t th:first-child,.adm-t.mem-t td:first-child{position:sticky;left:0;z-index:1;background:#fff;box-shadow:6px 0 8px -6px rgba(118,111,94,.25)}
+  .adm-t.mem-t th:first-child{background:#f6f1e6}
 }
-
