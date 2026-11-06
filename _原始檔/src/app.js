@@ -123,7 +123,7 @@ const gsvg=g=>{GC.font='100px AstroSym,"Apple Symbols","Segoe UI Symbol",sans-se
 const om=o=>{const m=Math.round(o*60);return Math.floor(m/60)+"°"+String(m%60).padStart(2,"0")+"′"};
 
 /* 星盤 */
-const MQ=matchMedia("(max-width:760px)");MQ.addEventListener&&MQ.addEventListener("change",()=>{if(typeof ST!=="undefined"&&ST)draw()});
+const MQ=matchMedia("(max-width:760px), (orientation:portrait) and (max-width:1100px)");MQ.addEventListener&&MQ.addEventListener("change",()=>{if(typeof ST!=="undefined"&&ST)draw()});
 function draw(){
   const {pl,cu,asc,mc,sel}=ST,cx=300,cy=300;
   const A=l=>(180+l-cu[1])*Math.PI/180,pt=(l,r)=>[cx+r*Math.cos(A(l)),cy-r*Math.sin(A(l))];
@@ -303,7 +303,7 @@ function renderB(){
   try{return renderB0()}finally{POP=null;if(typeof DB!=="undefined"&&DB)requestAnimationFrame(()=>DB.home())}
 }
 function renderB0(){
-  if(!R.length){$("board").innerHTML=`<p class="bempty"><span class="dk">點左側的符號，把卡牌加進來。</span><span class="tbo">點上方的符號，把卡牌加進來。</span><span class="mbo">點開下方「占星卡牌」，選擇符號加入卡牌。</span></p>`;return}
+  if(!R.length){$("board").innerHTML=`<p class="bempty"><span class="dk">點左側的符號，把卡牌加進來。還沒有卡牌？也可以到星盤查詢頁，點卡牌旁的「＋」，把卡牌加進來。</span><span class="tbo">點上方的符號，把卡牌加進來。還沒有卡牌？也可以到星盤查詢頁，點卡牌旁的「＋」，把卡牌加進來。</span><span class="mbo">點開下方「占星卡牌」，選擇符號加入卡牌。還沒有卡牌？也可以到星盤查詢頁，點卡牌旁的「＋」，把卡牌加進來。</span></p>`;return}
   $("board").innerHTML=R.map((row,ri)=>`<div class="brow" data-r="${ri}">`+row.map((id,i)=>`<div class="bcard${POP&&POP[0]==ri&&POP[1]==i?" popw":""}" draggable="true" data-i="${i}"><div style="position:relative;width:100%">${cardHTML(id)}<button type="button" class="bx" data-a="x" aria-label="移除">✕</button></div><div class="bbar"><button type="button" data-a="l" aria-label="往左移"${i?"":" disabled"}>${ARW.l}</button><button type="button" data-a="d" aria-label="移到下一排">${ARW.d}</button>${ri?`<button type="button" data-a="u" aria-label="移到上一排">${ARW.u}</button>`:""}<button type="button" data-a="r" aria-label="往右移"${i<row.length-1?"":" disabled"}>${ARW.r}</button></div></div>`).join("")+`</div>`).join("");
   $("board").querySelectorAll(".bcard.popw").forEach(b=>{const im=b.querySelector(".cw>img");if(!im){b.classList.remove("popw");b.classList.add("pop");return}im.parentElement.classList.add("wait");if(im.complete&&im.naturalWidth)cwOk(im)})
 }
@@ -339,13 +339,14 @@ $("menuBtn").onclick=e=>{e.stopPropagation();menu(!$("nav").classList.contains("
 document.addEventListener("click",e=>{if(!e.target.closest(".top"))menu(false)});
 /* ---------- 動態：進場由下往上淡入 ---------- */
 const RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const TQ=matchMedia("(pointer:coarse) and (min-width:761px)");
 const RVSEL='.brand,#nav,.ig,#f .fld,#f .adv,#f .frow2>*,.wheel-wrap,.tog,.par>*,.note,.sumrow,.trio>div,#asp>*,#asp li,.infobar,.lcol,.guide,.gdots,.board-foot,.bk-top,.bk h3,.plan,.cta,.faq details,.ab .tog,.abp>*';
 const IO=("IntersectionObserver" in window&&!RM)?new IntersectionObserver(es=>{let k=0;es.forEach(e=>{if(e.isIntersecting){const el=e.target;el.style.setProperty("--d",Math.min(k++,6)*60+"ms");el.classList.add("in");IO.unobserve(el)}})},{rootMargin:"0px 0px -5% 0px"}):null;
 function arm(root,extra,mark){if(!IO)return;root.querySelectorAll(RVSEL+(extra?","+extra:"")).forEach(el=>{if(el.closest(".rv:not(.in)")&&el.closest(".rv")!==el)return;el.classList.add("rv");if(mark)return;if(!el.classList.contains("in")||extra)IO.observe(el)})}
 function replay(root){if(!IO)return;arm(root,".brow .bcard",true);const els=[...root.querySelectorAll(".rv")];els.forEach(el=>{IO.unobserve(el);el.classList.add("rv0");el.classList.remove("in")});void root.offsetHeight;requestAnimationFrame(()=>{els.forEach(el=>el.classList.remove("rv0"));requestAnimationFrame(()=>{els.forEach(el=>IO.observe(el));arm(root,".brow .bcard")})})}
 if(IO){new MutationObserver(ms=>{ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType!==1)return;const host=n.parentElement;if(host&&!n.closest("#board"))arm(host)}))}).observe(document.body,{childList:true,subtree:true})}
 /* ---------- 點卡牌放大（所有裝置） ---------- */
-(()=>{const MQ=matchMedia("(max-width:760px)");const z=document.createElement("div");z.className="zoom";z.id="zoom";z.hidden=true;
+(()=>{const MQ=matchMedia("(max-width:760px), (orientation:portrait) and (max-width:1100px)");const z=document.createElement("div");z.className="zoom";z.id="zoom";z.hidden=true;
   z.innerHTML='<div class="zoom-c"></div><button type="button" class="zoom-x" aria-label="關閉">✕</button>';document.body.appendChild(z);
   const box=z.querySelector(".zoom-c");
   function close(){z.classList.remove("on");setTimeout(()=>{z.hidden=true;box.innerHTML=""},180);document.body.classList.remove("zoom-on")}
@@ -371,7 +372,7 @@ const CARDS_T={name:"使用方式",off:1,total:7,demo:true,steps:[
  {t:()=>$("deskB"),h:"放大縮小・移動",x:GSTXT,g:true},
  {t:()=>document.querySelector("#board .brow"),h:"排列卡牌",x:()=>"一排放「行星＋星座＋宮位」。可以拖曳換位置，按 ✕ 移除。"},
  {t:()=>MSQ.matches?document.querySelector("#mbar .mb-note"):document.querySelector(".ltog"),h:"占星筆記",anim:()=>{if(!MSQ.matches)coAnimLt()},x:()=>MSQ.matches?"按「筆記」打開占星筆記，可以一邊看卡牌、一邊寫下練習，依分類存好。":"切換到「占星筆記」，可以一邊看卡牌、一邊寫下練習，依分類存好。"},
- {t:()=>document.querySelector("#board .brow"),h:"照著關鍵字造句",x:()=>"觀察卡牌關鍵字，運用聯想力來串成一句話，寫進筆記裡：",ex:"1. 我的人生追求（<b>太陽</b>）是做自己（<b>第一宮</b>），並透過靈敏、好奇與溝通天賦（<b>雙子座</b>）展現出來。<br>2. 當我（<b>第一宮</b>）感到沒自信時（<b>太陽</b>），我會表現的心不在焉（<b>雙子座</b>）。<br>3. 我（<b>第一宮</b>）透過分享自己的故事（<b>雙子座</b>），引領他人（<b>太陽</b>）。"},
+ {t:()=>document.querySelector("#board .brow"),h:"照著關鍵字造句",x:()=>"觀察卡牌關鍵字，運用聯想力來串成一句話，寫進筆記裡：",ex:"我的人生追求（<b>太陽</b>）是做自己（<b>第一宮</b>），並透過靈敏、好奇與溝通天賦（<b>雙子座</b>）展現出來。"},
  {t:()=>$("deskB"),h:"自我覺察",x:()=>"問問自己：這句話曾在我的生活中哪裡出現過？",last:"開始排卡牌"}],
  back:()=>howOpen(true),fin:()=>{try{sessionStorage.setItem(HOWK,"1")}catch(e){}}};
 const CHART_T={name:"網站導覽",off:1,total:9,steps:[
@@ -380,16 +381,17 @@ const CHART_T={name:"網站導覽",off:1,total:9,steps:[
  {t:()=>MSQ.matches?$("mbNow"):$("now"),h:"現在天象",x:()=>"看此刻天空的星盤。"},
  {t:()=>$("wheel"),h:"點行星",x:()=>"點星盤上的行星，就會出現它的卡牌。"},
  {t:()=>document.querySelector("#vChart .tog"),h:"參數",x:()=>MSQ.matches?"切換星盤、常用參數、古典參數。":"切換常用參數與古典參數。"},
- {t:()=>$("cards"),h:"三張卡牌",x:()=>"行星＋星座＋宮位，串成一句話。試著照關鍵字造句，或按右上「＋」，把卡牌帶到卡牌頁練習。"},
+ {t:()=>$("cards"),h:"三張卡牌",x:()=>"行星＋星座＋宮位，串成一句話。試著照關鍵字造句，或按右上「＋」，把卡牌帶到占星卡牌頁練習。"},
  {t:()=>$("abar"),h:"相位",x:()=>"點相位符號，看這顆行星和另一顆行星的互動。",skip:()=>!$("abar").children.length},
  {t:()=>$("deskC"),h:"放大縮小・移動",x:GSTXT,g:true,last:"開始查詢星盤"}],
  back:()=>introOpen(),pre:()=>{if(document.body.dataset.view!="chart")view("chart");if(document.body.classList.contains("mv-fold"))$("mvFold").click()}};
 function coStart(T){if(!T)T=CARDS_T;COS=T;if(T===CARDS_T&&typeof ltSet=="function"){ltSet("lib");npClose()}if(T.pre)T.pre();if(T.demo){COBAK=R;R=[["P0","S2","H0"]];renderB()}
   document.body.classList.add("co-on");document.querySelectorAll(".desk .gest.on").forEach(g=>g.classList.remove("on"));$("coach").hidden=false;const g=document.querySelector(".gest");$("coG").innerHTML=g?g.innerHTML:"";coGo(0,1)}
-function coEnd(){if($("coach").hidden)return;coAnimStop();$("coach").hidden=true;document.body.classList.remove("co-on");COI=-1;
-  if(COBAK){R=COBAK;COBAK=null;renderB()}if(COS&&COS.fin)COS.fin();scrollTo(0,0)}
-function coGo(i,dir){coAnimStop();if(typeof msClose=="function")msClose();const L=COS.steps;while(L[i]&&L[i].skip&&L[i].skip())i+=dir||1;if(i<0){coEnd();COS.back();return}if(i>=L.length){coEnd();return}
-  COI=i;const S=L[i];$("coN").textContent=COS.name+" "+String(i+1+COS.off).padStart(2,"0")+" / "+String(COS.total).padStart(2,"0");$("coH").textContent=S.h;$("coT").textContent=S.x();
+function coEnd(){if($("coach").hidden)return;const was=COS;coAnimStop();$("coach").hidden=true;document.body.classList.remove("co-on","co-kw");COI=-1;
+  if(COBAK){R=COBAK;COBAK=null;renderB()}if(COS&&COS.fin)COS.fin();scrollTo(0,0);if(was===CHART_T)cadHint()}
+function cadHint(){try{document.querySelectorAll(".cadd-hint").forEach(e=>e.remove());if(document.body.dataset.view!="chart")return;const b=[...document.querySelectorAll("#vChart .cadd")].find(e=>e.offsetParent);if(!b)return;const s=document.createElement("span");s.className="cadd-hint";s.setAttribute("aria-hidden","true");s.innerHTML='<i></i><b>點「＋」加入卡牌頁</b>';b.appendChild(s);const off=()=>{s.remove();document.removeEventListener("click",off,true)};document.addEventListener("click",off,true);setTimeout(()=>{if(s.isConnected)off()},9000)}catch(e){}}
+function coGo(i,dir){coAnimStop();const bb=document.querySelector("#board .brow");if(bb)bb.style.transform="";if(typeof msClose=="function")msClose();const L=COS.steps;while(L[i]&&L[i].skip&&L[i].skip())i+=dir||1;if(i<0){coEnd();COS.back();return}if(i>=L.length){coEnd();return}
+  COI=i;const S=L[i];document.body.classList.toggle("co-kw",!!(S.ex&&MSQ.matches));$("coN").textContent=COS.name+" "+String(i+1+COS.off).padStart(2,"0")+" / "+String(COS.total).padStart(2,"0");$("coH").textContent=S.h;$("coT").textContent=S.x();
   $("coEx").hidden=!S.ex;$("coEx").innerHTML=S.ex||"";$("coG").hidden=!S.g;$("coPrev").textContent="上一步";$("coNext").textContent=S.last||"下一步";
   const el=S.t();if(el&&el.scrollIntoView){const r=el.getBoundingClientRect();if(r.top<(parseFloat(getComputedStyle(document.body).getPropertyValue("--topH"))||70)+20||r.bottom>innerHeight-80)el.scrollIntoView({block:"center"})}
   if(S.on)S.on();setTimeout(coPos,S.wait&&MSQ.matches?380:60)}
@@ -408,9 +410,21 @@ function coRect(el){let L,T,Rr,B;const r0=el.getBoundingClientRect();[L,T,Rr,B]=
   L=Math.max(L,12);Rr=Math.min(Rr,innerWidth-12);return {left:L,top:T,right:Rr,bottom:B,width:Math.max(0,Rr-L),height:Math.max(0,B-T)}}
 function coPos(){if(COI<0)return;if(COS.steps[COI].anim)COS.steps[COI].anim();const el=COS.steps[COI].t(),H=$("coHole"),T=$("coTip");if(!el){H.style.cssText="left:50%;top:50%;width:0;height:0";}else{
   const r=coRect(el),p=8,hl=Math.max(4,r.left-p),ht=r.top-p,hr=Math.min(innerWidth-4,r.right+p);H.style.cssText=`left:${hl}px;top:${ht}px;width:${hr-hl}px;height:${r.height+p*2}px`;
+  T.style.height="";T.style.bottom="auto";
+  if(COS.steps[COI].ex&&!MSQ.matches&&innerWidth-316>r.right+12){T.style.width="300px";T.style.left=(innerWidth-316)+"px";T.style.bottom="auto";T.style.top=Math.max(80,Math.min(r.top,innerHeight-T.offsetHeight-16))+"px";T.classList.remove("in");void T.offsetWidth;T.classList.add("in");return}
+  if(COS.steps[COI].ex&&!MSQ.matches&&TQ.matches){const b=el.closest(".brow")||el;b.style.transform="";const kids=[...b.children];const L=b.getBoundingClientRect().left;
+    const P=b.parentElement||b,pr=P.getBoundingClientRect();
+    const first=kids.length?kids[0].getBoundingClientRect().left:L,last=kids.length?kids[kids.length-1].getBoundingClientRect().right:b.getBoundingClientRect().right;const cw=Math.max(1,last-first);
+    const cap=(TQ.matches&&!MSQ.matches)?1:1.6;const z=Math.min(cap,(Math.min(innerWidth,pr.width)-16)/cw);const targetLeft=(pr.left+pr.width/2)-cw*z/2;const dx=targetLeft-L-z*(first-L);
+    b.style.transformOrigin="0 0";b.style.transform=`translate(${dx}px,0) scale(${z})`;
+    const dw=(TQ.matches&&!MSQ.matches)?Math.min(560,innerWidth-16):innerWidth-16;
+    T.style.width=dw+"px";T.style.left=((innerWidth-dw)/2)+"px";T.style.top="auto";T.style.bottom=((($("mbar")&&!$("mbar").hidden)?$("mbar").offsetHeight:0)+8)+"px";T.style.maxHeight="46vh";T.style.overflowY="auto";T.classList.add("dock");T.classList.remove("in");void T.offsetWidth;T.classList.add("in");return}
+  T.classList.remove("dock");T.style.maxHeight="";T.style.overflowY="";
   const tw=Math.min(340,innerWidth-24);T.style.width=tw+"px";const th=T.offsetHeight;let left=Math.min(Math.max(12,r.left+r.width/2-tw/2),innerWidth-tw-12),top;
   if(r.right+tw+24<innerWidth&&!MSQ.matches){left=r.right+18;top=Math.min(Math.max(80,r.top),innerHeight-th-12)}
   else if(r.bottom+th+20<innerHeight)top=r.bottom+16;else if(r.top-th-20>60)top=r.top-th-16;else top=Math.max(70,innerHeight-th-90);
+  if(TQ.matches&&MSQ.matches){const sh=$("msheet");if(sh&&!sh.hidden&&sh.offsetHeight){const st=sh.getBoundingClientRect().top;top=Math.max(12,st-th-14);left=Math.max(12,Math.min(left,innerWidth-tw-12))}}
+  if(TQ.matches&&!MSQ.matches){T.style.bottom="auto";T.style.maxHeight=(innerHeight-24)+"px";T.style.overflowY="auto";const hh=Math.min(T.offsetHeight,innerHeight-24);top=Math.max(12,Math.min(top,innerHeight-hh-12))}else T.style.bottom="auto";
   T.style.left=left+"px";T.style.top=top+"px";T.classList.remove("in");void T.offsetWidth;T.classList.add("in")}}
 $("coNext").onclick=()=>{if(COS.steps[COI].last)coEnd();else coGo(COI+1,1)};
 $("coPrev").onclick=()=>coGo(COI-1,-1);
@@ -482,7 +496,7 @@ function zoomArea(areas,key,target,prop){let z=1;try{z=+localStorage.getItem(key
     let g0=1;el.addEventListener("gesturestart",e=>{e.preventDefault();g0=z});
     el.addEventListener("gesturechange",e=>{e.preventDefault();if(!TOUCH)set(g0*e.scale)});})}
 /* ---------- 桌面式卡牌區：整區一起放大縮小、拖曳移動 ---------- */
-var MQM=matchMedia("(max-width:760px)");
+var MQM=matchMedia("(max-width:760px), (orientation:portrait) and (max-width:1100px)");
 function desk(id,key,skip){const D=$(id);if(!D)return null;const I=D.querySelector(".desk-in");let z=1,x=0,y=0,st=0,userZ=false;try{if(!MQM.matches){z=+localStorage.getItem(key)||1;userZ=!!localStorage.getItem(key)}}catch(e){}
   const W=()=>D.clientWidth,H=()=>D.clientHeight,ap=()=>{I.style.transform=`translate(${x}px,${y}px) scale(${z})`;I.style.setProperty("--dz",z)};
   const fit=()=>{if(!MQM.matches){D.style.height="";return}D.style.height=Math.round(Math.max(240,I.offsetHeight*z+16))+"px"};
@@ -550,7 +564,7 @@ document.addEventListener("keydown",e=>{if($("intro").hidden)return;if(e.key=="A
 $("tour").onclick=introOpen;document.querySelectorAll("[data-tour]").forEach(b=>b.onclick=introOpen);
 var NOTESVG='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h9l3.5 3.5v13.5H6z M14.5 3.5V7.5H18.5 M9 12h6.5M9 15.5h6.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>';
 /* ---------- 手機：下方工作列＋從下方拉出的面板（星盤頁＝輸入星盤資料、卡牌頁＝卡牌清單） ---------- */
-var MSQ=matchMedia("(max-width:760px)");
+var MSQ=matchMedia("(max-width:760px), (orientation:portrait) and (max-width:1100px)");
 var HOMEF={p:$("f").parentNode,n:$("f").nextSibling},HOMEL={p:$("lib").parentNode,n:$("lib").nextSibling};
 function msOpen(){const v=document.body.dataset.view;if(v!="chart"&&v!="cards")return;if(typeof npClose=="function")npClose();const s=$("msheet");$("msF").hidden=v!="chart";$("msL").hidden=v!="cards";s.hidden=false;document.body.classList.add("ms-on");requestAnimationFrame(()=>s.classList.add("on"))}
 function msClose(){const s=$("msheet");if(!s)return;if(s.hidden)return;s.classList.remove("on");document.body.classList.remove("ms-on");setTimeout(()=>{if(!s.classList.contains("on"))s.hidden=true},280)}
