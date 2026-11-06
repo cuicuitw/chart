@@ -1542,3 +1542,14 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 .cadd-hint svg{position:absolute;left:18px;top:16px;width:26px;height:26px;fill:#fff;stroke:#2b2b2b;stroke-width:.9;stroke-linejoin:round;animation:taph 1.3s ease-in-out infinite;overflow:visible}
 .cadd-hint b{position:absolute;right:-8px;top:calc(100% + 10px);white-space:nowrap;background:#fff;border:2px solid #f2a6c6;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:900;letter-spacing:.04em;color:var(--maroon)}
 @media (prefers-reduced-motion:reduce){.cadd-hint i,.cadd-hint svg{animation:none}}
+/* 後台會員資料：手機與平板直式維持表格，欄寬隨視窗縮放，文字換行後列高自動變大，不超出視窗 */
+@media (max-width:760px), (orientation:portrait) and (max-width:1100px){
+  .adm-tw:has(.mem-t){overflow-x:hidden}
+  .adm-t.mem-t{width:100%;table-layout:fixed}
+  .adm-t.mem-t th,.adm-t.mem-t td{white-space:normal;font-size:13px;line-height:1.5;padding:8px 6px;vertical-align:top;overflow-wrap:anywhere}
+  .adm-t.mem-t th:last-child,.adm-t.mem-t td:last-child{width:52px;text-align:center;padding-left:2px;padding-right:2px}
+  .adm-filters{gap:8px 10px}
+  .adm-filters input,.adm-filters select{width:auto;min-width:0}
+  .adm-filters input[type=number],.adm-filters input[placeholder="最小"],.adm-filters input[placeholder="最大"]{width:64px;padding:6px 7px}
+  .adm-filters input[type=search]{width:170px;max-width:100%}
+}
