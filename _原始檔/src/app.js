@@ -729,7 +729,7 @@ function catPanel(boxId="pCatBox",after){
   };
 }
 /* 內文格式：只保留副標 h3、內文 p、引言 blockquote、粗體 b、斜體 i、圖片 img（網址必須來自 Firebase Storage） */
-function imgOut(n,to){const s=n.getAttribute("src")||"";if(!ED_IMG.test(s))return;const im=document.createElement("img");im.src=s;im.alt="";const raw=(n.style&&n.style.width)||"",w=parseInt(raw,10);if(/%$/.test(raw)&&w>=10&&w<100)im.style.width=w+"%";const c=n.className||"";if(/\bial\b/.test(c))im.className="ial";else if(/\biar\b/.test(c))im.className="iar";to.appendChild(im)}
+function imgOut(n,to){const s=n.getAttribute("src")||"";if(!ED_IMG.test(s))return;const im=document.createElement("img");im.src=s;im.alt=(n.getAttribute("alt")||"").slice(0,200);const raw=(n.style&&n.style.width)||"",w=parseInt(raw,10);if(/%$/.test(raw)&&w>=10&&w<100)im.style.width=w+"%";const c=n.className||"";if(/\bial\b/.test(c))im.className="ial";else if(/\biar\b/.test(c))im.className="iar";to.appendChild(im)}
 function sanitizeBody(html){
   const src=new DOMParser().parseFromString(`<body>${String(html||"")}</body>`,"text/html").body;
   const out=document.createElement("div");
@@ -739,6 +739,7 @@ function sanitizeBody(html){
     if(n.nodeType!==1)return;
     let t=n.tagName;if(t==="DIV")t="P";if(t==="STRONG")t="B";if(t==="EM")t="I";
     if(t==="IMG"){imgOut(n,to);return}
+    if(n.tagName==="FIGURE"){const f=document.createElement("figure");f.className="ed-fig";n.childNodes.forEach(c=>{if(c.nodeType!==1)return;if(c.tagName==="IMG")imgOut(c,f);else if(c.tagName==="FIGCAPTION"){const t2=c.textContent.trim().slice(0,200);if(t2){const fc=document.createElement("figcaption");fc.textContent=t2;f.appendChild(fc)}}});if(f.querySelector("img"))to.appendChild(f);return}
     if(n.tagName==="DIV"&&n.classList.contains("ed-pair")){const d=document.createElement("div");d.className="ed-pair";n.childNodes.forEach(c=>{if(c.nodeType===1&&c.tagName==="IMG")imgOut(c,d)});if(d.children.length)to.appendChild(d);return}
     if(!keep[t]){walk(n,to);return}
     const el=document.createElement(t.toLowerCase());walk(n,el);to.appendChild(el);
@@ -762,6 +763,7 @@ function postEditorOpen(p){
   <div class="ed2">
     <div class="ed2-main">
       <textarea id="edT" class="ed2-title" rows="1" maxlength="120" placeholder="文章標題">${escH(p.title||"")}</textarea>
+      <div class="ed2-imginfo" id="edInfo" hidden><label>照片簡述（給搜尋與螢幕閱讀器用，不會顯示）<input id="edAlt" maxlength="200"></label><label>圖說（照片下方顯示，可不填；併排的圖不支援圖說）<input id="edCap" maxlength="200"></label></div>
       <div class="ed2-body" id="edB" contenteditable="true" spellcheck="false" aria-label="文章內文"></div>
       <button type="button" class="ed2-del" id="edDel" hidden>刪除</button>
       <div class="ed2-size" id="edSize" hidden><button type="button" id="edPair" class="ed2-txt">併排</button><button type="button" id="edUnpair" class="ed2-txt">拆開</button></div><div class="ed2-grip" id="edGrip" aria-label="拖曳調整圖片大小" role="slider"></div>
@@ -791,7 +793,7 @@ function postEditorOpen(p){
   edBtns(p);
   const t=$("edT");const fit=()=>{t.style.height="auto";t.style.height=t.scrollHeight+"px"};t.addEventListener("input",fit);fit();
   $("edCat").onchange=()=>edSubFill("");
-  $("edB").addEventListener("click",edSelect);$("edDel").onclick=()=>{if(EDSEL)EDSEL.remove();EDSEL=null;$("edDel").hidden=true;$("edSize").hidden=true};$("edPair").onclick=edPair;
+  $("edB").addEventListener("click",edSelect);$("edDel").onclick=()=>{if(EDSEL)EDSEL.remove();EDSEL=null;$("edDel").hidden=true;$("edSize").hidden=true};$("edPair").onclick=edPair;$("edAlt").oninput=()=>{if(EDSEL&&EDSEL.tagName==="IMG")EDSEL.alt=$("edAlt").value.slice(0,200)};$("edCap").oninput=()=>{if(!$("edCap").disabled)edSetCap($("edCap").value.slice(0,200))};
   let GD=null;const G=$("edGrip");
   G.addEventListener("pointerdown",e=>{if(!EDSEL||EDSEL.tagName!=="IMG")return;e.preventDefault();GD={im:EDSEL,x:e.clientX,w:EDSEL.getBoundingClientRect().width,base:$("edB").clientWidth||1};try{G.setPointerCapture(e.pointerId)}catch(_){}});
   G.addEventListener("pointermove",e=>{if(!GD)return;const dx=e.clientX-GD.x;const pct=Math.min(100,Math.max(10,Math.round((GD.w+dx)/GD.base*100)));GD.im.style.width=pct===100?"":pct+"%";const r=GD.im.getBoundingClientRect(),pr=$("edB").parentElement.getBoundingClientRect();edSizeShow(GD.im,r,pr)});
@@ -807,14 +809,20 @@ function postEditorOpen(p){
   $("edBtns").onclick=e=>{const b=e.target.closest("[data-es]");if(b)edSave(b.dataset.es)};
 }
 function edSelect(e){const t=e.target,del=$("edDel");
-  if(t.tagName==="IMG"||t.tagName==="HR"){EDSEL=t;const r=t.getBoundingClientRect(),pr=$("edB").parentElement.getBoundingClientRect();del.style.top=Math.max(0,r.top-pr.top-38)+"px";del.style.left=Math.max(0,r.right-pr.left-64)+"px";del.hidden=false;edSizeShow(t,r,pr)}
-  else{del.hidden=true;$("edSize").hidden=true;EDSEL=null}}
+  if(t.tagName==="IMG"||t.tagName==="HR"){EDSEL=t;const r=t.getBoundingClientRect(),pr=$("edB").parentElement.getBoundingClientRect();del.style.top=Math.max(0,r.top-pr.top-38)+"px";del.style.left=Math.max(0,r.right-pr.left-64)+"px";del.hidden=false;edSizeShow(t,r,pr);if(t.tagName==="IMG")infoShow(t)}
+  else{del.hidden=true;$("edSize").hidden=true;$("edInfo").hidden=true;EDSEL=null}}
+function infoShow(im){const z=$("edInfo");z.hidden=false;$("edAlt").value=im.alt||"";const f=im.closest("figure.ed-fig");const c=f&&f.querySelector("figcaption");$("edCap").value=c?c.textContent:"";$("edCap").disabled=!!(im.parentElement&&im.parentElement.classList.contains("ed-pair"))}
+function unfig(im){const f=im.closest("figure.ed-fig");if(f){const c=f.querySelector("figcaption");if(c)c.remove();f.replaceWith(im)}}
+function edSetCap(text){const im=EDSEL;if(!im||im.tagName!=="IMG")return;const t=text.trim();let f=im.closest("figure.ed-fig");
+  if(!t){if(f){unfig(im);if(im.parentElement===$("edB")){const p=document.createElement("p");im.replaceWith(p);p.appendChild(im)}}return}
+  if(!f){f=document.createElement("figure");f.className="ed-fig";const host=im.parentElement;if(host&&host.tagName==="P"&&host.childNodes.length===1)host.replaceWith(f);else im.replaceWith(f);f.appendChild(im)}
+  let c=f.querySelector("figcaption");if(!c){c=document.createElement("figcaption");f.appendChild(c)}c.textContent=text.slice(0,200)}
 function edSizeShow(t,r,pr){const z=$("edSize");if(t.tagName!=="IMG"){z.hidden=true;return}
   z.style.top=Math.max(0,r.top-pr.top-38)+"px";z.style.left=Math.max(0,r.left-pr.left)+"px";z.hidden=false;const g=$("edGrip");g.style.top=(r.bottom-pr.top+2)+"px";g.style.left=(r.right-pr.left+2)+"px"}
-function edPair(){const im=EDSEL;if(!im||im.tagName!=="IMG")return;const exist=im.parentElement&&im.parentElement.classList.contains("ed-pair")?im.parentElement:null;if(exist&&exist.children.length>=3){$("edMsg").textContent="一排最多放三張圖，請先拆開再調整。";return}
-  const blk=im.parentElement===$("edB")?im:im.parentElement;let nb=blk.nextElementSibling;const isEmptyP=x=>x&&(x.tagName==="P"||x.tagName==="DIV")&&!x.querySelector("img")&&!x.textContent.trim();while(isEmptyP(nb))nb=nb.nextElementSibling;const im2=nb&&(nb.tagName==="IMG"?nb:((nb.tagName==="P"||nb.tagName==="DIV")&&nb.children.length===1&&nb.firstElementChild.tagName==="IMG"?nb.firstElementChild:null));
+function edPair(){const im=EDSEL;if(!im||im.tagName!=="IMG")return;unfig(im);const exist=im.parentElement&&im.parentElement.classList.contains("ed-pair")?im.parentElement:null;if(exist&&exist.children.length>=3){$("edMsg").textContent="一排最多放三張圖，請先拆開再調整。";return}
+  const blk=im.parentElement===$("edB")?im:im.parentElement;let nb=blk.nextElementSibling;const isEmptyP=x=>x&&(x.tagName==="P"||x.tagName==="DIV")&&!x.querySelector("img")&&!x.textContent.trim();while(isEmptyP(nb))nb=nb.nextElementSibling;const im2=nb&&(nb.tagName==="FIGURE"?nb.querySelector("img"):nb.tagName==="IMG"?nb:((nb.tagName==="P"||nb.tagName==="DIV")&&nb.children.length===1&&nb.firstElementChild.tagName==="IMG"?nb.firstElementChild:null));
   if(!im2){$("edMsg").textContent="找不到可以併排的第二張圖：請把第二張圖放在第一張圖的下方（中間的空白行可以有）。";return}
-  const p2=im2.parentElement;const box=exist||document.createElement("div");box.className="ed-pair";im.classList.remove("ial","iar");im2.classList.remove("ial","iar");if(!exist){box.appendChild(im)}box.appendChild(im2);
+  unfig(im2);const p2=im2.parentElement;const box=exist||document.createElement("div");box.className="ed-pair";im.classList.remove("ial","iar");im2.classList.remove("ial","iar");if(!exist){box.appendChild(im)}box.appendChild(im2);
   if(!exist)blk.replaceWith(box);if(p2&&p2!==$("edB")&&p2!==box&&p2.parentNode&&!p2.querySelector("img")&&!p2.textContent.trim())p2.remove();
   $("edSize").hidden=true;EDSEL=null;$("edDel").hidden=true;$("edMsg").textContent="已併排，記得按存檔。"}
 function edUnpair(){const im=EDSEL;if(!im||!im.parentElement||!im.parentElement.classList.contains("ed-pair"))return;const box=im.parentElement;const ps=[...box.children].map(c=>{const p=document.createElement("p");p.appendChild(c);return p});box.replaceWith(...ps);
