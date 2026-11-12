@@ -811,11 +811,11 @@ function edSelect(e){const t=e.target,del=$("edDel");
   else{del.hidden=true;$("edSize").hidden=true;EDSEL=null}}
 function edSizeShow(t,r,pr){const z=$("edSize");if(t.tagName!=="IMG"){z.hidden=true;return}
   z.style.top=Math.max(0,r.top-pr.top-38)+"px";z.style.left=Math.max(0,r.left-pr.left)+"px";z.hidden=false;const g=$("edGrip");g.style.top=(r.bottom-pr.top+2)+"px";g.style.left=(r.right-pr.left+2)+"px"}
-function edPair(){const im=EDSEL;if(!im||im.tagName!=="IMG"||im.parentElement.classList.contains("ed-pair"))return;
+function edPair(){const im=EDSEL;if(!im||im.tagName!=="IMG")return;const exist=im.parentElement&&im.parentElement.classList.contains("ed-pair")?im.parentElement:null;if(exist&&exist.children.length>=3){$("edMsg").textContent="一排最多放三張圖，請先拆開再調整。";return}
   const blk=im.parentElement===$("edB")?im:im.parentElement;let nb=blk.nextElementSibling;const isEmptyP=x=>x&&(x.tagName==="P"||x.tagName==="DIV")&&!x.querySelector("img")&&!x.textContent.trim();while(isEmptyP(nb))nb=nb.nextElementSibling;const im2=nb&&(nb.tagName==="IMG"?nb:((nb.tagName==="P"||nb.tagName==="DIV")&&nb.children.length===1&&nb.firstElementChild.tagName==="IMG"?nb.firstElementChild:null));
   if(!im2){$("edMsg").textContent="找不到可以併排的第二張圖：請把第二張圖放在第一張圖的下方（中間的空白行可以有）。";return}
-  const p2=im2.parentElement;const box=document.createElement("div");box.className="ed-pair";im.classList.remove("ial","iar");im2.classList.remove("ial","iar");box.appendChild(im);box.appendChild(im2);
-  blk.replaceWith(box);if(p2&&p2!==$("edB")&&p2!==box&&p2.parentNode&&!p2.querySelector("img")&&!p2.textContent.trim())p2.remove();
+  const p2=im2.parentElement;const box=exist||document.createElement("div");box.className="ed-pair";im.classList.remove("ial","iar");im2.classList.remove("ial","iar");if(!exist){box.appendChild(im)}box.appendChild(im2);
+  if(!exist)blk.replaceWith(box);if(p2&&p2!==$("edB")&&p2!==box&&p2.parentNode&&!p2.querySelector("img")&&!p2.textContent.trim())p2.remove();
   $("edSize").hidden=true;EDSEL=null;$("edDel").hidden=true;$("edMsg").textContent="已併排，記得按存檔。"}
 function edUnpair(){const im=EDSEL;if(!im||!im.parentElement||!im.parentElement.classList.contains("ed-pair"))return;const box=im.parentElement;const ps=[...box.children].map(c=>{const p=document.createElement("p");p.appendChild(c);return p});box.replaceWith(...ps);
   $("edSize").hidden=true;EDSEL=null;$("edDel").hidden=true;$("edMsg").textContent="已拆開，記得按存檔。"}
