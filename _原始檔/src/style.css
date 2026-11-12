@@ -1580,7 +1580,7 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 }
 
 /* 後台文章編輯：圖片大小調整工具（只影響圖片寬度，10%–100%）；前台與預覽置中顯示 */
-.ed2-size{position:absolute;display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #cdbfa8;border-radius:99px;padding:3px 6px;box-shadow:0 2px 8px rgba(0,0,0,.12);z-index:5}
+.ed2-size{position:absolute;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.78);border:1px solid rgba(205,191,168,.8);border-radius:99px;padding:3px 6px;box-shadow:0 2px 8px rgba(0,0,0,.08);z-index:5}
 .ed2-size button{width:28px;height:28px;border:1px solid #cdbfa8;border-radius:50%;background:#fbf7ee;color:#4a4536;font:inherit;font-size:16px;line-height:1;cursor:pointer}
 .ed2-size span{min-width:44px;text-align:center;font-size:13px;color:#4a4536}
 .ed2-body img,.blg-body img{margin-left:auto;margin-right:auto}
@@ -1591,7 +1591,6 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 .ed2-body .ed-pair,.blg-body .ed-pair{display:flex;gap:12px;align-items:flex-start;margin:1em 0;clear:both}
 .ed2-body .ed-pair img,.blg-body .ed-pair img{flex:0 1 auto;min-width:0;max-width:100%;margin:0}
 .ed2-body .ed-pair img:not([style]),.blg-body .ed-pair img:not([style]){width:50%}
-.ed2-size .ed2-sep{width:1px;height:18px;background:#d9d0bd;margin:0 2px}
 .ed2-size .ed2-txt{width:auto;padding:0 8px;border-radius:99px;font-size:13px}
 .ed2-size{flex-wrap:wrap;max-width:min(420px,90vw)}
 @media (max-width:760px){.ed2-body img.ial,.blg-body img.ial,.ed2-body img.iar,.blg-body img.iar{float:none;display:block;margin:1em auto;max-width:100%}
@@ -1599,5 +1598,5 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
   .ed2-body .ed-pair img:not([style]),.blg-body .ed-pair img:not([style]){width:100%}}
 
 /* 文章圖片：右下角拖曳把手，拖曳即可調整寬度（10%–100%） */
-.ed2-grip{position:absolute;width:18px;height:18px;border-radius:5px;background:#e79dbd;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:nwse-resize;touch-action:none;z-index:6}
+.ed2-grip{position:absolute;width:16px;height:16px;border-radius:5px;background:rgba(231,157,189,.85);border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:nwse-resize;touch-action:none;z-index:6}
 .ed2-size[hidden] ~ .ed2-grip{display:none}
