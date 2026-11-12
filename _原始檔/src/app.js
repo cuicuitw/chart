@@ -729,6 +729,7 @@ function catPanel(boxId="pCatBox",after){
   };
 }
 /* 內文格式：只保留副標 h3、內文 p、引言 blockquote、粗體 b、斜體 i、圖片 img（網址必須來自 Firebase Storage） */
+function imgOut(n,to){const s=n.getAttribute("src")||"";if(!ED_IMG.test(s))return;const im=document.createElement("img");im.src=s;im.alt="";const raw=(n.style&&n.style.width)||"",w=parseInt(raw,10);if(/%$/.test(raw)&&w>=10&&w<100)im.style.width=w+"%";const c=n.className||"";if(/\bial\b/.test(c))im.className="ial";else if(/\biar\b/.test(c))im.className="iar";to.appendChild(im)}
 function sanitizeBody(html){
   const src=new DOMParser().parseFromString(`<body>${String(html||"")}</body>`,"text/html").body;
   const out=document.createElement("div");
@@ -737,7 +738,8 @@ function sanitizeBody(html){
     if(n.nodeType===3){to.appendChild(document.createTextNode(n.nodeValue));return}
     if(n.nodeType!==1)return;
     let t=n.tagName;if(t==="DIV")t="P";if(t==="STRONG")t="B";if(t==="EM")t="I";
-    if(t==="IMG"){const s=n.getAttribute("src")||"";if(ED_IMG.test(s)){const im=document.createElement("img");im.src=s;im.alt="";const w=parseInt((n.style&&n.style.width)||"",10);if(/%$/.test((n.style&&n.style.width)||"")&&w>=10&&w<100)im.style.width=w+"%";to.appendChild(im)}return}
+    if(t==="IMG"){imgOut(n,to);return}
+    if(n.tagName==="DIV"&&n.classList.contains("ed-pair")){const d=document.createElement("div");d.className="ed-pair";n.childNodes.forEach(c=>{if(c.nodeType===1&&c.tagName==="IMG")imgOut(c,d)});if(d.children.length)to.appendChild(d);return}
     if(!keep[t]){walk(n,to);return}
     const el=document.createElement(t.toLowerCase());walk(n,el);to.appendChild(el);
   })};
@@ -762,7 +764,7 @@ function postEditorOpen(p){
       <textarea id="edT" class="ed2-title" rows="1" maxlength="120" placeholder="文章標題">${escH(p.title||"")}</textarea>
       <div class="ed2-body" id="edB" contenteditable="true" spellcheck="false" aria-label="文章內文"></div>
       <button type="button" class="ed2-del" id="edDel" hidden>刪除</button>
-      <div class="ed2-size" id="edSize" hidden><button type="button" id="edSmaller" aria-label="縮小圖片">－</button><span id="edPct">100%</span><button type="button" id="edBigger" aria-label="放大圖片">＋</button></div>
+      <div class="ed2-size" id="edSize" hidden><button type="button" id="edSmaller" aria-label="縮小圖片">－</button><span id="edPct">100%</span><button type="button" id="edBigger" aria-label="放大圖片">＋</button><span class="ed2-sep"></span><button type="button" id="edAlL" class="ed2-txt">左</button><button type="button" id="edAlC" class="ed2-txt">中</button><button type="button" id="edAlR" class="ed2-txt">右</button><span class="ed2-sep"></span><button type="button" id="edPair" class="ed2-txt">併排</button><button type="button" id="edUnpair" class="ed2-txt">拆開</button></div>
       <button type="button" class="ed2-plus" id="edPlus" hidden aria-label="加入內容">+</button>
       <div class="ed2-pm" id="edPM" hidden><button type="button" data-eplus="img">圖片</button><button type="button" data-eplus="hr">分隔線（· · ·）</button></div>
       <div class="ed2-tb" id="edTB" hidden role="toolbar" aria-label="文字格式"><button type="button" data-ec="h3">副標</button><button type="button" data-ec="p">內文</button><button type="button" data-ec="blockquote">引言</button><button type="button" data-ec="bold"><b>B</b></button><button type="button" data-ec="italic"><i>I</i></button></div>
@@ -789,7 +791,7 @@ function postEditorOpen(p){
   edBtns(p);
   const t=$("edT");const fit=()=>{t.style.height="auto";t.style.height=t.scrollHeight+"px"};t.addEventListener("input",fit);fit();
   $("edCat").onchange=()=>edSubFill("");
-  $("edB").addEventListener("click",edSelect);$("edDel").onclick=()=>{if(EDSEL)EDSEL.remove();EDSEL=null;$("edDel").hidden=true;$("edSize").hidden=true};$("edSmaller").onclick=()=>edResize(-10);$("edBigger").onclick=()=>edResize(10);
+  $("edB").addEventListener("click",edSelect);$("edDel").onclick=()=>{if(EDSEL)EDSEL.remove();EDSEL=null;$("edDel").hidden=true;$("edSize").hidden=true};$("edSmaller").onclick=()=>edResize(-10);$("edBigger").onclick=()=>edResize(10);$("edAlL").onclick=()=>edAlign("ial");$("edAlC").onclick=()=>edAlign("");$("edAlR").onclick=()=>edAlign("iar");$("edPair").onclick=edPair;$("edUnpair").onclick=edUnpair;
   $("edB").addEventListener("keyup",edPlace);$("edB").addEventListener("click",edPlace);$("edB").addEventListener("input",edPlace);
   $("edTB").addEventListener("mousedown",e=>{const b=e.target.closest("[data-ec]");if(!b)return;e.preventDefault();edFmt(b.dataset.ec)});
   $("edPlus").onclick=()=>{$("edPM").hidden=!$("edPM").hidden};
@@ -805,6 +807,15 @@ function edSelect(e){const t=e.target,del=$("edDel");
   else{del.hidden=true;$("edSize").hidden=true;EDSEL=null}}
 function edSizeShow(t,r,pr){const z=$("edSize");if(t.tagName!=="IMG"){z.hidden=true;return}
   const cur=parseInt(t.style.width,10)||100;$("edPct").textContent=cur+"%";z.style.top=(r.bottom-pr.top-40)+"px";z.style.left=Math.max(0,r.left-pr.left+8)+"px";z.hidden=false}
+function edAlign(c){if(!EDSEL||EDSEL.tagName!=="IMG")return;EDSEL.classList.remove("ial","iar");if(c)EDSEL.classList.add(c);if(EDSEL.parentElement&&EDSEL.parentElement.classList.contains("ed-pair")){EDSEL.classList.remove("ial","iar")}}
+function edPair(){const im=EDSEL;if(!im||im.tagName!=="IMG"||im.parentElement.classList.contains("ed-pair"))return;
+  const blk=im.parentElement===$("edB")?im:im.parentElement;const nb=blk.nextElementSibling;const im2=nb&&(nb.tagName==="IMG"?nb:(nb.tagName==="P"&&nb.children.length===1&&nb.firstElementChild.tagName==="IMG"?nb.firstElementChild:null));
+  if(!im2){$("edMsg").textContent="併排需要下一行也是圖片，請先插入第二張圖。";return}
+  const box=document.createElement("div");box.className="ed-pair";im.classList.remove("ial","iar");im2.classList.remove("ial","iar");box.appendChild(im);box.appendChild(im2);
+  blk.replaceWith(box);(im2.parentElement!==$("edB")&&im2.parentElement.tagName==="P"&&!im2.parentElement.textContent.trim())&&im2.parentElement.remove();
+  $("edSize").hidden=true;EDSEL=null;$("edDel").hidden=true;$("edMsg").textContent="已併排，記得按存檔。"}
+function edUnpair(){const im=EDSEL;if(!im||!im.parentElement||!im.parentElement.classList.contains("ed-pair"))return;const box=im.parentElement;const ps=[...box.children].map(c=>{const p=document.createElement("p");p.appendChild(c);return p});box.replaceWith(...ps);
+  $("edSize").hidden=true;EDSEL=null;$("edDel").hidden=true;$("edMsg").textContent="已拆開，記得按存檔。"}
 function edResize(d){if(!EDSEL||EDSEL.tagName!=="IMG")return;const cur=parseInt(EDSEL.style.width,10)||100,n=Math.min(100,Math.max(10,cur+d));EDSEL.style.width=n===100?"":n+"%";$("edPct").textContent=n+"%";const r=EDSEL.getBoundingClientRect(),pr=$("edB").parentElement.getBoundingClientRect();edSizeShow(EDSEL,r,pr);$("edDel").hidden=false;const del=$("edDel");del.style.top=(r.top-pr.top+4)+"px";del.style.left=Math.max(0,r.right-pr.left-80)+"px"}
 function openPreview(){
   const sub=$("edSub").value,cats=[$("edCat").value,sub&&sub!=="無"?sub:""].filter(Boolean).join("・");
