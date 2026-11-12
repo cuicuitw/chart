@@ -764,7 +764,7 @@ function postEditorOpen(p){
       <textarea id="edT" class="ed2-title" rows="1" maxlength="120" placeholder="文章標題">${escH(p.title||"")}</textarea>
       <div class="ed2-body" id="edB" contenteditable="true" spellcheck="false" aria-label="文章內文"></div>
       <button type="button" class="ed2-del" id="edDel" hidden>刪除</button>
-      <div class="ed2-size" id="edSize" hidden><button type="button" id="edSmaller" aria-label="縮小圖片">－</button><span id="edPct">100%</span><button type="button" id="edBigger" aria-label="放大圖片">＋</button><span class="ed2-sep"></span><button type="button" id="edAlL" class="ed2-txt">左</button><button type="button" id="edAlC" class="ed2-txt">中</button><button type="button" id="edAlR" class="ed2-txt">右</button><span class="ed2-sep"></span><button type="button" id="edPair" class="ed2-txt">併排</button><button type="button" id="edUnpair" class="ed2-txt">拆開</button></div>
+      <div class="ed2-size" id="edSize" hidden><button type="button" id="edSmaller" aria-label="縮小圖片">－</button><span id="edPct">100%</span><button type="button" id="edBigger" aria-label="放大圖片">＋</button><span class="ed2-sep"></span><button type="button" id="edAlL" class="ed2-txt">左</button><button type="button" id="edAlC" class="ed2-txt">中</button><button type="button" id="edAlR" class="ed2-txt">右</button><span class="ed2-sep"></span><button type="button" id="edPair" class="ed2-txt">併排</button><button type="button" id="edUnpair" class="ed2-txt">拆開</button></div><div class="ed2-grip" id="edGrip" aria-label="拖曳調整圖片大小" role="slider"></div>
       <button type="button" class="ed2-plus" id="edPlus" hidden aria-label="加入內容">+</button>
       <div class="ed2-pm" id="edPM" hidden><button type="button" data-eplus="img">圖片</button><button type="button" data-eplus="hr">分隔線（· · ·）</button></div>
       <div class="ed2-tb" id="edTB" hidden role="toolbar" aria-label="文字格式"><button type="button" data-ec="h3">副標</button><button type="button" data-ec="p">內文</button><button type="button" data-ec="blockquote">引言</button><button type="button" data-ec="bold"><b>B</b></button><button type="button" data-ec="italic"><i>I</i></button></div>
@@ -791,7 +791,11 @@ function postEditorOpen(p){
   edBtns(p);
   const t=$("edT");const fit=()=>{t.style.height="auto";t.style.height=t.scrollHeight+"px"};t.addEventListener("input",fit);fit();
   $("edCat").onchange=()=>edSubFill("");
-  $("edB").addEventListener("click",edSelect);$("edDel").onclick=()=>{if(EDSEL)EDSEL.remove();EDSEL=null;$("edDel").hidden=true;$("edSize").hidden=true};$("edSmaller").onclick=()=>edResize(-10);$("edBigger").onclick=()=>edResize(10);$("edAlL").onclick=()=>edAlign("ial");$("edAlC").onclick=()=>edAlign("");$("edAlR").onclick=()=>edAlign("iar");$("edPair").onclick=edPair;$("edUnpair").onclick=edUnpair;
+  $("edB").addEventListener("click",edSelect);$("edDel").onclick=()=>{if(EDSEL)EDSEL.remove();EDSEL=null;$("edDel").hidden=true;$("edSize").hidden=true};$("edSmaller").onclick=()=>edResize(-10);$("edBigger").onclick=()=>edResize(10);$("edAlL").onclick=()=>edAlign("ial");$("edAlC").onclick=()=>edAlign("");$("edAlR").onclick=()=>edAlign("iar");$("edPair").onclick=edPair;
+  let GD=null;const G=$("edGrip");
+  G.addEventListener("pointerdown",e=>{if(!EDSEL||EDSEL.tagName!=="IMG")return;e.preventDefault();GD={im:EDSEL,x:e.clientX,w:EDSEL.getBoundingClientRect().width,base:$("edB").clientWidth||1};try{G.setPointerCapture(e.pointerId)}catch(_){}});
+  G.addEventListener("pointermove",e=>{if(!GD)return;const dx=e.clientX-GD.x;const pct=Math.min(100,Math.max(10,Math.round((GD.w+dx)/GD.base*100)));GD.im.style.width=pct===100?"":pct+"%";$("edPct").textContent=pct+"%";const r=GD.im.getBoundingClientRect(),pr=$("edB").parentElement.getBoundingClientRect();edSizeShow(GD.im,r,pr)});
+  const GEND=()=>{GD=null};G.addEventListener("pointerup",GEND);G.addEventListener("pointercancel",GEND);$("edUnpair").onclick=edUnpair;
   $("edB").addEventListener("keyup",edPlace);$("edB").addEventListener("click",edPlace);$("edB").addEventListener("input",edPlace);
   $("edTB").addEventListener("mousedown",e=>{const b=e.target.closest("[data-ec]");if(!b)return;e.preventDefault();edFmt(b.dataset.ec)});
   $("edPlus").onclick=()=>{$("edPM").hidden=!$("edPM").hidden};
@@ -806,7 +810,7 @@ function edSelect(e){const t=e.target,del=$("edDel");
   if(t.tagName==="IMG"||t.tagName==="HR"){EDSEL=t;const r=t.getBoundingClientRect(),pr=$("edB").parentElement.getBoundingClientRect();del.style.top=(r.top-pr.top+4)+"px";del.style.left=Math.max(0,r.right-pr.left-80)+"px";del.hidden=false;edSizeShow(t,r,pr)}
   else{del.hidden=true;$("edSize").hidden=true;EDSEL=null}}
 function edSizeShow(t,r,pr){const z=$("edSize");if(t.tagName!=="IMG"){z.hidden=true;return}
-  const cur=parseInt(t.style.width,10)||100;$("edPct").textContent=cur+"%";z.style.top=(r.bottom-pr.top-40)+"px";z.style.left=Math.max(0,r.left-pr.left+8)+"px";z.hidden=false}
+  const cur=parseInt(t.style.width,10)||100;$("edPct").textContent=cur+"%";z.style.top=(r.bottom-pr.top-40)+"px";z.style.left=Math.max(0,r.left-pr.left+8)+"px";z.hidden=false;const g=$("edGrip");g.style.top=(r.bottom-pr.top-9)+"px";g.style.left=(r.right-pr.left-9)+"px"}
 function edAlign(c){if(!EDSEL||EDSEL.tagName!=="IMG")return;EDSEL.classList.remove("ial","iar");if(c)EDSEL.classList.add(c);if(EDSEL.parentElement&&EDSEL.parentElement.classList.contains("ed-pair")){EDSEL.classList.remove("ial","iar")}}
 function edPair(){const im=EDSEL;if(!im||im.tagName!=="IMG"||im.parentElement.classList.contains("ed-pair"))return;
   const blk=im.parentElement===$("edB")?im:im.parentElement;const nb=blk.nextElementSibling;const im2=nb&&(nb.tagName==="IMG"?nb:(nb.tagName==="P"&&nb.children.length===1&&nb.firstElementChild.tagName==="IMG"?nb.firstElementChild:null));
