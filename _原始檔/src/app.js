@@ -812,8 +812,8 @@ function edSelect(e){const t=e.target,del=$("edDel");
 function edSizeShow(t,r,pr){const z=$("edSize");if(t.tagName!=="IMG"){z.hidden=true;return}
   z.style.top=Math.max(0,r.top-pr.top-38)+"px";z.style.left=Math.max(0,r.left-pr.left)+"px";z.hidden=false;const g=$("edGrip");g.style.top=(r.bottom-pr.top+2)+"px";g.style.left=(r.right-pr.left+2)+"px"}
 function edPair(){const im=EDSEL;if(!im||im.tagName!=="IMG"||im.parentElement.classList.contains("ed-pair"))return;
-  const blk=im.parentElement===$("edB")?im:im.parentElement;const nb=blk.nextElementSibling;const im2=nb&&(nb.tagName==="IMG"?nb:(nb.tagName==="P"&&nb.children.length===1&&nb.firstElementChild.tagName==="IMG"?nb.firstElementChild:null));
-  if(!im2){$("edMsg").textContent="併排需要下一行也是圖片，請先插入第二張圖。";return}
+  const blk=im.parentElement===$("edB")?im:im.parentElement;let nb=blk.nextElementSibling;const isEmptyP=x=>x&&x.tagName==="P"&&!x.querySelector("img")&&!x.textContent.trim();while(isEmptyP(nb))nb=nb.nextElementSibling;const im2=nb&&(nb.tagName==="IMG"?nb:(nb.tagName==="P"&&nb.children.length===1&&nb.firstElementChild.tagName==="IMG"?nb.firstElementChild:null));
+  if(!im2){$("edMsg").textContent="找不到可以併排的第二張圖：請把第二張圖放在第一張圖的下方（中間的空白行可以有）。";return}
   const box=document.createElement("div");box.className="ed-pair";im.classList.remove("ial","iar");im2.classList.remove("ial","iar");box.appendChild(im);box.appendChild(im2);
   blk.replaceWith(box);(im2.parentElement!==$("edB")&&im2.parentElement.tagName==="P"&&!im2.parentElement.textContent.trim())&&im2.parentElement.remove();
   $("edSize").hidden=true;EDSEL=null;$("edDel").hidden=true;$("edMsg").textContent="已併排，記得按存檔。"}
