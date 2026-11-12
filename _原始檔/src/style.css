@@ -1578,3 +1578,9 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
   .adm-filters input[type=number],.adm-filters input[placeholder="最小"],.adm-filters input[placeholder="最大"]{width:64px;padding:6px 7px}
   .adm-filters input[type=search]{width:170px;max-width:100%}
 }
+
+/* 後台文章編輯：圖片大小調整工具（只影響圖片寬度，10%–100%）；前台與預覽置中顯示 */
+.ed2-size{position:absolute;display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #cdbfa8;border-radius:99px;padding:3px 6px;box-shadow:0 2px 8px rgba(0,0,0,.12);z-index:5}
+.ed2-size button{width:28px;height:28px;border:1px solid #cdbfa8;border-radius:50%;background:#fbf7ee;color:#4a4536;font:inherit;font-size:16px;line-height:1;cursor:pointer}
+.ed2-size span{min-width:44px;text-align:center;font-size:13px;color:#4a4536}
+.ed2-body img,.blg-body img{margin-left:auto;margin-right:auto}

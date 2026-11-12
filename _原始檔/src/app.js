@@ -737,7 +737,7 @@ function sanitizeBody(html){
     if(n.nodeType===3){to.appendChild(document.createTextNode(n.nodeValue));return}
     if(n.nodeType!==1)return;
     let t=n.tagName;if(t==="DIV")t="P";if(t==="STRONG")t="B";if(t==="EM")t="I";
-    if(t==="IMG"){const s=n.getAttribute("src")||"";if(ED_IMG.test(s)){const im=document.createElement("img");im.src=s;im.alt="";to.appendChild(im)}return}
+    if(t==="IMG"){const s=n.getAttribute("src")||"";if(ED_IMG.test(s)){const im=document.createElement("img");im.src=s;im.alt="";const w=parseInt((n.style&&n.style.width)||"",10);if(/%$/.test((n.style&&n.style.width)||"")&&w>=10&&w<100)im.style.width=w+"%";to.appendChild(im)}return}
     if(!keep[t]){walk(n,to);return}
     const el=document.createElement(t.toLowerCase());walk(n,el);to.appendChild(el);
   })};
@@ -762,6 +762,7 @@ function postEditorOpen(p){
       <textarea id="edT" class="ed2-title" rows="1" maxlength="120" placeholder="文章標題">${escH(p.title||"")}</textarea>
       <div class="ed2-body" id="edB" contenteditable="true" spellcheck="false" aria-label="文章內文"></div>
       <button type="button" class="ed2-del" id="edDel" hidden>刪除</button>
+      <div class="ed2-size" id="edSize" hidden><button type="button" id="edSmaller" aria-label="縮小圖片">－</button><span id="edPct">100%</span><button type="button" id="edBigger" aria-label="放大圖片">＋</button></div>
       <button type="button" class="ed2-plus" id="edPlus" hidden aria-label="加入內容">+</button>
       <div class="ed2-pm" id="edPM" hidden><button type="button" data-eplus="img">圖片</button><button type="button" data-eplus="hr">分隔線（· · ·）</button></div>
       <div class="ed2-tb" id="edTB" hidden role="toolbar" aria-label="文字格式"><button type="button" data-ec="h3">副標</button><button type="button" data-ec="p">內文</button><button type="button" data-ec="blockquote">引言</button><button type="button" data-ec="bold"><b>B</b></button><button type="button" data-ec="italic"><i>I</i></button></div>
@@ -788,7 +789,7 @@ function postEditorOpen(p){
   edBtns(p);
   const t=$("edT");const fit=()=>{t.style.height="auto";t.style.height=t.scrollHeight+"px"};t.addEventListener("input",fit);fit();
   $("edCat").onchange=()=>edSubFill("");
-  $("edB").addEventListener("click",edSelect);$("edDel").onclick=()=>{if(EDSEL)EDSEL.remove();EDSEL=null;$("edDel").hidden=true};
+  $("edB").addEventListener("click",edSelect);$("edDel").onclick=()=>{if(EDSEL)EDSEL.remove();EDSEL=null;$("edDel").hidden=true;$("edSize").hidden=true};$("edSmaller").onclick=()=>edResize(-10);$("edBigger").onclick=()=>edResize(10);
   $("edB").addEventListener("keyup",edPlace);$("edB").addEventListener("click",edPlace);$("edB").addEventListener("input",edPlace);
   $("edTB").addEventListener("mousedown",e=>{const b=e.target.closest("[data-ec]");if(!b)return;e.preventDefault();edFmt(b.dataset.ec)});
   $("edPlus").onclick=()=>{$("edPM").hidden=!$("edPM").hidden};
@@ -800,8 +801,11 @@ function postEditorOpen(p){
   $("edBtns").onclick=e=>{const b=e.target.closest("[data-es]");if(b)edSave(b.dataset.es)};
 }
 function edSelect(e){const t=e.target,del=$("edDel");
-  if(t.tagName==="IMG"||t.tagName==="HR"){EDSEL=t;const r=t.getBoundingClientRect(),pr=$("edB").parentElement.getBoundingClientRect();del.style.top=(r.top-pr.top+4)+"px";del.style.left=Math.max(0,r.right-pr.left-80)+"px";del.hidden=false}
-  else{del.hidden=true;EDSEL=null}}
+  if(t.tagName==="IMG"||t.tagName==="HR"){EDSEL=t;const r=t.getBoundingClientRect(),pr=$("edB").parentElement.getBoundingClientRect();del.style.top=(r.top-pr.top+4)+"px";del.style.left=Math.max(0,r.right-pr.left-80)+"px";del.hidden=false;edSizeShow(t,r,pr)}
+  else{del.hidden=true;$("edSize").hidden=true;EDSEL=null}}
+function edSizeShow(t,r,pr){const z=$("edSize");if(t.tagName!=="IMG"){z.hidden=true;return}
+  const cur=parseInt(t.style.width,10)||100;$("edPct").textContent=cur+"%";z.style.top=(r.bottom-pr.top-40)+"px";z.style.left=Math.max(0,r.left-pr.left+8)+"px";z.hidden=false}
+function edResize(d){if(!EDSEL||EDSEL.tagName!=="IMG")return;const cur=parseInt(EDSEL.style.width,10)||100,n=Math.min(100,Math.max(10,cur+d));EDSEL.style.width=n===100?"":n+"%";$("edPct").textContent=n+"%";const r=EDSEL.getBoundingClientRect(),pr=$("edB").parentElement.getBoundingClientRect();edSizeShow(EDSEL,r,pr);$("edDel").hidden=false;const del=$("edDel");del.style.top=(r.top-pr.top+4)+"px";del.style.left=Math.max(0,r.right-pr.left-80)+"px"}
 function openPreview(){
   const sub=$("edSub").value,cats=[$("edCat").value,sub&&sub!=="無"?sub:""].filter(Boolean).join("・");
   const cover=EDP&&EDP.cover&&ED_IMG.test(EDP.cover)?`<img class="blg-cover" src="${escH(EDP.cover)}" alt="">`:"";
