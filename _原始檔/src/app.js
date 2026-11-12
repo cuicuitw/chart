@@ -741,7 +741,7 @@ function sanitizeBody(html){
     let t=n.tagName;if(t==="DIV")t="P";if(t==="STRONG")t="B";if(t==="EM")t="I";
     if(t==="IMG"){imgOut(n,to);return}
     if(n.tagName==="FIGURE"){figOut(n,to);return}
-    if(n.tagName==="DIV"&&n.classList.contains("ed-pair")){const d=document.createElement("div");d.className="ed-pair";n.childNodes.forEach(c=>{if(c.nodeType!==1)return;if(c.tagName==="IMG")imgOut(c,d);else if(c.tagName==="FIGURE")figOut(c,d)});if(d.children.length)to.appendChild(d);return}
+    if(n.tagName==="DIV"&&n.classList.contains("ed-pair")){const d=document.createElement("div");d.className="ed-pair";n.childNodes.forEach(c=>{if(c.nodeType!==1)return;if(c.tagName==="IMG")imgOut(c,d);else if(c.tagName==="FIGURE")figOut(c,d);else if(c.tagName==="FIGCAPTION"){const t2=c.textContent.trim().slice(0,200);if(t2){const fc=document.createElement("figcaption");fc.textContent=t2;d.appendChild(fc)}}});if(d.children.length)to.appendChild(d);return}
     if(!keep[t]){walk(n,to);return}
     const el=document.createElement(t.toLowerCase());walk(n,el);to.appendChild(el);
   })};
@@ -764,7 +764,7 @@ function postEditorOpen(p){
   <div class="ed2">
     <div class="ed2-main">
       <textarea id="edT" class="ed2-title" rows="1" maxlength="120" placeholder="文章標題">${escH(p.title||"")}</textarea>
-      <div class="ed2-imginfo" id="edInfo" hidden><label>照片簡述（給搜尋與螢幕閱讀器用，不會顯示）<input id="edAlt" maxlength="200"></label><label>圖說（照片下方顯示，可不填）<input id="edCap" maxlength="200"></label></div>
+      <div class="ed2-imginfo" id="edInfo" hidden><label>照片簡述（給搜尋與螢幕閱讀器用，不會顯示）<input id="edAlt" maxlength="200"></label><label>圖說（照片下方顯示，可不填；併排時整排共用一個）<input id="edCap" maxlength="200"></label></div>
       <div class="ed2-body" id="edB" contenteditable="true" spellcheck="false" aria-label="文章內文"></div>
       <button type="button" class="ed2-del" id="edDel" hidden>刪除</button>
       <div class="ed2-size" id="edSize" hidden><button type="button" id="edPair" class="ed2-txt">併排</button><button type="button" id="edUnpair" class="ed2-txt">拆開</button></div><div class="ed2-grip" id="edGrip" aria-label="拖曳調整圖片大小" role="slider"></div>
@@ -812,26 +812,25 @@ function postEditorOpen(p){
 function edSelect(e){const t=e.target,del=$("edDel");
   if(t.tagName==="IMG"||t.tagName==="HR"){EDSEL=t;const r=t.getBoundingClientRect(),pr=$("edB").parentElement.getBoundingClientRect();del.style.top=Math.max(0,r.top-pr.top-38)+"px";del.style.left=Math.max(0,r.right-pr.left-64)+"px";del.hidden=false;edSizeShow(t,r,pr);if(t.tagName==="IMG")infoShow(t)}
   else{del.hidden=true;$("edSize").hidden=true;$("edInfo").hidden=true;EDSEL=null}}
-function infoShow(im){const z=$("edInfo");z.hidden=false;const r0=im.getBoundingClientRect(),pr0=$("edB").parentElement.getBoundingClientRect();z.style.top=(r0.bottom-pr0.top+16)+"px";z.style.left=Math.max(0,r0.left-pr0.left)+"px";$("edAlt").value=im.alt||"";const f=im.closest("figure.ed-fig");const c=f&&f.querySelector("figcaption");$("edCap").value=c?c.textContent:"";$("edCap").disabled=false}
+function groupCap(im){const b=im.closest(".ed-pair");return b?b.querySelector(":scope > figcaption"):null}
+function infoShow(im){const z=$("edInfo");z.hidden=false;const r0=im.getBoundingClientRect(),pr0=$("edB").parentElement.getBoundingClientRect();z.style.top=(r0.bottom-pr0.top+16)+"px";z.style.left=Math.max(0,r0.left-pr0.left)+"px";$("edAlt").value=im.alt||"";const gc=groupCap(im);const f=im.closest("figure.ed-fig");const c=gc||(f&&f.querySelector("figcaption"));$("edCap").value=c?c.textContent:"";$("edCap").disabled=false}
 function unfig(im){const f=im.closest("figure.ed-fig");if(f){const c=f.querySelector("figcaption");if(c)c.remove();f.replaceWith(im)}}
-function edSetCap(text){const im=EDSEL;if(!im||im.tagName!=="IMG")return;const t=text.trim();let f=im.closest("figure.ed-fig");
+function edSetCap(text){const im=EDSEL;if(!im||im.tagName!=="IMG")return;const t=text.trim();const box=im.closest(".ed-pair");if(box){let c=groupCap(im);if(!t){if(c)c.remove();return}if(!c){c=document.createElement("figcaption");box.appendChild(c)}c.textContent=text.slice(0,200);return}let f=im.closest("figure.ed-fig");
   if(!t){if(f){unfig(im);if(im.parentElement===$("edB")){const p=document.createElement("p");im.replaceWith(p);p.appendChild(im)}}return}
   if(!f){f=document.createElement("figure");f.className="ed-fig";const host=im.parentElement;if(host&&host.tagName==="P"&&host.childNodes.length===1)host.replaceWith(f);else im.replaceWith(f);f.appendChild(im)}
   let c=f.querySelector("figcaption");if(!c){c=document.createElement("figcaption");f.appendChild(c)}c.textContent=text.slice(0,200)}
 function edSizeShow(t,r,pr){const z=$("edSize");if(t.tagName!=="IMG"){z.hidden=true;return}
   z.style.top=Math.max(0,r.top-pr.top-38)+"px";z.style.left=Math.max(0,r.left-pr.left)+"px";z.hidden=false;const g=$("edGrip");g.style.top=(r.bottom-pr.top+2)+"px";g.style.left=(r.right-pr.left+2)+"px";const iz=$("edInfo");if(!iz.hidden){iz.style.top=(r.bottom-pr.top+16)+"px";iz.style.left=Math.max(0,r.left-pr.left)+"px"}}
-function edPair(){const im=EDSEL;if(!im||im.tagName!=="IMG")return;const exist=im.parentElement&&im.parentElement.classList.contains("ed-pair")?im.parentElement:null;if(exist&&exist.children.length>=3){$("edMsg").textContent="一排最多放三張圖，請先拆開再調整。";return}
-  const unitOf=x=>x.closest("figure.ed-fig")&&x.closest("figure.ed-fig").parentElement&&x.closest("figure.ed-fig").parentElement.tagName!=="FIGURE"?x.closest("figure.ed-fig"):x;
-  const u1=unitOf(im);const blk=exist?exist:(u1.parentElement===$("edB")?u1:u1.parentElement);let nb=blk.nextElementSibling;const isEmptyP=x=>x&&(x.tagName==="P"||x.tagName==="DIV")&&!x.querySelector("img")&&!x.textContent.trim();while(isEmptyP(nb))nb=nb.nextElementSibling;
-  let im2=null,u2=null;if(nb){if(nb.tagName==="FIGURE"){im2=nb.querySelector("img");u2=nb}else if(nb.tagName==="IMG"){im2=nb;u2=nb}else if((nb.tagName==="P"||nb.tagName==="DIV")&&nb.children.length===1){const c=nb.firstElementChild;if(c.tagName==="IMG"){im2=c;u2=c}else if(c.tagName==="FIGURE"){im2=c.querySelector("img");u2=c}}}
+function edPair(){const im=EDSEL;if(!im||im.tagName!=="IMG")return;const exist=im.parentElement&&im.parentElement.classList.contains("ed-pair")?im.parentElement:null;if(exist&&exist.children.length>=4){$("edMsg").textContent="一排最多放三張圖，請先拆開再調整。";return}
+  unfig(im);const blk=exist?exist:(im.parentElement===$("edB")?im:im.parentElement);let nb=blk.nextElementSibling;const isEmptyP=x=>x&&(x.tagName==="P"||x.tagName==="DIV")&&!x.querySelector("img")&&!x.textContent.trim();while(isEmptyP(nb))nb=nb.nextElementSibling;
+  let im2=null;if(nb){if(nb.tagName==="FIGURE")im2=nb.querySelector("img");else if(nb.tagName==="IMG")im2=nb;else if((nb.tagName==="P"||nb.tagName==="DIV")&&nb.children.length===1){const c=nb.firstElementChild;if(c.tagName==="IMG")im2=c;else if(c.tagName==="FIGURE")im2=c.querySelector("img")}}
   if(!im2){$("edMsg").textContent="找不到可以併排的第二張圖：請把第二張圖放在第一張圖的下方（中間的空白行可以有）。";return}
-  const p2=u2.parentElement;const box=exist||document.createElement("div");box.className="ed-pair";
-  if(!exist)blk.replaceWith(box);
-  if(!exist){im.classList.remove("ial","iar");box.appendChild(u1)}
-  im2.classList.remove("ial","iar");box.appendChild(u2);
+  unfig(im2);const p2=im2.parentElement;const box=exist||document.createElement("div");box.className="ed-pair";
+  if(!exist){blk.replaceWith(box);im.classList.remove("ial","iar");box.appendChild(im)}
+  im2.classList.remove("ial","iar");box.appendChild(im2);
   if(p2&&p2!==$("edB")&&p2!==box&&p2.parentNode&&!p2.querySelector("img,figure")&&!p2.textContent.trim())p2.remove();
   $("edSize").hidden=true;$("edInfo").hidden=true;EDSEL=null;$("edDel").hidden=true;$("edMsg").textContent="已併排，記得按存檔。"}
-function edUnpair(){const im=EDSEL;const box=im&&im.closest?im.closest(".ed-pair"):null;if(!box)return;const outs=[...box.children].map(c=>{if(c.tagName==="FIGURE")return c;const p=document.createElement("p");p.appendChild(c);return p});box.replaceWith(...outs);
+function edUnpair(){const im=EDSEL;const box=im&&im.closest?im.closest(".ed-pair"):null;if(!box)return;const outs=[...box.children].map(c=>{if(c.tagName==="FIGURE")return c;const p=document.createElement("p");if(c.tagName==="FIGCAPTION"){p.textContent=c.textContent;return p}p.appendChild(c);return p});box.replaceWith(...outs);
   $("edSize").hidden=true;$("edInfo").hidden=true;EDSEL=null;$("edDel").hidden=true;$("edMsg").textContent="已拆開，記得按存檔。"}
 function openPreview(){
   const sub=$("edSub").value,cats=[$("edCat").value,sub&&sub!=="無"?sub:""].filter(Boolean).join("・");
