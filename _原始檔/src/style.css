@@ -1615,3 +1615,4 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 .ed2-imginfo label{display:grid;gap:4px;font-size:13px;color:#4a4536}
 .ed2-imginfo input{border:1px solid #cdbfa8;border-radius:8px;padding:6px 9px;background:#fff;font:inherit}
 .ed2-imginfo input:disabled{background:#f1ece0;color:#9a927f}
+.ed2-body .ed-pair figure.ed-fig,.blg-body .ed-pair figure.ed-fig{margin:0;flex:0 1 auto;min-width:0}
