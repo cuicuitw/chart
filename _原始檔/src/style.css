@@ -1578,3 +1578,52 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
   .adm-filters input[type=number],.adm-filters input[placeholder="最小"],.adm-filters input[placeholder="最大"]{width:64px;padding:6px 7px}
   .adm-filters input[type=search]{width:170px;max-width:100%}
 }
+
+/* 後台文章編輯：圖片大小調整工具（只影響圖片寬度，10%–100%）；前台與預覽置中顯示 */
+.ed2-size{position:absolute;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.78);border:1px solid rgba(205,191,168,.8);border-radius:99px;padding:3px 6px;box-shadow:0 2px 8px rgba(0,0,0,.08);z-index:5}
+.ed2-size button{width:28px;height:28px;border:1px solid #cdbfa8;border-radius:50%;background:#fbf7ee;color:#4a4536;font:inherit;font-size:16px;line-height:1;cursor:pointer}
+.ed2-size span{min-width:44px;text-align:center;font-size:13px;color:#4a4536}
+.ed2-body img,.blg-body img{margin-left:auto;margin-right:auto}
+
+/* 文章圖片：置左／置右（文字會繞圖）、併排（並排一列，手機自動上下排）；編輯器與前台共用 */
+.ed2-body img.ial,.blg-body img.ial{float:left;margin:.3em 1.2em .8em 0;max-width:50%}
+.ed2-body img.iar,.blg-body img.iar{float:right;margin:.3em 0 .8em 1.2em;max-width:50%}
+.ed2-body .ed-pair,.blg-body .ed-pair{display:flex;gap:12px;align-items:flex-end;margin:1em 0;clear:both}
+.ed2-body .ed-pair img,.blg-body .ed-pair img{flex:0 1 auto;min-width:0;max-width:100%;margin:0}
+.ed2-body .ed-pair img:not([style]),.blg-body .ed-pair img:not([style]){width:50%}
+.ed2-size .ed2-txt{width:auto;padding:0 8px;border-radius:99px;font-size:13px}
+.ed2-size{flex-wrap:wrap;max-width:min(420px,90vw)}
+@media (max-width:760px){.ed2-body img.ial,.blg-body img.ial,.ed2-body img.iar,.blg-body img.iar{float:none;display:block;margin:1em auto;max-width:100%}
+  .ed2-body .ed-pair,.blg-body .ed-pair{flex-direction:column}
+  .ed2-body .ed-pair img:not([style]),.blg-body .ed-pair img:not([style]){width:100%}}
+
+/* 文章圖片：右下角拖曳把手，拖曳即可調整寬度（10%–100%） */
+.ed2-grip{position:absolute;width:16px;height:16px;border-radius:5px;background:rgba(231,157,189,.85);border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:nwse-resize;touch-action:none;z-index:6}
+.ed2-size[hidden] ~ .ed2-grip{display:none}
+
+/* 置中：單張圖與併排的圖群都置中；併排一排最多三張 */
+.ed2-body p:has(> img),.blg-body p:has(> img){text-align:center}
+.ed2-body .ed-pair,.blg-body .ed-pair{justify-content:center}
+.ed2-body .ed-pair img:not([style]),.blg-body .ed-pair img:not([style]){width:33%}
+.ed2-body .ed-pair:has(> img:nth-child(2):last-child) img:not([style]),.blg-body .ed-pair:has(> img:nth-child(2):last-child) img:not([style]){width:50%}
+
+/* 文章圖說與照片簡述：前台圖說置中、小字；編輯器的資訊欄在編輯區上方（不蓋住照片） */
+.blg-body figure.ed-fig,.ed2-body figure.ed-fig{margin:1em auto;text-align:center}
+.blg-body figure.ed-fig img,.ed2-body figure.ed-fig img{margin:0 auto}
+.blg-body figure.ed-fig figcaption,.ed2-body figure.ed-fig figcaption{font-size:12.5px;line-height:1.45;color:#776f5e;margin-top:.15em}
+.ed2-imginfo{position:absolute;z-index:6;display:grid;gap:8px;width:min(340px,calc(100% - 24px));padding:10px 12px;border:1px solid #d9d0bd;border-radius:10px;background:rgba(251,247,238,.94);box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.ed2-imginfo label{display:grid;gap:4px;font-size:13px;color:#4a4536}
+.ed2-imginfo input{border:1px solid #cdbfa8;border-radius:8px;padding:6px 9px;background:#fff;font:inherit}
+.ed2-imginfo input:disabled{background:#f1ece0;color:#9a927f}
+.ed2-body .ed-pair figure.ed-fig,.blg-body .ed-pair figure.ed-fig{margin:0;flex:0 1 auto;min-width:0}
+/* 併排：整排共用一個圖說，放在整排下方置中 */
+.ed2-body .ed-pair,.blg-body .ed-pair{flex-wrap:wrap}
+.ed2-body .ed-pair > figcaption,.blg-body .ed-pair > figcaption{flex:0 0 100%;text-align:center;font-size:12.5px;line-height:1.45;color:#776f5e;margin:.15em 0 0}
+/* 併排寬度上限：避免兩張圖加上間距超出一列，導致圖說被擠到很下面 */
+.ed2-body .ed-pair > img,.blg-body .ed-pair > img,.ed2-body .ed-pair > figure.ed-fig,.blg-body .ed-pair > figure.ed-fig{max-width:calc(50% - 6px)}
+.ed2-body .ed-pair:has(> :nth-child(3):not(figcaption)) > img,.blg-body .ed-pair:has(> :nth-child(3):not(figcaption)) > img,.ed2-body .ed-pair:has(> :nth-child(3):not(figcaption)) > figure.ed-fig,.blg-body .ed-pair:has(> :nth-child(3):not(figcaption)) > figure.ed-fig{max-width:calc(33.33% - 8px)}
+@media (max-width:760px){.ed2-body .ed-pair > img,.blg-body .ed-pair > img,.ed2-body .ed-pair > figure.ed-fig,.blg-body .ed-pair > figure.ed-fig{max-width:100%}}
+/* 併排：高矮不同的照片底部對齊，圖說緊貼整排底部 */
+.ed2-body .ed-pair,.blg-body .ed-pair{align-items:flex-end}
+.ed2-body .ed-pair > figcaption,.blg-body .ed-pair > figcaption{margin-top:0}
+.ed2-body .ed-pair,.blg-body .ed-pair{row-gap:2px}
