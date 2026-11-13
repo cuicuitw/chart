@@ -1,8 +1,9 @@
 import {initializeApp} from "firebase/app";
 import {getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged,reauthenticateWithPopup,deleteUser,browserLocalPersistence,setPersistence} from "firebase/auth";
+import {getStorage,ref as storageRef,uploadBytes,getDownloadURL} from "firebase/storage";
 import {getFirestore,collection,collectionGroup,doc,getDocs,addDoc,setDoc,updateDoc,deleteDoc,serverTimestamp,query,orderBy,writeBatch,where,increment,getDoc} from "firebase/firestore";
 const app=initializeApp({apiKey:"AIzaSyAQqpG61B23KMk0erWcAWZzNyUaJBckgTc",authDomain:"cuicui-chart.firebaseapp.com",projectId:"cuicui-chart",storageBucket:"cuicui-chart.firebasestorage.app",messagingSenderId:"1095786794782",appId:"1:1095786794782:web:cc57f83c16421fd9d0030f"});
-const auth=getAuth(app),db=getFirestore(app);setPersistence(auth,browserLocalPersistence).catch(()=>{});
+const auth=getAuth(app),db=getFirestore(app),storage=getStorage(app);setPersistence(auth,browserLocalPersistence).catch(()=>{});
 const prov=()=>{const p=new GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});return p};
 const col=()=>collection(db,"users",auth.currentUser.uid,"charts");
 const ncol=()=>collection(db,"users",auth.currentUser.uid,"notes");
@@ -33,6 +34,12 @@ window.FB={
   commentList:async id=>{const s=await getDocs(query(ccol(id),orderBy("created","asc")));return s.docs.map(d=>{const x=d.data();return {id:d.id,uid:String(x.uid||""),name:String(x.name||""),text:String(x.text||""),created:x.created&&x.created.toMillis?x.created.toMillis():0}})},
   commentAdd:(id,text)=>{const u=auth.currentUser;return addDoc(ccol(id),{uid:u.uid,name:String(u.displayName||"會員").slice(0,40),text:String(text).slice(0,500),created:serverTimestamp()})},
   commentDel:(id,cid)=>deleteDoc(doc(ccol(id),String(cid))),
+  /* 文章分類（postCats）：所有人可讀；只有站長可寫入 */
+  catsAll:async()=>(await getDocs(collection(db,"postCats"))).docs.map(d=>({id:d.id,name:String(d.data().name||""),parent:d.data().parent||null})),
+  catSave:async(id,c)=>{const t={name:String(c.name||"").trim().slice(0,30)};if(c.parent!==undefined)t.parent=c.parent||null;if(id)return updateDoc(doc(db,"postCats",String(id)),t);return addDoc(collection(db,"postCats"),{...t,parent:t.parent||null,created:serverTimestamp()})},
+  catDel:async id=>{const s=await getDocs(query(collection(db,"postCats"),where("parent","==",id)));const b=writeBatch(db);s.docs.forEach(d=>b.delete(d.ref));b.delete(doc(db,"postCats",String(id)));await b.commit()},
+  /* 圖片上傳（文章用）：回傳下載網址 */
+  upload:async(file,folder)=>{const name=String(file.name||"img").replace(/[^\w.-]/g,"_").slice(-60)||"img";const r=storageRef(storage,`${folder}/${Date.now()}-${name}`);await uploadBytes(r,file,{contentType:file.type});return getDownloadURL(r)},
   nAdd:async n=>(await addDoc(ncol(),{...pickN(n),created:serverTimestamp(),updated:serverTimestamp()})).id,
   nUpd:(id,n)=>updateDoc(doc(ncol(),id),{...pickN(n),updated:serverTimestamp()}),
   nDel:id=>deleteDoc(doc(ncol(),id)),
