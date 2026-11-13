@@ -1627,3 +1627,8 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 .ed2-body .ed-pair,.blg-body .ed-pair{align-items:flex-end}
 .ed2-body .ed-pair > figcaption,.blg-body .ed-pair > figcaption{margin-top:0}
 .ed2-body .ed-pair,.blg-body .ed-pair{row-gap:2px}
+/* 文章分享按鈕 */
+.blg-share{margin-top:36px;padding-top:20px;border-top:1px dashed #d9d0bd;display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+.blg-share button{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid #cdbfa8;border-radius:99px;padding:8px 16px;font:inherit;font-size:15px;color:#776f5e;cursor:pointer}
+.blg-share button:hover,.blg-share button:focus-visible{border-color:#e79dbd;color:#e79dbd}
+.blg-share #pstShareMsg{font-size:14px;color:#776f5e}

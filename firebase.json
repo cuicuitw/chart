@@ -10,7 +10,13 @@
       "CNAME",
       "README.md"
     ],
-    "cleanUrls": true
+    "cleanUrls": true,
+    "rewrites": [
+      {
+        "source": "/blog/**",
+        "destination": "/index.html"
+      }
+    ]
   },
   "firestore": {
     "rules": "_原始檔/firestore.rules"

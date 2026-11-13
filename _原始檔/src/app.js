@@ -329,6 +329,10 @@ $("send").onclick=()=>{if(!ST)return;const p=ST.pl[ST.sel],f=fmt(p.lon);R.push([
 /* ---------- 導覽 ---------- */
 let POSTS=[],BLOG=null,BCAT="";const ADM_EMAIL="cuicui.tw@gmail.com";
 const NAV=[["chart","星盤查詢",true],["cards","占星卡牌",true],["blog","翠誌",true],["booking","預約占星",true],["about","關於本站",true]];
+const DEF_T=document.title,DEF_D=(document.querySelector('meta[name="description"]')||{}).content||"";
+const hashView=()=>({"#cards":"cards","#blog":"blog","#booking":"booking","#about":"about","#privacy":"privacy","#terms":"terms","#admin":"admin"})[location.hash]||"chart";
+const postKey=p=>p.slug||p.id;
+const postPath=p=>"/blog/"+encodeURIComponent(postKey(p));
 const VIEW={chart:"vChart",cards:"vCards",blog:"vBlog",post:"vPost",booking:"vBook",about:"vAbout",privacy:"vPriv",terms:"vTerms",admin:"vAdmin"},HASH={cards:"#cards",blog:"#blog",booking:"#booking",about:"#about",privacy:"#privacy",terms:"#terms",admin:"#admin"};
 $("nav").innerHTML=NAV.filter(n=>n[2]).map(n=>`<button type="button" data-v="${n[0]}">${n[1]}</button>`).join("");
 /* 翠誌暫時只有站長看得到：沒有站長登入紀錄的裝置，導覽不顯示，網址也不能進入 */
@@ -437,7 +441,7 @@ function view(v){
   document.querySelectorAll("#nav button").forEach(b=>{const on=b.dataset.v==v;b.classList.toggle("on",on);b.setAttribute("aria-current",on?"page":"false")});
   menu(false);if(v!="cards"&&typeof npClose=="function")npClose();if(v=="cards"){preloadCards();renderB();howFirst()}if(v=="admin")setTimeout(adminOpen,0);if(v=="blog")setTimeout(blogOpen,0);if(typeof msClose=="function"){msClose();mbarR()}
   requestAnimationFrame(()=>{if(v=="chart"&&ST)sizeMV();if(v=="chart"&&DC)DC.home();if(v=="cards"&&DB)DB.home()});
-  try{history.replaceState(null,"",HASH[v]||location.pathname+location.search)}catch(e){}
+  if(v!="post"){resetMeta();const base=/^\/blog\//.test(location.pathname)?"/":location.pathname;try{history.replaceState(null,"",HASH[v]?base+HASH[v]:base+location.search)}catch(e){}}
   window.scrollTo(0,0);
   if(IO){const el=$(VIEW[v]);el.querySelectorAll(".pane").forEach(p=>p.scrollTop=0);replay(el)}
 }
@@ -463,7 +467,7 @@ addEventListener("scroll",chkTop,{passive:true});document.querySelectorAll(".pan
 $("toTop").onclick=()=>{scrollTo({top:0,behavior:"smooth"});visPanes().forEach(p=>p.scrollTo({top:0,behavior:"smooth"}))};
 
 document.querySelector(".brand").onclick=e=>{e.preventDefault();view("chart")};
-if(IO){arm(document.querySelector(".top"))}setTimeout(preloadCards,10000);preloadWheel();lib();document.fonts&&document.fonts.load('100px AstroSym',"☉☽☿♀♂♃♄♅♆♇♈♉♊♋♌♍♎♏♐♑♒♓").then(lib,()=>{});view(({"#cards":"cards","#blog":"blog","#booking":"booking","#about":"about","#privacy":"privacy","#terms":"terms","#admin":"admin"})[location.hash]||"chart");
+if(IO){arm(document.querySelector(".top"))}setTimeout(preloadCards,10000);preloadWheel();lib();document.fonts&&document.fonts.load('100px AstroSym',"☉☽☿♀♂♃♄♅♆♇♈♉♊♋♌♍♎♏♐♑♒♓").then(lib,()=>{});{const bm=location.pathname.match(/^\/blog\/([^/]+)\/?$/);if(bm)openSlug(decodeURIComponent(bm[1]));else view(hashView());}
 
 /* ---------- 記住上一次查詢：按「現在天象」後再按「排盤」會回到上一次的資料 ---------- */
 const LQK="cuicui-last-query",QF=["nm","date","time","place","lat","lon","tz","hs","gen"];let NOWM=false;
@@ -916,6 +920,10 @@ async function edSave(a,skipCov){
   catch(e){msg.textContent="儲存失敗，請稍後再試。"}
 }
 /* 翠誌：公開列表與單篇文章 */
+function setMeta(t,d,u){document.title=t;const m=document.querySelector('meta[name="description"]');if(m)m.content=d;let c=document.querySelector('link[rel="canonical"]');if(!c){c=document.createElement("link");c.rel="canonical";document.head.appendChild(c)}c.href=u}
+function resetMeta(){setMeta(DEF_T,DEF_D,"https://cuicui.tw/")}
+async function openSlug(slug){try{await fbLoad();if(!BLOG)BLOG=(await FB.postsPub()).sort((a,b)=>(b.publishedAt||0)-(a.publishedAt||0))}catch(e){view("blog");return}
+  const p=BLOG.find(x=>postKey(x)===slug);if(!p){view("blog");return}postView(p,true)}
 function blgFont(){try{if(document.getElementById("blgFontL"))return;const l=document.createElement("link");l.id="blgFontL";l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap";document.head.appendChild(l)}catch(e){}}
 const catTxt=p=>[p.cat,p.sub||p.level].filter(Boolean).join("・");
 async function blogOpen(){blgFont();const L=$("blgList");if(BLOG){blogR();return}
@@ -934,7 +942,12 @@ function blgMenu(open){const ul=$("blgFMenu"),btn=$("blgFBtn");ul.hidden=!open;b
 function blogR(){const L=$("blgList");
   const all=BLOG,list=all.filter(blgMatch);
   L.innerHTML=list.length?list.map((p,i)=>`<li class="blg-item" style="--i:${i}"><button type="button" class="blg-go" data-post="${escH(p.id)}"><span class="blg-thumb" aria-hidden="true">${p.cover&&ED_IMG.test(p.cover)?`<img src="${escH(p.cover)}" alt="">`:""}</span><span class="blg-txt"><span class="blg-line"><span>${escH(catTxt(p))}</span><time>${p.publishedAt?escH(fmtD(p.publishedAt)):""}</time></span><b class="blg-tt">${escH(p.title)}</b><span class="blg-sm">${escH(p.summary||"")}</span></span></button></li>`).join(""):`<li class="blg-empty">${all.length?"這個分類還沒有文章。":"文章即將上架，敬請期待。"}</li>`}
-function postView(p){if(!p)return;$("pstCat").textContent=catTxt(p);$("pstT").textContent=p.title||"";$("pstMeta").textContent=p.publishedAt?fmtD(p.publishedAt):"";
+$("pstShare").onclick=async()=>{const url=location.href,t=$("pstT").textContent||"",msg=$("pstShareMsg");msg.textContent="";
+  if(navigator.share){try{await navigator.share({title:t,url});return}catch(e){if(e&&e.name==="AbortError")return}}
+  try{await navigator.clipboard.writeText(url);msg.textContent="已複製文章連結"}catch(e){msg.textContent="請複製網址列的連結"}};
+function postView(p,fromUrl){if(!p)return;
+  const want=postPath(p);if(!fromUrl&&location.pathname!==want){try{history.pushState(null,"",want)}catch(e){}}
+  setMeta((p.seoTitle||p.title||"")+" ｜ 翠脆的心",(p.seoDesc||p.summary||DEF_D),"https://cuicui.tw"+want);$("pstCat").textContent=catTxt(p);$("pstT").textContent=p.title||"";$("pstMeta").textContent=p.publishedAt?fmtD(p.publishedAt):"";
   const cv=$("pstCover");if(cv){cv.hidden=true;cv.removeAttribute("src")}
   const B=$("pstBody");B.innerHTML="";
   if(bodyIsHtml(p.body)){B.innerHTML=sanitizeBody(p.body)}
@@ -944,6 +957,7 @@ $("blgFBtn").onclick=e=>{e.stopPropagation();blgMenu($("blgFMenu").hidden)};
 $("blgFMenu").onclick=e=>{const li=e.target.closest("[data-v]");if(!li)return;BLOG_F=li.dataset.v;blgFilterR();blgMenu(false);blogR()};
 document.addEventListener("click",e=>{if(!e.target.closest("#blgFilter"))blgMenu(false)});
 $("blgList").onclick=e=>{const b=e.target.closest("[data-post]");if(b&&BLOG)postView(BLOG.find(p=>p.id==b.dataset.post))};
+addEventListener("popstate",()=>{const m=location.pathname.match(/^\/blog\/([^/]+)\/?$/);if(m)openSlug(decodeURIComponent(m[1]));else view(hashView())});
 $("vPost").onclick=e=>{if(e.target.closest("[data-blogback]")){e.preventDefault();view("blog")}};
 {const ab=$("admBtn");if(ab)ab.onclick=()=>view("admin");}
 $("memAdm").onclick=()=>{memClose();view("admin")};
