@@ -942,6 +942,9 @@ function blgMenu(open){const ul=$("blgFMenu"),btn=$("blgFBtn");ul.hidden=!open;b
 function blogR(){const L=$("blgList");
   const all=BLOG,list=all.filter(blgMatch);
   L.innerHTML=list.length?list.map((p,i)=>`<li class="blg-item" style="--i:${i}"><button type="button" class="blg-go" data-post="${escH(p.id)}"><span class="blg-thumb" aria-hidden="true">${p.cover&&ED_IMG.test(p.cover)?`<img src="${escH(p.cover)}" alt="">`:""}</span><span class="blg-txt"><span class="blg-line"><span>${escH(catTxt(p))}</span><time>${p.publishedAt?escH(fmtD(p.publishedAt)):""}</time></span><b class="blg-tt">${escH(p.title)}</b><span class="blg-sm">${escH(p.summary||"")}</span></span></button></li>`).join(""):`<li class="blg-empty">${all.length?"這個分類還沒有文章。":"文章即將上架，敬請期待。"}</li>`}
+$("pstShare").onclick=async()=>{const url=location.href,t=$("pstT").textContent||"",msg=$("pstShareMsg");msg.textContent="";
+  if(navigator.share){try{await navigator.share({title:t,url});return}catch(e){if(e&&e.name==="AbortError")return}}
+  try{await navigator.clipboard.writeText(url);msg.textContent="已複製文章連結"}catch(e){msg.textContent="請複製網址列的連結"}};
 function postView(p,fromUrl){if(!p)return;
   const want=postPath(p);if(!fromUrl&&location.pathname!==want){try{history.pushState(null,"",want)}catch(e){}}
   setMeta((p.seoTitle||p.title||"")+" ｜ 翠脆的心",(p.seoDesc||p.summary||DEF_D),"https://cuicui.tw"+want);$("pstCat").textContent=catTxt(p);$("pstT").textContent=p.title||"";$("pstMeta").textContent=p.publishedAt?fmtD(p.publishedAt):"";
