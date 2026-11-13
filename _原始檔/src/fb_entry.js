@@ -29,9 +29,9 @@ window.FB={
   saveList:async()=>{const s=await getDocs(query(scol(),orderBy("created","desc")));return s.docs.map(d=>{const x=d.data();return {id:d.id,title:String(x.title||""),slug:String(x.slug||""),cat:String(x.cat||""),summary:String(x.summary||""),created:x.created&&x.created.toMillis?x.created.toMillis():Date.now()}})},
   savePost:p=>setDoc(doc(scol(),String(p.id)),{postId:String(p.id),title:String(p.title??"").slice(0,120),slug:String(p.slug??"").slice(0,80),cat:String(p.cat??"").slice(0,30),summary:String(p.summary??"").slice(0,300),created:serverTimestamp()}),
   unsavePost:id=>deleteDoc(doc(scol(),String(id))),
-  /* 留言：每篇文章底下的 comments；所有人可讀，登入會員可留言，本人或站長可刪除 */
+  /* 留言：每篇文章底下的 comments；所有人可讀與留言，只有站長可刪除 */
   commentList:async id=>{const s=await getDocs(query(ccol(id),orderBy("created","asc")));return s.docs.map(d=>{const x=d.data();return {id:d.id,uid:String(x.uid||""),name:String(x.name||""),text:String(x.text||""),created:x.created&&x.created.toMillis?x.created.toMillis():0}})},
-  commentAdd:(id,text)=>{const u=auth.currentUser;return addDoc(ccol(id),{uid:u.uid,name:String(u.displayName||"會員").slice(0,40),text:String(text).slice(0,500),created:serverTimestamp()})},
+  commentAdd:(id,name,text)=>addDoc(ccol(id),{name:String(name||"訪客").slice(0,20),text:String(text).slice(0,500),created:serverTimestamp()}),
   commentDel:(id,cid)=>deleteDoc(doc(ccol(id),String(cid))),
   nAdd:async n=>(await addDoc(ncol(),{...pickN(n),created:serverTimestamp(),updated:serverTimestamp()})).id,
   nUpd:(id,n)=>updateDoc(doc(ncol(),id),{...pickN(n),updated:serverTimestamp()}),
