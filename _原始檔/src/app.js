@@ -467,7 +467,7 @@ addEventListener("scroll",chkTop,{passive:true});document.querySelectorAll(".pan
 $("toTop").onclick=()=>{scrollTo({top:0,behavior:"smooth"});visPanes().forEach(p=>p.scrollTo({top:0,behavior:"smooth"}))};
 
 document.querySelector(".brand").onclick=e=>{e.preventDefault();view("chart")};
-if(IO){arm(document.querySelector(".top"))}setTimeout(preloadCards,10000);preloadWheel();lib();document.fonts&&document.fonts.load('100px AstroSym',"☉☽☿♀♂♃♄♅♆♇♈♉♊♋♌♍♎♏♐♑♒♓").then(lib,()=>{});{const bm=location.pathname.match(/^\/blog\/([^/]+)\/?$/);if(bm)openSlug(decodeURIComponent(bm[1]));else view(hashView());}
+if(IO){arm(document.querySelector(".top"))}setTimeout(preloadCards,10000);preloadWheel();lib();document.fonts&&document.fonts.load('100px AstroSym',"☉☽☿♀♂♃♄♅♆♇♈♉♊♋♌♍♎♏♐♑♒♓").then(lib,()=>{});{const bm=location.pathname.match(/^\/blog\/([^/]+)\/?$/);if(bm)Promise.resolve().then(()=>openSlug(decodeURIComponent(bm[1])));else view(hashView());}
 
 /* ---------- 記住上一次查詢：按「現在天象」後再按「排盤」會回到上一次的資料 ---------- */
 const LQK="cuicui-last-query",QF=["nm","date","time","place","lat","lon","tz","hs","gen"];let NOWM=false;
