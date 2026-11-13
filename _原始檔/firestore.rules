@@ -47,14 +47,16 @@ service cloud.firestore {
       allow read: if resource.data.status == "published" || isAdmin();
       allow write: if isAdmin();
 
-      // 文章留言：所有人可讀、所有人可留言（不需登入；暱稱最多 20 字、內容 1–500 字）；只有站長可刪除；不可修改
+      // 文章留言：所有人可讀；登入會員可留言（只能以自己的名義、限 500 字）；本人或站長可刪除；不可修改
       match /comments/{commentId} {
         allow read: if true;
-        allow create: if request.resource.data.keys().hasOnly(['name', 'text', 'created'])
-          && request.resource.data.name is string && request.resource.data.name.size() <= 20
+        allow create: if request.auth != null
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.keys().hasOnly(['uid', 'name', 'text', 'created'])
+          && request.resource.data.name is string && request.resource.data.name.size() <= 40
           && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 500
           && request.resource.data.created == request.time;
-        allow delete: if isAdmin();
+        allow delete: if request.auth != null && (resource.data.uid == request.auth.uid || isAdmin());
         allow update: if false;
       }
     }

@@ -1648,7 +1648,6 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 .cmt-del:hover{color:#e79dbd}
 .cmt-empty{color:#776f5e;font-size:14px;padding:8px 0;list-style:none}
 .cmt-form{display:grid;gap:8px}
-.cmt-form input{width:100%;box-sizing:border-box;border:1px solid #cdbfa8;border-radius:10px;padding:8px 12px;font:inherit;font-size:14px;background:#fff}
 .cmt-form textarea{width:100%;box-sizing:border-box;border:1px solid #cdbfa8;border-radius:10px;padding:10px 12px;font:inherit;font-size:15px;background:#fff;resize:vertical}
 .cmt-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .cmt-msg{font-size:13px;color:#776f5e}

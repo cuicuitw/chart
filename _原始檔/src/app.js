@@ -978,18 +978,19 @@ $("pstSave").onclick=async()=>{if(!CURP)return;if(!ME){memOpen("登入後就能�
   const id=String(CURP.id),on=!!(SAVED&&SAVED.has(id)),msg=$("pstShareMsg");msg.textContent="";
   try{if(on){await FB.unsavePost(id);SAVED.delete(id);msg.textContent="已移除收藏"}else{await FB.savePost(CURP);if(!SAVED)SAVED=new Set();SAVED.add(id);msg.textContent="已收藏，可到會員區查看"}pstSaveR();savedLoad()}
   catch(e){msg.textContent="儲存失敗，請稍後再試。"}};
-$("pstCmt").onclick=()=>{const box=$("cmtBox");if(box)box.scrollIntoView({behavior:"smooth",block:"start"});if($("cmtTxt"))setTimeout(()=>$("cmtTxt").focus({preventScroll:true}),350)};
+$("pstCmt").onclick=()=>{const box=$("cmtBox");if(box)box.scrollIntoView({behavior:"smooth",block:"start"});if(ME&&$("cmtTxt"))setTimeout(()=>$("cmtTxt").focus({preventScroll:true}),350)};
 /* 留言區：登入會員可留言；本人與站長可刪除 */
 let CMT_ID=null;
-function cmtSync(){const f=$("cmtForm");if(f)f.hidden=false;const n=$("cmtName");if(n&&!n.value){try{n.value=localStorage.getItem("cuicui-cmt-name")||""}catch(e){}}}
-function cmtCanDel(){return !!ME&&ME.email===ADM_EMAIL}
+function cmtSync(){const f=$("cmtForm"),l=$("cmtLogin");if(!f||!l)return;f.hidden=!ME;l.hidden=!!ME}
+function cmtCanDel(c){return !!ME&&(c.uid===ME.uid||ME.email===ADM_EMAIL)}
 function cmtRender(list){const L=$("cmtList");if(!L)return;
   L.innerHTML=list.length?list.map(c=>`<li class="cmt-item"><div class="cmt-h"><b>${escH(c.name||"會員")}</b><time>${c.created?escH(fmtD(c.created)):""}</time></div><p class="cmt-t">${escH(c.text).replace(/\n/g,"<br>")}</p>${cmtCanDel(c)?`<button type="button" class="cmt-del" data-cid="${escH(c.id)}">刪除</button>`:""}</li>`).join(""):'<li class="cmt-empty">還沒有留言，來說點什麼吧。</li>'}
 async function cmtLoad(id){CMT_ID=String(id);const L=$("cmtList");if(!L)return;L.innerHTML='<li class="cmt-empty">讀取留言中…</li>';
   try{const l=await FB.commentList(CMT_ID);if(CMT_ID===String(id))cmtRender(l)}catch(e){if(CMT_ID===String(id))L.innerHTML='<li class="cmt-empty">留言載入失敗，請稍後再試。</li>'}}
-$("cmtForm").onsubmit=async e=>{e.preventDefault();if(!CURP)return;const t=$("cmtTxt").value.trim(),msg=$("cmtMsg");if(!t)return;
-  const raw=$("cmtName").value.trim(),name=(raw||"訪客").slice(0,20);const id=String(CURP.id);$("cmtSend").disabled=true;msg.textContent="";
-  try{await FB.commentAdd(id,name,t);try{localStorage.setItem("cuicui-cmt-name",raw)}catch(err){}$("cmtTxt").value="";await cmtLoad(id)}catch(err){msg.textContent="留言失敗，請稍後再試。"}finally{$("cmtSend").disabled=false}};
+$("cmtForm").onsubmit=async e=>{e.preventDefault();if(!ME||!CURP)return;const t=$("cmtTxt").value.trim(),msg=$("cmtMsg");if(!t)return;
+  const id=String(CURP.id);$("cmtSend").disabled=true;msg.textContent="";
+  try{await FB.commentAdd(id,t);$("cmtTxt").value="";await cmtLoad(id)}catch(err){msg.textContent="留言失敗，請稍後再試。"}finally{$("cmtSend").disabled=false}};
+$("cmtLoginBtn").onclick=()=>memOpen("登入後就能留言。");
 $("cmtList").onclick=async e=>{const b=e.target.closest(".cmt-del");if(!b||!CURP)return;if(!confirm("確定要刪除這則留言嗎？"))return;
   const id=String(CURP.id);try{await FB.commentDel(id,b.dataset.cid);await cmtLoad(id)}catch(err){$("cmtMsg").textContent="刪除失敗，請稍後再試。"}};
 async function openSaved(x){try{await fbLoad();if(!BLOG)BLOG=(await FB.postsPub()).sort((a,b)=>(b.publishedAt||0)-(a.publishedAt||0))}catch(e){view("blog");return}

@@ -169,11 +169,11 @@
     <section class="cmt" id="cmtBox" aria-labelledby="cmtH">
       <h3 class="cmt-title" id="cmtH">留言</h3>
       <ul class="cmt-list" id="cmtList"></ul>
-      <form class="cmt-form" id="cmtForm">
-        <input id="cmtName" maxlength="20" placeholder="暱稱（可不填）" aria-label="暱稱">
+      <form class="cmt-form" id="cmtForm" hidden>
         <textarea id="cmtTxt" maxlength="500" rows="3" aria-label="留言內容" placeholder="寫下你的想法（最多 500 字）"></textarea>
         <div class="cmt-row"><span class="cmt-msg" id="cmtMsg" aria-live="polite"></span><button type="submit" class="pill" id="cmtSend">送出留言</button></div>
       </form>
+      <p class="cmt-login" id="cmtLogin" hidden>登入後就能留言。<button type="button" class="pill" id="cmtLoginBtn">用 Google 登入</button></p>
     </section>
   </article>
 </div>
