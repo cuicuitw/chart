@@ -1636,3 +1636,19 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 .ic-btn.on .bm{fill:currentColor}
 .ic-btn.on .pl{display:none}
 .blg-share #pstShareMsg{font-size:14px;color:#776f5e;margin-left:6px}
+/* 文章留言區 */
+.cmt{margin-top:28px}
+.cmt-title{font-size:18px;font-weight:700;color:#111;margin:0 0 6px}
+.cmt-list{list-style:none;padding:0;margin:0 0 16px}
+.cmt-item{border-bottom:1px dashed #e4dccb;padding:12px 0}
+.cmt-h{display:flex;gap:10px;align-items:baseline;font-size:14px;color:#776f5e}
+.cmt-h b{color:#111;font-weight:500}
+.cmt-t{margin:6px 0 0;font-size:15px;line-height:1.8;word-break:break-word;color:#111}
+.cmt-del{margin-top:4px;background:none;border:0;color:#a08f7f;font-size:13px;cursor:pointer;padding:0}
+.cmt-del:hover{color:#e79dbd}
+.cmt-empty{color:#776f5e;font-size:14px;padding:8px 0;list-style:none}
+.cmt-form{display:grid;gap:8px}
+.cmt-form textarea{width:100%;box-sizing:border-box;border:1px solid #cdbfa8;border-radius:10px;padding:10px 12px;font:inherit;font-size:15px;background:#fff;resize:vertical}
+.cmt-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.cmt-msg{font-size:13px;color:#776f5e}
+.cmt-login{font-size:14px;color:#776f5e;display:flex;gap:10px;align-items:center;flex-wrap:wrap}

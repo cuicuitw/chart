@@ -7,6 +7,7 @@ const prov=()=>{const p=new GoogleAuthProvider();p.setCustomParameters({prompt:"
 const col=()=>collection(db,"users",auth.currentUser.uid,"charts");
 const ncol=()=>collection(db,"users",auth.currentUser.uid,"notes");
 const scol=()=>collection(db,"users",auth.currentUser.uid,"savedPosts");
+const ccol=id=>collection(db,"posts",String(id),"comments");
 const pickN=n=>({cat:String(n.cat??"").slice(0,30),title:String(n.title??"").slice(0,80),body:String(n.body??"").slice(0,5000)});
 const pickP=p=>({title:String(p.title??"").slice(0,120),slug:String(p.slug??"").slice(0,80),cat:String(p.cat??"").slice(0,30),summary:String(p.summary??"").slice(0,300),body:String(p.body??"").slice(0,20000),seoTitle:String(p.seoTitle??"").slice(0,70),seoDesc:String(p.seoDesc??"").slice(0,180),status:p.status==="published"?"published":"draft",publishedAt:typeof p.publishedAt==="number"?p.publishedAt:null});
 const postOut=d=>{const x=d.data(),ts=v=>v&&v.toMillis?v.toMillis():(typeof v==="number"?v:0);return {id:d.id,title:x.title||"",slug:x.slug||"",cat:x.cat||"",summary:x.summary||"",body:x.body||"",seoTitle:x.seoTitle||"",seoDesc:x.seoDesc||"",status:x.status||"draft",publishedAt:ts(x.publishedAt),updated:ts(x.updated),created:ts(x.created)}};
@@ -28,6 +29,10 @@ window.FB={
   saveList:async()=>{const s=await getDocs(query(scol(),orderBy("created","desc")));return s.docs.map(d=>{const x=d.data();return {id:d.id,title:String(x.title||""),slug:String(x.slug||""),cat:String(x.cat||""),summary:String(x.summary||""),created:x.created&&x.created.toMillis?x.created.toMillis():Date.now()}})},
   savePost:p=>setDoc(doc(scol(),String(p.id)),{postId:String(p.id),title:String(p.title??"").slice(0,120),slug:String(p.slug??"").slice(0,80),cat:String(p.cat??"").slice(0,30),summary:String(p.summary??"").slice(0,300),created:serverTimestamp()}),
   unsavePost:id=>deleteDoc(doc(scol(),String(id))),
+  /* 留言：每篇文章底下的 comments；所有人可讀，登入會員可留言，本人或站長可刪除 */
+  commentList:async id=>{const s=await getDocs(query(ccol(id),orderBy("created","asc")));return s.docs.map(d=>{const x=d.data();return {id:d.id,uid:String(x.uid||""),name:String(x.name||""),text:String(x.text||""),created:x.created&&x.created.toMillis?x.created.toMillis():0}})},
+  commentAdd:(id,text)=>{const u=auth.currentUser;return addDoc(ccol(id),{uid:u.uid,name:String(u.displayName||"會員").slice(0,40),text:String(text).slice(0,500),created:serverTimestamp()})},
+  commentDel:(id,cid)=>deleteDoc(doc(ccol(id),String(cid))),
   nAdd:async n=>(await addDoc(ncol(),{...pickN(n),created:serverTimestamp(),updated:serverTimestamp()})).id,
   nUpd:(id,n)=>updateDoc(doc(ncol(),id),{...pickN(n),updated:serverTimestamp()}),
   nDel:id=>deleteDoc(doc(ncol(),id)),

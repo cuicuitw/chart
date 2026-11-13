@@ -611,7 +611,7 @@ let LASTQ=null,ME=null,MLIST=[],PEND=false,FBL=null;
 const MKEY="cuicui-signed";
 function fbLoad(){if(FBL)return FBL;if(!window.FB&&location.protocol=="file:")return Promise.reject(new Error("file"));
   FBL=(window.FB?Promise.resolve():new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="fb.js?v=__FBV__";sc.async=true;sc.onload=()=>{window.FB?ok():no(new Error("fb"))};sc.onerror=()=>{FBL=null;no(new Error("net"))};document.head.appendChild(sc)}))
-    .then(()=>{FB.onUser(u=>{ME=u;try{u?localStorage.setItem(MKEY,"1"):localStorage.removeItem(MKEY)}catch(e){}acctR();admBtnR(u);if(u){memLoad();if(PEND){PEND=false;saveChart()}}else{MLIST=[];memR()}notesOnUser(u)})});
+    .then(()=>{FB.onUser(u=>{ME=u;try{u?localStorage.setItem(MKEY,"1"):localStorage.removeItem(MKEY)}catch(e){}acctR();admBtnR(u);cmtSync();if(u){memLoad();if(PEND){PEND=false;saveChart()}}else{MLIST=[];memR()}notesOnUser(u)})});
   return FBL}
 const escH=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function acctR(){const b=$("acct");if(!b)return;if(ME){b.classList.add("in");b.setAttribute("aria-label","我的帳號");
@@ -945,7 +945,7 @@ function blogR(){const L=$("blgList");
 $("pstShare").onclick=async()=>{const url=location.href,t=$("pstT").textContent||"",msg=$("pstShareMsg");msg.textContent="";
   if(navigator.share){try{await navigator.share({title:t,url});return}catch(e){if(e&&e.name==="AbortError")return}}
   try{await navigator.clipboard.writeText(url);msg.textContent="已複製文章連結"}catch(e){msg.textContent="請複製網址列的連結"}};
-function postView(p,fromUrl){if(!p)return;CURP=p;if(ME&&!SAVED)savedLoad();else pstSaveR();
+function postView(p,fromUrl){if(!p)return;CURP=p;if(ME&&!SAVED)savedLoad();else pstSaveR();cmtSync();$("cmtMsg").textContent="";cmtLoad(String(p.id));
   const want=postPath(p);if(!fromUrl&&location.pathname!==want){try{history.pushState(null,"",want)}catch(e){}}
   setMeta((p.seoTitle||p.title||"")+" ｜ 翠脆的心",(p.seoDesc||p.summary||DEF_D),"https://cuicui.tw"+want);$("pstCat").textContent=catTxt(p);$("pstT").textContent=p.title||"";$("pstMeta").textContent=p.publishedAt?fmtD(p.publishedAt):"";
   const cv=$("pstCover");if(cv){cv.hidden=true;cv.removeAttribute("src")}
@@ -978,7 +978,21 @@ $("pstSave").onclick=async()=>{if(!CURP)return;if(!ME){memOpen("登入後就能�
   const id=String(CURP.id),on=!!(SAVED&&SAVED.has(id)),msg=$("pstShareMsg");msg.textContent="";
   try{if(on){await FB.unsavePost(id);SAVED.delete(id);msg.textContent="已移除收藏"}else{await FB.savePost(CURP);if(!SAVED)SAVED=new Set();SAVED.add(id);msg.textContent="已收藏，可到會員區查看"}pstSaveR();savedLoad()}
   catch(e){msg.textContent="儲存失敗，請稍後再試。"}};
-$("pstCmt").onclick=()=>{$("pstShareMsg").textContent="留言功能即將推出"};
+$("pstCmt").onclick=()=>{const box=$("cmtBox");if(box)box.scrollIntoView({behavior:"smooth",block:"start"});if(ME&&$("cmtTxt"))setTimeout(()=>$("cmtTxt").focus({preventScroll:true}),350)};
+/* 留言區：登入會員可留言；本人與站長可刪除 */
+let CMT_ID=null;
+function cmtSync(){const f=$("cmtForm"),l=$("cmtLogin");if(!f||!l)return;f.hidden=!ME;l.hidden=!!ME}
+function cmtCanDel(c){return !!ME&&(c.uid===ME.uid||ME.email===ADM_EMAIL)}
+function cmtRender(list){const L=$("cmtList");if(!L)return;
+  L.innerHTML=list.length?list.map(c=>`<li class="cmt-item"><div class="cmt-h"><b>${escH(c.name||"會員")}</b><time>${c.created?escH(fmtD(c.created)):""}</time></div><p class="cmt-t">${escH(c.text).replace(/\n/g,"<br>")}</p>${cmtCanDel(c)?`<button type="button" class="cmt-del" data-cid="${escH(c.id)}">刪除</button>`:""}</li>`).join(""):'<li class="cmt-empty">還沒有留言，來說點什麼吧。</li>'}
+async function cmtLoad(id){CMT_ID=String(id);const L=$("cmtList");if(!L)return;L.innerHTML='<li class="cmt-empty">讀取留言中…</li>';
+  try{const l=await FB.commentList(CMT_ID);if(CMT_ID===String(id))cmtRender(l)}catch(e){if(CMT_ID===String(id))L.innerHTML='<li class="cmt-empty">留言載入失敗，請稍後再試。</li>'}}
+$("cmtForm").onsubmit=async e=>{e.preventDefault();if(!ME||!CURP)return;const t=$("cmtTxt").value.trim(),msg=$("cmtMsg");if(!t)return;
+  const id=String(CURP.id);$("cmtSend").disabled=true;msg.textContent="";
+  try{await FB.commentAdd(id,t);$("cmtTxt").value="";await cmtLoad(id)}catch(err){msg.textContent="留言失敗，請稍後再試。"}finally{$("cmtSend").disabled=false}};
+$("cmtLoginBtn").onclick=()=>memOpen("登入後就能留言。");
+$("cmtList").onclick=async e=>{const b=e.target.closest(".cmt-del");if(!b||!CURP)return;if(!confirm("確定要刪除這則留言嗎？"))return;
+  const id=String(CURP.id);try{await FB.commentDel(id,b.dataset.cid);await cmtLoad(id)}catch(err){$("cmtMsg").textContent="刪除失敗，請稍後再試。"}};
 async function openSaved(x){try{await fbLoad();if(!BLOG)BLOG=(await FB.postsPub()).sort((a,b)=>(b.publishedAt||0)-(a.publishedAt||0))}catch(e){view("blog");return}
   const p=BLOG.find(q=>q.id===x.id||(x.slug&&postKey(q)===x.slug));if(!p){view("blog");return}postView(p)}
 $("memSaved").onclick=async e=>{const b=e.target.closest("[data-sid]");if(!b)return;const x=SAVEDL.find(s=>s.id===b.dataset.sid);if(!x)return;
