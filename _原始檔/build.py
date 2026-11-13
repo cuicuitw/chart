@@ -65,6 +65,7 @@ lib=swe+'\n;\n'+tz;LV=H(lib.encode());open(OUT+'lib.js','w',encoding='utf-8').wr
 for x in (swe,tz,app): assert '</script' not in x
 html=f'''<!doctype html>
 <html lang="zh-Hant"><head><meta charset="utf-8">
+<script>if(location.protocol!="file:"&&/^\/blog\//.test(location.pathname)){{var _b=document.createElement("base");_b.href="/";document.head.insertBefore(_b,document.head.firstChild)}}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="format-detection" content="telephone=no,date=no,address=no">
 <title>翠脆的心｜星盤查詢與占星卡牌</title>
