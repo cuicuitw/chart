@@ -1588,7 +1588,7 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 /* 文章圖片：置左／置右（文字會繞圖）、併排（並排一列，手機自動上下排）；編輯器與前台共用 */
 .ed2-body img.ial,.blg-body img.ial{float:left;margin:.3em 1.2em .8em 0;max-width:50%}
 .ed2-body img.iar,.blg-body img.iar{float:right;margin:.3em 0 .8em 1.2em;max-width:50%}
-.ed2-body .ed-pair,.blg-body .ed-pair{display:flex;gap:12px;align-items:flex-start;margin:1em 0;clear:both}
+.ed2-body .ed-pair,.blg-body .ed-pair{display:flex;gap:12px;align-items:flex-end;margin:1em 0;clear:both}
 .ed2-body .ed-pair img,.blg-body .ed-pair img{flex:0 1 auto;min-width:0;max-width:100%;margin:0}
 .ed2-body .ed-pair img:not([style]),.blg-body .ed-pair img:not([style]){width:50%}
 .ed2-size .ed2-txt{width:auto;padding:0 8px;border-radius:99px;font-size:13px}
@@ -1623,3 +1623,7 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 .ed2-body .ed-pair > img,.blg-body .ed-pair > img,.ed2-body .ed-pair > figure.ed-fig,.blg-body .ed-pair > figure.ed-fig{max-width:calc(50% - 6px)}
 .ed2-body .ed-pair:has(> :nth-child(3):not(figcaption)) > img,.blg-body .ed-pair:has(> :nth-child(3):not(figcaption)) > img,.ed2-body .ed-pair:has(> :nth-child(3):not(figcaption)) > figure.ed-fig,.blg-body .ed-pair:has(> :nth-child(3):not(figcaption)) > figure.ed-fig{max-width:calc(33.33% - 8px)}
 @media (max-width:760px){.ed2-body .ed-pair > img,.blg-body .ed-pair > img,.ed2-body .ed-pair > figure.ed-fig,.blg-body .ed-pair > figure.ed-fig{max-width:100%}}
+/* 併排：高矮不同的照片底部對齊，圖說緊貼整排底部 */
+.ed2-body .ed-pair,.blg-body .ed-pair{align-items:flex-end}
+.ed2-body .ed-pair > figcaption,.blg-body .ed-pair > figcaption{margin-top:0}
+.ed2-body .ed-pair,.blg-body .ed-pair{row-gap:2px}
