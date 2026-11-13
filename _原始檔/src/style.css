@@ -1610,7 +1610,7 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 /* 文章圖說與照片簡述：前台圖說置中、小字；編輯器的資訊欄在編輯區上方（不蓋住照片） */
 .blg-body figure.ed-fig,.ed2-body figure.ed-fig{margin:1em auto;text-align:center}
 .blg-body figure.ed-fig img,.ed2-body figure.ed-fig img{margin:0 auto}
-.blg-body figure.ed-fig figcaption,.ed2-body figure.ed-fig figcaption{font-size:14px;line-height:1.6;color:#776f5e;margin-top:.5em}
+.blg-body figure.ed-fig figcaption,.ed2-body figure.ed-fig figcaption{font-size:12.5px;line-height:1.45;color:#776f5e;margin-top:.15em}
 .ed2-imginfo{position:absolute;z-index:6;display:grid;gap:8px;width:min(340px,calc(100% - 24px));padding:10px 12px;border:1px solid #d9d0bd;border-radius:10px;background:rgba(251,247,238,.94);box-shadow:0 4px 14px rgba(0,0,0,.08)}
 .ed2-imginfo label{display:grid;gap:4px;font-size:13px;color:#4a4536}
 .ed2-imginfo input{border:1px solid #cdbfa8;border-radius:8px;padding:6px 9px;background:#fff;font:inherit}
@@ -1618,4 +1618,8 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 .ed2-body .ed-pair figure.ed-fig,.blg-body .ed-pair figure.ed-fig{margin:0;flex:0 1 auto;min-width:0}
 /* 併排：整排共用一個圖說，放在整排下方置中 */
 .ed2-body .ed-pair,.blg-body .ed-pair{flex-wrap:wrap}
-.ed2-body .ed-pair > figcaption,.blg-body .ed-pair > figcaption{flex:0 0 100%;text-align:center;font-size:14px;line-height:1.6;color:#776f5e;margin-top:.5em}
+.ed2-body .ed-pair > figcaption,.blg-body .ed-pair > figcaption{flex:0 0 100%;text-align:center;font-size:12.5px;line-height:1.45;color:#776f5e;margin:.15em 0 0}
+/* 併排寬度上限：避免兩張圖加上間距超出一列，導致圖說被擠到很下面 */
+.ed2-body .ed-pair > img,.blg-body .ed-pair > img,.ed2-body .ed-pair > figure.ed-fig,.blg-body .ed-pair > figure.ed-fig{max-width:calc(50% - 6px)}
+.ed2-body .ed-pair:has(> :nth-child(3):not(figcaption)) > img,.blg-body .ed-pair:has(> :nth-child(3):not(figcaption)) > img,.ed2-body .ed-pair:has(> :nth-child(3):not(figcaption)) > figure.ed-fig,.blg-body .ed-pair:has(> :nth-child(3):not(figcaption)) > figure.ed-fig{max-width:calc(33.33% - 8px)}
+@media (max-width:760px){.ed2-body .ed-pair > img,.blg-body .ed-pair > img,.ed2-body .ed-pair > figure.ed-fig,.blg-body .ed-pair > figure.ed-fig{max-width:100%}}
