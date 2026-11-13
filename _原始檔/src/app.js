@@ -611,7 +611,7 @@ let LASTQ=null,ME=null,MLIST=[],PEND=false,FBL=null;
 const MKEY="cuicui-signed";
 function fbLoad(){if(FBL)return FBL;if(!window.FB&&location.protocol=="file:")return Promise.reject(new Error("file"));
   FBL=(window.FB?Promise.resolve():new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="fb.js?v=__FBV__";sc.async=true;sc.onload=()=>{window.FB?ok():no(new Error("fb"))};sc.onerror=()=>{FBL=null;no(new Error("net"))};document.head.appendChild(sc)}))
-    .then(()=>{FB.onUser(u=>{ME=u;try{u?localStorage.setItem(MKEY,"1"):localStorage.removeItem(MKEY)}catch(e){}acctR();admBtnR(u);if(u){memLoad();if(PEND){PEND=false;saveChart()}}else{MLIST=[];memR()}notesOnUser(u)})});
+    .then(()=>{FB.onUser(u=>{ME=u;try{u?localStorage.setItem(MKEY,"1"):localStorage.removeItem(MKEY)}catch(e){}acctR();admBtnR(u);cmtSync();if(u){memLoad();if(PEND){PEND=false;saveChart()}}else{MLIST=[];memR()}notesOnUser(u)})});
   return FBL}
 const escH=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function acctR(){const b=$("acct");if(!b)return;if(ME){b.classList.add("in");b.setAttribute("aria-label","我的帳號");
@@ -945,7 +945,7 @@ function blogR(){const L=$("blgList");
 $("pstShare").onclick=async()=>{const url=location.href,t=$("pstT").textContent||"",msg=$("pstShareMsg");msg.textContent="";
   if(navigator.share){try{await navigator.share({title:t,url});return}catch(e){if(e&&e.name==="AbortError")return}}
   try{await navigator.clipboard.writeText(url);msg.textContent="已複製文章連結"}catch(e){msg.textContent="請複製網址列的連結"}};
-function postView(p,fromUrl){if(!p)return;
+function postView(p,fromUrl){if(!p)return;CURP=p;if(ME&&!SAVED)savedLoad();else pstSaveR();cmtSync();$("cmtMsg").textContent="";cmtLoad(String(p.id));
   const want=postPath(p);if(!fromUrl&&location.pathname!==want){try{history.pushState(null,"",want)}catch(e){}}
   setMeta((p.seoTitle||p.title||"")+" ｜ 翠脆的心",(p.seoDesc||p.summary||DEF_D),"https://cuicui.tw"+want);$("pstCat").textContent=catTxt(p);$("pstT").textContent=p.title||"";$("pstMeta").textContent=p.publishedAt?fmtD(p.publishedAt):"";
   const cv=$("pstCover");if(cv){cv.hidden=true;cv.removeAttribute("src")}
@@ -966,7 +966,38 @@ function memR(){$("memOut").hidden=!!ME;$("memIn").hidden=!ME;if(!ME)return;
   $("memAv").src=ME.photoURL||"";$("memAv").hidden=!ME.photoURL;$("memNm").textContent=ME.displayName||"會員";$("memEm").textContent=ME.email||"";
   const L=$("memList");if(!MLIST.length){L.innerHTML=`<li class="mem-empty">還沒有存任何星盤。排好星盤後，按「存星盤」就會出現在這裡。</li>`;return}
   L.innerHTML=MLIST.map((c,i)=>{const [y,m,d]=(c.date||"").split("-");return `<li data-i="${i}"><button type="button" class="mem-open" data-act="open"><b>${escH(c.nm||"未命名星盤")}</b><small>${y?`${+y}/${+m}/${+d}`:""} ${escH(c.time)}｜${escH(c.place)}</small></button><button type="button" class="mem-ic" data-act="ren" aria-label="改名"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10.5-10.5-4-4L4 16z M13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button><button type="button" class="mem-ic" data-act="del" aria-label="刪除"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4.5h4V7M7 7l1 13h8l1-13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg></button></li>`}).join("")}
-async function memLoad(){if(!ME)return;try{MLIST=await FB.list()}catch(e){mmsg("讀取星盤失敗，請稍後再試。")}memR()}
+async function memLoad(){if(!ME)return;try{MLIST=await FB.list()}catch(e){mmsg("讀取星盤失敗，請稍後再試。")}memR();savedLoad()}
+/* 收藏的文章：會員登入後載入；文章頁的書籤按鈕與會員區共用同一份資料 */
+let SAVED=null,SAVEDL=[],CURP=null;
+function savedLoad(){if(!ME){SAVED=null;SAVEDL=[];savedR();pstSaveR();return Promise.resolve()}
+  return FB.saveList().then(l=>{SAVEDL=l;SAVED=new Set(l.map(x=>x.id));savedR();pstSaveR()}).catch(()=>{})}
+function savedR(){const L=$("memSaved");if(!L)return;if(!ME||!SAVEDL.length){L.innerHTML=`<li class="mem-empty">還沒有收藏的文章。在翠誌文章頁按書籤圖示，就會收在這裡。</li>`;return}
+  L.innerHTML=SAVEDL.map(x=>`<li><button type="button" class="mem-open" data-sid="${escH(x.id)}"><b>${escH(x.title||"未命名文章")}</b><small>${escH(x.cat||"")}</small></button><button type="button" class="mem-ic" data-sid="${escH(x.id)}" data-sact="unsave" aria-label="移除收藏"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></li>`).join("")}
+function pstSaveR(){const b=$("pstSave");if(!b)return;const on=!!(SAVED&&CURP&&SAVED.has(String(CURP.id)));b.classList.toggle("on",on);b.setAttribute("aria-pressed",String(on))}
+$("pstSave").onclick=async()=>{if(!CURP)return;if(!ME){memOpen("登入後就能收藏文章。");return}
+  const id=String(CURP.id),on=!!(SAVED&&SAVED.has(id)),msg=$("pstShareMsg");msg.textContent="";
+  try{if(on){await FB.unsavePost(id);SAVED.delete(id);msg.textContent="已移除收藏"}else{await FB.savePost(CURP);if(!SAVED)SAVED=new Set();SAVED.add(id);msg.textContent="已收藏，可到會員區查看"}pstSaveR();savedLoad()}
+  catch(e){msg.textContent="儲存失敗，請稍後再試。"}};
+$("pstCmt").onclick=()=>{const box=$("cmtBox");if(box)box.scrollIntoView({behavior:"smooth",block:"start"});if(ME&&$("cmtTxt"))setTimeout(()=>$("cmtTxt").focus({preventScroll:true}),350)};
+/* 留言區：登入會員可留言；本人與站長可刪除 */
+let CMT_ID=null;
+function cmtSync(){const f=$("cmtForm"),l=$("cmtLogin");if(!f||!l)return;f.hidden=!ME;l.hidden=!!ME}
+function cmtCanDel(c){return !!ME&&(c.uid===ME.uid||ME.email===ADM_EMAIL)}
+function cmtRender(list){const L=$("cmtList");if(!L)return;
+  L.innerHTML=list.length?list.map(c=>`<li class="cmt-item"><div class="cmt-h"><b>${escH(c.name||"會員")}</b><time>${c.created?escH(fmtD(c.created)):""}</time></div><p class="cmt-t">${escH(c.text).replace(/\n/g,"<br>")}</p>${cmtCanDel(c)?`<button type="button" class="cmt-del" data-cid="${escH(c.id)}">刪除</button>`:""}</li>`).join(""):'<li class="cmt-empty">還沒有留言，來說點什麼吧。</li>'}
+async function cmtLoad(id){CMT_ID=String(id);const L=$("cmtList");if(!L)return;L.innerHTML='<li class="cmt-empty">讀取留言中…</li>';
+  try{const l=await FB.commentList(CMT_ID);if(CMT_ID===String(id))cmtRender(l)}catch(e){if(CMT_ID===String(id))L.innerHTML='<li class="cmt-empty">留言載入失敗，請稍後再試。</li>'}}
+$("cmtForm").onsubmit=async e=>{e.preventDefault();if(!ME||!CURP)return;const t=$("cmtTxt").value.trim(),msg=$("cmtMsg");if(!t)return;
+  const id=String(CURP.id);$("cmtSend").disabled=true;msg.textContent="";
+  try{await FB.commentAdd(id,t);$("cmtTxt").value="";await cmtLoad(id)}catch(err){msg.textContent="留言失敗，請稍後再試。"}finally{$("cmtSend").disabled=false}};
+$("cmtLoginBtn").onclick=()=>memOpen("登入後就能留言。");
+$("cmtList").onclick=async e=>{const b=e.target.closest(".cmt-del");if(!b||!CURP)return;if(!confirm("確定要刪除這則留言嗎？"))return;
+  const id=String(CURP.id);try{await FB.commentDel(id,b.dataset.cid);await cmtLoad(id)}catch(err){$("cmtMsg").textContent="刪除失敗，請稍後再試。"}};
+async function openSaved(x){try{await fbLoad();if(!BLOG)BLOG=(await FB.postsPub()).sort((a,b)=>(b.publishedAt||0)-(a.publishedAt||0))}catch(e){view("blog");return}
+  const p=BLOG.find(q=>q.id===x.id||(x.slug&&postKey(q)===x.slug));if(!p){view("blog");return}postView(p)}
+$("memSaved").onclick=async e=>{const b=e.target.closest("[data-sid]");if(!b)return;const x=SAVEDL.find(s=>s.id===b.dataset.sid);if(!x)return;
+  if(b.dataset.sact==="unsave"){try{await FB.unsavePost(x.id);await savedLoad()}catch(err){}return}
+  memClose();openSaved(x)};
 const sameQ=(a,b)=>["date","time","lat","lon","hs"].every(k=>String(a[k])==String(b[k]));
 async function saveChart(){const b=$("saveC");if(!LASTQ){return}
   if(!ME){PEND=true;memOpen("登入後就能把這張星盤存起來。");return}
@@ -1050,7 +1081,7 @@ document.body.insertAdjacentHTML("beforeend",'<datalist id="ntCats"></datalist>'
 function ltSet(v){document.body.dataset.lt=v;document.querySelectorAll(".ltog button").forEach(b=>{const on=b.dataset.lt==v;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});document.body.classList.remove("note-open");if($("noteBtn"))$("noteBtn").setAttribute("aria-expanded",false)}
 document.querySelectorAll(".ltog button").forEach(b=>b.onclick=()=>ltSet(b.dataset.lt));ltSet("lib");
 /* 會員視窗：星盤存檔／占星筆記切換 */
-function mtSet(v){document.querySelectorAll(".mem-tabs button").forEach(b=>{const on=b.dataset.mt==v;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});$("memC").hidden=v!="c";$("memN").hidden=v!="n";if(v=="n")NR($("notesM"))}
+function mtSet(v){document.querySelectorAll(".mem-tabs button").forEach(b=>{const on=b.dataset.mt==v;b.classList.toggle("on",on);b.setAttribute("aria-selected",on)});$("memC").hidden=v!="c";$("memN").hidden=v!="n";$("memS").hidden=v!="s";if(v=="n")NR($("notesM"));if(v=="s")savedLoad()}
 document.querySelectorAll(".mem-tabs button").forEach(b=>b.onclick=()=>mtSet(b.dataset.mt));
 /* 手機：筆記從下方跳出，不擋住卡牌，可一邊縮放卡牌一邊打字 */
 function npOpen(){const p=$("npanel");p.hidden=false;document.body.classList.add("np-on");requestAnimationFrame(()=>{p.classList.add("on");npFit()});NR($("notes"))}
