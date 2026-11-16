@@ -26,3 +26,4 @@ jobs:
         run: npm --prefix functions install --omit=dev
       - name: 部署 blog 函式
         run: npx --yes firebase-tools@13 deploy --only functions --project cuicui-chart --non-interactive --force
+# 權限已於 2026-11-16 補齊，重新部署
