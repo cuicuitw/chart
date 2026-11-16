@@ -732,13 +732,13 @@ function catPanel(boxId="pCatBox",after){
       try{await FB.catDel(d.dataset.cd);CAT_OPEN.delete(d.dataset.cd);await refresh()}catch(er){$("admMsg").textContent="刪除失敗，請稍後再試。"}}
   };
 }
-/* 內文格式：只保留副標 h3、內文 p、引言 blockquote、粗體 b、斜體 i、圖片 img（網址必須來自 Firebase Storage） */
+/* 內文格式：標題 h2、副標 h3、內文 p、引言 blockquote、粗體 b、斜體 i、底線 u、清單 ul/ol、連結 a（只允許 https）、圖片 img（網址必須來自 Firebase Storage） */
 function imgOut(n,to){const s=n.getAttribute("src")||"";if(!ED_IMG.test(s))return;const im=document.createElement("img");im.src=s;im.alt=(n.getAttribute("alt")||"").slice(0,200);const raw=(n.style&&n.style.width)||"",w=parseInt(raw,10);if(/%$/.test(raw)&&w>=10&&w<100)im.style.width=w+"%";const c=n.className||"";if(/\bial\b/.test(c))im.className="ial";else if(/\biar\b/.test(c))im.className="iar";to.appendChild(im)}
 function figOut(n,to){const f=document.createElement("figure");f.className="ed-fig";n.childNodes.forEach(c=>{if(c.nodeType!==1)return;if(c.tagName==="IMG")imgOut(c,f);else if(c.tagName==="FIGCAPTION"){const t2=c.textContent.trim().slice(0,200);if(t2){const fc=document.createElement("figcaption");fc.textContent=t2;f.appendChild(fc)}}});if(f.querySelector("img"))to.appendChild(f)}
 function sanitizeBody(html){
   const src=new DOMParser().parseFromString(`<body>${String(html||"")}</body>`,"text/html").body;
   const out=document.createElement("div");
-  const keep={P:1,H3:1,BLOCKQUOTE:1,B:1,I:1,BR:1,HR:1};
+  const keep={P:1,H2:1,H3:1,BLOCKQUOTE:1,B:1,I:1,U:1,UL:1,OL:1,LI:1,BR:1,HR:1};
   const walk=(from,to)=>{from.childNodes.forEach(n=>{
     if(n.nodeType===3){to.appendChild(document.createTextNode(n.nodeValue));return}
     if(n.nodeType!==1)return;
@@ -746,6 +746,7 @@ function sanitizeBody(html){
     if(t==="IMG"){imgOut(n,to);return}
     if(n.tagName==="FIGURE"){figOut(n,to);return}
     if(n.tagName==="DIV"&&n.classList.contains("ed-pair")){const d=document.createElement("div");d.className="ed-pair";n.childNodes.forEach(c=>{if(c.nodeType!==1)return;if(c.tagName==="IMG")imgOut(c,d);else if(c.tagName==="FIGURE")figOut(c,d);else if(c.tagName==="FIGCAPTION"){const t2=c.textContent.trim().slice(0,200);if(t2){const fc=document.createElement("figcaption");fc.textContent=t2;d.appendChild(fc)}}});if(d.children.length)to.appendChild(d);return}
+    if(t==="A"){const h=n.getAttribute("href")||"";if(/^https?:\/\//i.test(h)){const a=document.createElement("a");a.href=h;a.target="_blank";a.rel="noopener noreferrer";walk(n,a);to.appendChild(a)}else walk(n,to);return}
     if(!keep[t]){walk(n,to);return}
     const el=document.createElement(t.toLowerCase());walk(n,el);to.appendChild(el);
   })};
@@ -769,12 +770,12 @@ function postEditorOpen(p){
     <div class="ed2-main">
       <textarea id="edT" class="ed2-title" rows="1" maxlength="120" placeholder="文章標題">${escH(p.title||"")}</textarea>
       <div class="ed2-imginfo" id="edInfo" hidden><label>照片簡述（給搜尋與螢幕閱讀器用，不會顯示）<input id="edAlt" maxlength="200"></label><label>圖說（照片下方顯示，可不填；併排時整排共用一個）<input id="edCap" maxlength="200"></label></div>
-      <div class="ed2-body" id="edB" contenteditable="true" spellcheck="false" aria-label="文章內文"></div>
+      <div class="ed2-find-row"><button type="button" class="ed2-txt" id="edFo">搜尋</button></div><div class="ed2-find" id="edFind" hidden><input id="edFq" maxlength="60" placeholder="輸入要找的字" aria-label="搜尋文章內容"><span id="edFc" aria-live="polite"></span><button type="button" class="ed2-txt" id="edFp">上一個</button><button type="button" class="ed2-txt" id="edFn">下一個</button><button type="button" class="ed2-txt" id="edFx">關閉</button></div><div class="ed2-body" id="edB" contenteditable="true" spellcheck="false" aria-label="文章內文"></div>
       <button type="button" class="ed2-del" id="edDel" hidden>刪除</button>
       <div class="ed2-size" id="edSize" hidden><button type="button" id="edPair" class="ed2-txt">併排</button><button type="button" id="edUnpair" class="ed2-txt">拆開</button></div><div class="ed2-grip" id="edGrip" aria-label="拖曳調整圖片大小" role="slider"></div>
       <button type="button" class="ed2-plus" id="edPlus" hidden aria-label="加入內容">+</button>
       <div class="ed2-pm" id="edPM" hidden><button type="button" data-eplus="img">圖片</button><button type="button" data-eplus="hr">分隔線（· · ·）</button></div>
-      <div class="ed2-tb" id="edTB" hidden role="toolbar" aria-label="文字格式"><button type="button" data-ec="h3">副標</button><button type="button" data-ec="p">內文</button><button type="button" data-ec="blockquote">引言</button><button type="button" data-ec="bold"><b>B</b></button><button type="button" data-ec="italic"><i>I</i></button></div>
+      <div class="ed2-tb" id="edTB" hidden role="toolbar" aria-label="文字格式"><button type="button" data-ec="h2">標題</button><button type="button" data-ec="h3">副標</button><button type="button" data-ec="p">內文</button><button type="button" data-ec="blockquote">引言</button><button type="button" data-ec="bold"><b>B</b></button><button type="button" data-ec="italic"><i>I</i></button><button type="button" data-ec="underline"><u>U</u></button><button type="button" data-ec="ul">點列</button><button type="button" data-ec="ol">編號</button><button type="button" data-ec="link">連結</button></div>
       <p class="pe-hint">選取文字會出現格式工具。在空白行按「＋」可加入圖片。</p>
     </div>
     <aside class="ed2-side is-closed"><button type="button" class="ed2-stog" id="edSTog" aria-expanded="false"><span>文章設定（分類、封面、摘要、SEO）</span><i class="ed2-sico" aria-hidden="true"></i></button>
@@ -805,6 +806,11 @@ function postEditorOpen(p){
   const GEND=()=>{GD=null};G.addEventListener("pointerup",GEND);G.addEventListener("pointercancel",GEND);$("edUnpair").onclick=edUnpair;
   $("edB").addEventListener("keyup",edPlace);$("edB").addEventListener("click",edPlace);$("edB").addEventListener("input",edPlace);
   $("edTB").addEventListener("mousedown",e=>{const b=e.target.closest("[data-ec]");if(!b)return;e.preventDefault();edFmt(b.dataset.ec)});
+  $("edFo").onclick=()=>{const f=$("edFind");f.hidden=!f.hidden;if(!f.hidden)$("edFq").focus()};
+  $("edFx").onclick=()=>{$("edFind").hidden=true;FIND=[];FIDX=-1;$("edFc").textContent=""};
+  $("edFq").oninput=()=>{FIDX=-1;edFindRun()};
+  $("edFq").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();edFindStep(e.shiftKey?-1:1)}};
+  $("edFn").onclick=()=>edFindStep(1);$("edFp").onclick=()=>edFindStep(-1);
   $("edPlus").onclick=()=>{$("edPM").hidden=!$("edPM").hidden};
   $("edPM").onclick=e=>{const b=e.target.closest("[data-eplus]");if(!b)return;$("edPM").hidden=true;if(b.dataset.eplus==="hr"){edHrInsert();return}edPickImage(async f=>{const url=await edUpload(f,"posts/images",$("edMsg"));if(url)edImgInsert(url)})};
   $("edCovF").onchange=async e=>{const f=e.target.files[0];if(!f)return;const url=await edUpload(f,"posts/covers",$("edMsg"));e.target.value="";if(!url)return;
@@ -852,7 +858,26 @@ function edSelChange(){
 function edFmt(c){
   if(c==="bold")document.execCommand("bold");
   else if(c==="italic")document.execCommand("italic");
+  else if(c==="underline")document.execCommand("underline");
+  else if(c==="ul")document.execCommand("insertUnorderedList");
+  else if(c==="ol")document.execCommand("insertOrderedList");
+  else if(c==="link"){const sel=window.getSelection();if(!sel||!sel.rangeCount||sel.isCollapsed)return;const rg=sel.getRangeAt(0).cloneRange();const u=(prompt("輸入網址（需以 https:// 開頭）")||"").trim();if(!u)return;if(!/^https?:\/\//i.test(u)){$("edMsg").textContent="網址要以 https:// 開頭。";return}sel.removeAllRanges();sel.addRange(rg);document.execCommand("createLink",false,u)}
   else document.execCommand("formatBlock",false,"<"+c+">");
+}
+let FIND=[],FIDX=-1;
+function edFindRun(){
+  const q=$("edFq").value;FIND=[];
+  if(!q){$("edFc").textContent="";return}
+  const B=$("edB"),ql=q.toLowerCase(),w=document.createTreeWalker(B,NodeFilter.SHOW_TEXT);let n;
+  while((n=w.nextNode())){const s=n.nodeValue.toLowerCase();let i=s.indexOf(ql);while(i>=0){const r=document.createRange();r.setStart(n,i);r.setEnd(n,i+q.length);FIND.push(r);i=s.indexOf(ql,i+q.length)}}
+  $("edFc").textContent=FIND.length?"":"找不到";
+}
+function edFindStep(d){
+  edFindRun();if(!FIND.length)return;
+  FIDX=FIDX<0?(d>0?0:FIND.length-1):(FIDX+d+FIND.length)%FIND.length;
+  const r=FIND[FIDX],sel=window.getSelection();sel.removeAllRanges();sel.addRange(r.cloneRange());
+  const host=r.startContainer.parentElement;if(host)host.scrollIntoView({block:"center"});
+  $("edFc").textContent=`第 ${FIDX+1} / ${FIND.length} 處`;
 }
 function edPlace(){
   const B=$("edB"),plus=$("edPlus"),pm=$("edPM");const sel=window.getSelection();
