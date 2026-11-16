@@ -806,6 +806,12 @@ function postEditorOpen(p){
   G.addEventListener("pointermove",e=>{if(!GD)return;const dx=e.clientX-GD.x;const pct=Math.min(100,Math.max(10,Math.round((GD.w+dx)/GD.base*100)));GD.im.style.width=pct===100?"":pct+"%";const r=GD.im.getBoundingClientRect(),pr=$("edB").parentElement.getBoundingClientRect();edSizeShow(GD.im,r,pr)});
   const GEND=()=>{GD=null};G.addEventListener("pointerup",GEND);G.addEventListener("pointercancel",GEND);$("edUnpair").onclick=edUnpair;
   $("edB").addEventListener("keyup",edPlace);$("edB").addEventListener("click",edPlace);$("edB").addEventListener("input",edPlace);
+  $("edB").addEventListener("paste",async e=>{
+    const cd=e.clipboardData;if(!cd)return;
+    const files=[...cd.files].filter(f=>/^image\//.test(f.type));
+    if(files.length){e.preventDefault();for(const f of files){const url=await edUpload(f,"posts/images",$("edMsg"));if(url)edImgInsert(url)}edPlace();return}
+    if(/<img[\s>]/i.test(cd.getData("text/html")||"")){e.preventDefault();document.execCommand("insertText",false,cd.getData("text/plain")||"");$("edMsg").textContent="從網頁複製的圖片無法保留，請用「＋」的「圖片」上傳。"}
+  });
   $("edTB").addEventListener("mousedown",e=>{const b=e.target.closest("[data-ec]");if(!b)return;e.preventDefault();edFmt(b.dataset.ec)});
   $("edTB").addEventListener("mousedown",e=>{const a=e.target.closest(".ed2-tbar");if(!a)return;e.preventDefault();$("edTS").scrollBy({left:a.id==="edTL"?-140:140,behavior:"smooth"})});
   $("edPlus").onclick=()=>{$("edPM").hidden=!$("edPM").hidden};
