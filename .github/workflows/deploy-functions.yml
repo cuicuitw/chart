@@ -1,0 +1,33 @@
+name: Deploy blog OG function
+on:
+  push:
+    branches:
+      - admin-v2
+    paths:
+      - functions/**
+      - firebase.json
+      - .github/workflows/deploy-functions.yml
+  workflow_dispatch:
+jobs:
+  deploy_functions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: 準備 Firebase 憑證
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CUICUI_CHART }}' > "$RUNNER_TEMP/sa.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/sa.json" >> "$GITHUB_ENV"
+      - name: 複製 index.html 給函式使用
+        run: cp index.html functions/index.html
+      - name: 安裝函式套件
+        run: npm --prefix functions install --omit=dev
+      - name: 部署 blog 函式
+        run: npx --yes firebase-tools@13 deploy --only functions --project cuicui-chart --non-interactive --force
+# firebaseextensions API 已啟用
+# 已加入 Firebase Extensions 開發人員角色
+# eventarc API 已啟用
+# cloudbilling API 已啟用
+# Cloud Functions 管理員已加入

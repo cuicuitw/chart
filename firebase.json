@@ -8,13 +8,17 @@
       "_原始檔/**",
       "網站設計稿/**",
       "CNAME",
-      "README.md"
+      "README.md",
+      "functions/**"
     ],
     "cleanUrls": true,
     "rewrites": [
       {
         "source": "/blog/**",
-        "destination": "/index.html"
+        "function": {
+          "functionId": "blog",
+          "region": "asia-east1"
+        }
       }
     ]
   },
@@ -23,5 +27,9 @@
   },
   "storage": {
     "rules": "_原始檔/storage.rules"
+  },
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs22"
   }
 }
