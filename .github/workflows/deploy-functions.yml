@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
       - name: 準備 Firebase 憑證
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CUICUI_CHART }}' > "$RUNNER_TEMP/sa.json"
@@ -26,4 +26,3 @@ jobs:
         run: npm --prefix functions install --omit=dev
       - name: 部署 blog 函式
         run: npx --yes firebase-tools@13 deploy --only functions --project cuicui-chart --non-interactive --force
-# 權限已於 2026-11-16 補齊，重新部署
