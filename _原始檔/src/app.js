@@ -634,7 +634,7 @@ async function adminOpen(){
   for(let i=0;i<2&&!ok;i++){try{await fbLoad();ok=true}catch(e){FBL=null;if(i==0)await new Promise(r=>setTimeout(r,1500))}}
   if(!ok){$("admMsg").textContent="後台載入失敗，請檢查網路後再試一次。";return}
   const u=await new Promise(r=>{let un=null;un=FB.onUser(x=>{if(un)un();r(x)})});
-  if(!ADM_NAV){ADM_NAV=true;$("admPvX").onclick=()=>{$("admPv").hidden=true};$("admTog").onclick=()=>document.querySelector(".adm2-nav").classList.toggle("open");document.querySelectorAll("#vAdmin [data-an]").forEach(b=>b.addEventListener("click",()=>admGo(b.dataset.an)));document.addEventListener("selectionchange",edSelChange)}
+  if(!ADM_NAV){ADM_NAV=true;$("admPvX").onclick=()=>{$("admPv").hidden=true};$("admTog").onclick=()=>document.querySelector(".adm2-nav").classList.toggle("open");document.querySelectorAll("#vAdmin [data-an]").forEach(b=>b.addEventListener("click",()=>admGo(b.dataset.an)));document.addEventListener("selectionchange",edSelChange);window.addEventListener("scroll",edSelChange,{passive:true,capture:true});if(window.visualViewport){visualViewport.addEventListener("resize",edSelChange);visualViewport.addEventListener("scroll",edSelChange)}}
   if(!u){admGo("list",true);$("anList").innerHTML=`<button type="button" class="pill" id="admLogin">用 Google 帳號登入</button>`;$("admLogin").onclick=()=>memOpen("登入後才能使用後台。");return}
   admGo("list");
 }
@@ -743,6 +743,7 @@ function sanitizeBody(html){
     if(n.nodeType===3){to.appendChild(document.createTextNode(n.nodeValue));return}
     if(n.nodeType!==1)return;
     let t=n.tagName;if(t==="DIV")t="P";if(t==="STRONG")t="B";if(t==="EM")t="I";
+    if(t==="SPAN"){const st=n.getAttribute("style")||"";if(/font-weight:\s*(bold|[6-9]00)/i.test(st))t="B";else if(/font-style:\s*italic/i.test(st))t="I"}
     if(t==="IMG"){imgOut(n,to);return}
     if(n.tagName==="FIGURE"){figOut(n,to);return}
     if(n.tagName==="DIV"&&n.classList.contains("ed-pair")){const d=document.createElement("div");d.className="ed-pair";n.childNodes.forEach(c=>{if(c.nodeType!==1)return;if(c.tagName==="IMG")imgOut(c,d);else if(c.tagName==="FIGURE")figOut(c,d);else if(c.tagName==="FIGCAPTION"){const t2=c.textContent.trim().slice(0,200);if(t2){const fc=document.createElement("figcaption");fc.textContent=t2;d.appendChild(fc)}}});if(d.children.length)to.appendChild(d);return}
@@ -852,8 +853,16 @@ function edSelChange(){
   const tb=$("edTB"),B=$("edB");if(!tb||!B)return;
   const sel=window.getSelection();
   if(!sel||!sel.rangeCount||sel.isCollapsed||!B.contains(sel.anchorNode)){tb.hidden=true;return}
+  tb.hidden=false;
+  if(window.matchMedia("(pointer:coarse)").matches){
+    /* 手機：固定貼在畫面底部（鍵盤上方），不跟著選取文字走，距離一致，也不會擋到系統的複製選單 */
+    const vv=window.visualViewport,h=vv?vv.height:window.innerHeight,top=vv?vv.offsetTop:0;
+    tb.style.left="8px";tb.style.right="8px";tb.style.top="auto";tb.style.maxWidth="none";tb.style.justifyContent="center";
+    tb.style.bottom=Math.round(window.innerHeight-(top+h)+12)+"px";return
+  }
+  tb.style.right="";tb.style.bottom="";tb.style.maxWidth="";tb.style.justifyContent="";
   const r=sel.getRangeAt(0).getBoundingClientRect();
-  tb.hidden=false;tb.style.top=Math.max(8,r.top-48)+"px";tb.style.left=Math.max(8,Math.min(window.innerWidth-300,r.left))+"px";
+  tb.style.top=Math.max(8,r.top-48)+"px";tb.style.left=Math.max(8,Math.min(window.innerWidth-300,r.left))+"px";
 }
 function edFmt(c){
   if(c==="bold")document.execCommand("bold");

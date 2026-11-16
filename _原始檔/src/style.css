@@ -1298,7 +1298,8 @@ body.co-on .desk .gest{display:none!important}
 .ed2{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:24px;align-items:start;margin-top:10px}
 .ed2-main{position:relative;padding-left:40px;min-width:0}
 .ed2-title{width:100%;border:0;background:transparent;font:inherit;font-size:30px;font-weight:700;line-height:1.35;outline:none;padding:6px 0;resize:none;overflow:hidden;display:block}
-.ed2-body{min-height:320px;outline:none;font-size:18px;font-weight:300;line-height:1.9;padding:4px 0;word-break:break-word;color:#111}
+.ed2-body{min-height:320px;outline:none;font-size:18px;font-weight:400;line-height:2;letter-spacing:.02em;padding:4px 0;word-break:break-word;color:#111}
+.ed2-body b,.ed2-body strong{font-weight:700}
 .ed2-body:empty::before{content:"開始寫你的文章…";color:#aaa}
 .ed2-body p{margin:0 0 1.1em}
 .ed2-body h2{font-size:32px;font-weight:700;line-height:1.35;margin:1.6em 0 .6em;padding-left:18px;border-left:4px solid #111}
@@ -1353,7 +1354,7 @@ body.co-on .desk .gest{display:none!important}
 .ed2-cover-box{height:110px;border:1px dashed #776f5e;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#776f5e;font-size:13px;cursor:pointer}
 .ed2-cover-box:hover{background:#f6efe2}
 .ed2-del{position:absolute;z-index:7;background:#222;color:#fff;border:0;border-radius:6px;padding:4px 10px;cursor:pointer;font:inherit;font-size:13px}
-.ed2-body{font-family:"Noto Sans TC",system-ui,sans-serif}
+.ed2-body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
 .adm-pv{position:fixed;inset:0;background:#fefbf4;overflow:auto;z-index:40;padding:40px 24px}
 .adm-pv-in{max-width:830px;margin:0 auto}
 .adm-pv-x{margin-bottom:24px}
@@ -1527,7 +1528,7 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
   .ed2-side .pe-btns .pill[data-es=published]{background:#e79dbd;border-color:#e79dbd;color:#fff}
   .ed2-side .pe-btns .pill[data-es=preview]{border-color:#766f5e}
   .ed2-title{font-size:26px;line-height:1.4}
-  .ed2-body{min-height:340px;font-size:18px;font-weight:300;line-height:1.9}
+  .ed2-body{min-height:340px;font-size:18px;font-weight:400;line-height:1.9}
   .ed2-body:empty::before{content:"開始寫你的文章…";color:#aaa}
   .ed2-body h2{font-size:28px;font-weight:700;margin:.8em 0 .4em}
   .ed2-body h3{font-size:22px;font-weight:700;margin:.8em 0 .4em}

@@ -1328,7 +1328,8 @@ body.co-on .desk .gest{display:none!important}
 .ed2{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:24px;align-items:start;margin-top:10px}
 .ed2-main{position:relative;padding-left:40px;min-width:0}
 .ed2-title{width:100%;border:0;background:transparent;font:inherit;font-size:30px;font-weight:700;line-height:1.35;outline:none;padding:6px 0;resize:none;overflow:hidden;display:block}
-.ed2-body{min-height:320px;outline:none;font-size:18px;font-weight:300;line-height:1.9;padding:4px 0;word-break:break-word;color:#111}
+.ed2-body{min-height:320px;outline:none;font-size:18px;font-weight:400;line-height:2;letter-spacing:.02em;padding:4px 0;word-break:break-word;color:#111}
+.ed2-body b,.ed2-body strong{font-weight:700}
 .ed2-body:empty::before{content:"開始寫你的文章…";color:#aaa}
 .ed2-body p{margin:0 0 1.1em}
 .ed2-body h2{font-size:32px;font-weight:700;line-height:1.35;margin:1.6em 0 .6em;padding-left:18px;border-left:4px solid #111}
@@ -1383,7 +1384,7 @@ body.co-on .desk .gest{display:none!important}
 .ed2-cover-box{height:110px;border:1px dashed #776f5e;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#776f5e;font-size:13px;cursor:pointer}
 .ed2-cover-box:hover{background:#f6efe2}
 .ed2-del{position:absolute;z-index:7;background:#222;color:#fff;border:0;border-radius:6px;padding:4px 10px;cursor:pointer;font:inherit;font-size:13px}
-.ed2-body{font-family:"Noto Sans TC",system-ui,sans-serif}
+.ed2-body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
 .adm-pv{position:fixed;inset:0;background:#fefbf4;overflow:auto;z-index:40;padding:40px 24px}
 .adm-pv-in{max-width:830px;margin:0 auto}
 .adm-pv-x{margin-bottom:24px}
@@ -1557,7 +1558,7 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
   .ed2-side .pe-btns .pill[data-es=published]{background:#e79dbd;border-color:#e79dbd;color:#fff}
   .ed2-side .pe-btns .pill[data-es=preview]{border-color:#766f5e}
   .ed2-title{font-size:26px;line-height:1.4}
-  .ed2-body{min-height:340px;font-size:18px;font-weight:300;line-height:1.9}
+  .ed2-body{min-height:340px;font-size:18px;font-weight:400;line-height:1.9}
   .ed2-body:empty::before{content:"開始寫你的文章…";color:#aaa}
   .ed2-body h2{font-size:28px;font-weight:700;margin:.8em 0 .4em}
   .ed2-body h3{font-size:22px;font-weight:700;margin:.8em 0 .4em}
@@ -2743,7 +2744,7 @@ async function adminOpen(){
   for(let i=0;i<2&&!ok;i++){try{await fbLoad();ok=true}catch(e){FBL=null;if(i==0)await new Promise(r=>setTimeout(r,1500))}}
   if(!ok){$("admMsg").textContent="後台載入失敗，請檢查網路後再試一次。";return}
   const u=await new Promise(r=>{let un=null;un=FB.onUser(x=>{if(un)un();r(x)})});
-  if(!ADM_NAV){ADM_NAV=true;$("admPvX").onclick=()=>{$("admPv").hidden=true};$("admTog").onclick=()=>document.querySelector(".adm2-nav").classList.toggle("open");document.querySelectorAll("#vAdmin [data-an]").forEach(b=>b.addEventListener("click",()=>admGo(b.dataset.an)));document.addEventListener("selectionchange",edSelChange)}
+  if(!ADM_NAV){ADM_NAV=true;$("admPvX").onclick=()=>{$("admPv").hidden=true};$("admTog").onclick=()=>document.querySelector(".adm2-nav").classList.toggle("open");document.querySelectorAll("#vAdmin [data-an]").forEach(b=>b.addEventListener("click",()=>admGo(b.dataset.an)));document.addEventListener("selectionchange",edSelChange);window.addEventListener("scroll",edSelChange,{passive:true,capture:true});if(window.visualViewport){visualViewport.addEventListener("resize",edSelChange);visualViewport.addEventListener("scroll",edSelChange)}}
   if(!u){admGo("list",true);$("anList").innerHTML=`<button type="button" class="pill" id="admLogin">用 Google 帳號登入</button>`;$("admLogin").onclick=()=>memOpen("登入後才能使用後台。");return}
   admGo("list");
 }
@@ -2852,6 +2853,7 @@ function sanitizeBody(html){
     if(n.nodeType===3){to.appendChild(document.createTextNode(n.nodeValue));return}
     if(n.nodeType!==1)return;
     let t=n.tagName;if(t==="DIV")t="P";if(t==="STRONG")t="B";if(t==="EM")t="I";
+    if(t==="SPAN"){const st=n.getAttribute("style")||"";if(/font-weight:\s*(bold|[6-9]00)/i.test(st))t="B";else if(/font-style:\s*italic/i.test(st))t="I"}
     if(t==="IMG"){imgOut(n,to);return}
     if(n.tagName==="FIGURE"){figOut(n,to);return}
     if(n.tagName==="DIV"&&n.classList.contains("ed-pair")){const d=document.createElement("div");d.className="ed-pair";n.childNodes.forEach(c=>{if(c.nodeType!==1)return;if(c.tagName==="IMG")imgOut(c,d);else if(c.tagName==="FIGURE")figOut(c,d);else if(c.tagName==="FIGCAPTION"){const t2=c.textContent.trim().slice(0,200);if(t2){const fc=document.createElement("figcaption");fc.textContent=t2;d.appendChild(fc)}}});if(d.children.length)to.appendChild(d);return}
@@ -2961,8 +2963,16 @@ function edSelChange(){
   const tb=$("edTB"),B=$("edB");if(!tb||!B)return;
   const sel=window.getSelection();
   if(!sel||!sel.rangeCount||sel.isCollapsed||!B.contains(sel.anchorNode)){tb.hidden=true;return}
+  tb.hidden=false;
+  if(window.matchMedia("(pointer:coarse)").matches){
+    /* 手機：固定貼在畫面底部（鍵盤上方），不跟著選取文字走，距離一致，也不會擋到系統的複製選單 */
+    const vv=window.visualViewport,h=vv?vv.height:window.innerHeight,top=vv?vv.offsetTop:0;
+    tb.style.left="8px";tb.style.right="8px";tb.style.top="auto";tb.style.maxWidth="none";tb.style.justifyContent="center";
+    tb.style.bottom=Math.round(window.innerHeight-(top+h)+12)+"px";return
+  }
+  tb.style.right="";tb.style.bottom="";tb.style.maxWidth="";tb.style.justifyContent="";
   const r=sel.getRangeAt(0).getBoundingClientRect();
-  tb.hidden=false;tb.style.top=Math.max(8,r.top-48)+"px";tb.style.left=Math.max(8,Math.min(window.innerWidth-300,r.left))+"px";
+  tb.style.top=Math.max(8,r.top-48)+"px";tb.style.left=Math.max(8,Math.min(window.innerWidth-300,r.left))+"px";
 }
 function edFmt(c){
   if(c==="bold")document.execCommand("bold");
