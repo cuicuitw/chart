@@ -1327,7 +1327,7 @@ body.co-on .desk .gest{display:none!important}
 .adm2-clist li.sub{padding-left:24px}
 .ed2{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:24px;align-items:start;margin-top:10px}
 .ed2-main{position:relative;padding-left:40px;min-width:0}
-.ed2-title{width:100%;border:0;background:transparent;font:inherit;font-size:30px;font-weight:700;line-height:1.35;outline:none;padding:6px 0;resize:none;overflow:hidden;display:block}
+.ed2-title{width:100%;border:0;background:transparent;font:inherit;font-size:28px;font-weight:500;line-height:40px;outline:none;padding:6px 0;resize:none;overflow:hidden;display:block}
 .ed2-body{min-height:320px;outline:none;font-size:18px;font-weight:400;line-height:2;letter-spacing:.02em;padding:4px 0;word-break:break-word;color:#111}
 .ed2-body b,.ed2-body strong{font-weight:700}
 .ed2-body:empty::before{content:"開始寫你的文章…";color:#aaa}
@@ -1338,17 +1338,17 @@ body.co-on .desk .gest{display:none!important}
 .ed2-body li,.blg-body li{margin:.3em 0}
 .ed2-body u,.blg-body u{text-decoration:underline;text-underline-offset:3px}
 .ed2-body a,.blg-body a{color:#337099;text-decoration:underline}
-.ed2-find-row{margin:0 0 .4em}
-.ed2-find{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#f6f1e7;border:1px solid #cdbfa8;border-radius:10px;padding:6px 8px;margin:0 0 .6em;font-size:14px}
-.ed2-find[hidden]{display:none}
-.ed2-find input{flex:1 1 160px;min-width:0;border:1px solid #cdbfa8;border-radius:6px;padding:5px 8px;font:inherit;font-size:16px}
-#edFc{color:#776f5e;white-space:nowrap}
 .ed2-body blockquote{margin:1em 0;padding-left:16px;border-left:3px solid #e79dbd;color:#776f5e;font-style:italic}
 .ed2-body img{max-width:100%;display:block;margin:1em 0}
 .ed2-plus{position:absolute;left:0;width:30px;height:30px;border-radius:50%;border:1px solid #776f5e;background:#fff;cursor:pointer;font-size:18px;line-height:1;padding:0;z-index:6}
 .ed2-pm{position:absolute;left:0;background:#fff;border:1px solid #cdbfa8;border-radius:10px;padding:6px;box-shadow:0 6px 18px rgba(0,0,0,.1);z-index:7}
 .ed2-pm button{background:none;border:0;padding:6px 10px;border-radius:6px;cursor:pointer;font:inherit}
-.ed2-tb{position:fixed;z-index:30;background:#222;color:#fff;border-radius:8px;padding:5px;display:flex;gap:2px;flex-wrap:wrap;max-width:300px}
+.ed2-tb{position:fixed;z-index:30;background:#222;color:#fff;border-radius:8px;padding:4px;display:flex;align-items:center;gap:2px;width:min(calc(100vw - 16px),520px)}
+.ed2-tbs{flex:1 1 auto;min-width:0;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.ed2-tbs::-webkit-scrollbar{display:none}
+.ed2-tbs button,.ed2-tbar{flex:0 0 auto;white-space:nowrap}
+.ed2-tbar{background:none;border:0;color:#fff;padding:5px 8px;border-radius:6px;cursor:pointer;font:inherit;font-size:18px;line-height:1}
+.ed2-tbar:hover{background:#444}
 .ed2-tb button{background:none;border:0;color:#fff;padding:5px 8px;border-radius:6px;cursor:pointer;font:inherit;font-size:14px}
 .ed2-tb button:hover{background:#444}
 .ed2-side{display:grid;gap:12px;border-left:1px solid #eadfcf;padding-left:22px}
@@ -1532,7 +1532,7 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 }
 @media (max-width:760px), (orientation:portrait) and (max-width:1100px){
   .ed2-main{padding-left:0}
-  .ed2-title{font-size:26px;line-height:1.4}
+  .ed2-title{font-size:28px;font-weight:500;line-height:40px}
   .ed2-body{font-size:18px;line-height:1.9;min-height:240px}
   .ed2-side label{font-size:13px;color:#776f5e}
   .ed2-side{gap:14px}
@@ -1557,7 +1557,7 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
   .ed2-side .pe-btns .pill{height:40px;padding:0 16px;border:1px solid #766f5e;border-radius:8px;font-size:14px;letter-spacing:.08em;background:#fff;color:#111}
   .ed2-side .pe-btns .pill[data-es=published]{background:#e79dbd;border-color:#e79dbd;color:#fff}
   .ed2-side .pe-btns .pill[data-es=preview]{border-color:#766f5e}
-  .ed2-title{font-size:26px;line-height:1.4}
+  .ed2-title{font-size:28px;font-weight:500;line-height:40px}
   .ed2-body{min-height:340px;font-size:18px;font-weight:400;line-height:1.9}
   .ed2-body:empty::before{content:"開始寫你的文章…";color:#aaa}
   .ed2-body h2{font-size:28px;font-weight:700;margin:.8em 0 .4em}
@@ -2881,12 +2881,12 @@ function postEditorOpen(p){
     <div class="ed2-main">
       <textarea id="edT" class="ed2-title" rows="1" maxlength="120" placeholder="文章標題">${escH(p.title||"")}</textarea>
       <div class="ed2-imginfo" id="edInfo" hidden><label>照片簡述（給搜尋與螢幕閱讀器用，不會顯示）<input id="edAlt" maxlength="200"></label><label>圖說（照片下方顯示，可不填；併排時整排共用一個）<input id="edCap" maxlength="200"></label></div>
-      <div class="ed2-find-row"><button type="button" class="ed2-txt" id="edFo">搜尋</button></div><div class="ed2-find" id="edFind" hidden><input id="edFq" maxlength="60" placeholder="輸入要找的字" aria-label="搜尋文章內容"><span id="edFc" aria-live="polite"></span><button type="button" class="ed2-txt" id="edFp">上一個</button><button type="button" class="ed2-txt" id="edFn">下一個</button><button type="button" class="ed2-txt" id="edFx">關閉</button></div><div class="ed2-body" id="edB" contenteditable="true" spellcheck="false" aria-label="文章內文"></div>
+      <div class="ed2-body" id="edB" contenteditable="true" spellcheck="false" aria-label="文章內文"></div>
       <button type="button" class="ed2-del" id="edDel" hidden>刪除</button>
       <div class="ed2-size" id="edSize" hidden><button type="button" id="edPair" class="ed2-txt">併排</button><button type="button" id="edUnpair" class="ed2-txt">拆開</button></div><div class="ed2-grip" id="edGrip" aria-label="拖曳調整圖片大小" role="slider"></div>
       <button type="button" class="ed2-plus" id="edPlus" hidden aria-label="加入內容">+</button>
       <div class="ed2-pm" id="edPM" hidden><button type="button" data-eplus="img">圖片</button><button type="button" data-eplus="hr">分隔線（· · ·）</button></div>
-      <div class="ed2-tb" id="edTB" hidden role="toolbar" aria-label="文字格式"><button type="button" data-ec="h2">標題</button><button type="button" data-ec="h3">副標</button><button type="button" data-ec="p">內文</button><button type="button" data-ec="blockquote">引言</button><button type="button" data-ec="bold"><b>B</b></button><button type="button" data-ec="italic"><i>I</i></button><button type="button" data-ec="underline"><u>U</u></button><button type="button" data-ec="ul">點列</button><button type="button" data-ec="ol">編號</button><button type="button" data-ec="link">連結</button></div>
+      <div class="ed2-tb" id="edTB" hidden role="toolbar" aria-label="文字格式"><button type="button" class="ed2-tbar" id="edTL" aria-label="往左捲動">‹</button><div class="ed2-tbs" id="edTS"><button type="button" data-ec="h2">標題</button><button type="button" data-ec="h3">副標</button><button type="button" data-ec="p">內文</button><button type="button" data-ec="blockquote">引言</button><button type="button" data-ec="bold"><b>B</b></button><button type="button" data-ec="italic"><i>I</i></button><button type="button" data-ec="underline"><u>U</u></button><button type="button" data-ec="ul">點列</button><button type="button" data-ec="ol">編號</button><button type="button" data-ec="link">連結</button></div><button type="button" class="ed2-tbar" id="edTR" aria-label="往右捲動">›</button></div>
       <p class="pe-hint">選取文字會出現格式工具。在空白行按「＋」可加入圖片。</p>
     </div>
     <aside class="ed2-side is-closed"><button type="button" class="ed2-stog" id="edSTog" aria-expanded="false"><span>文章設定（分類、封面、摘要、SEO）</span><i class="ed2-sico" aria-hidden="true"></i></button>
@@ -2917,11 +2917,7 @@ function postEditorOpen(p){
   const GEND=()=>{GD=null};G.addEventListener("pointerup",GEND);G.addEventListener("pointercancel",GEND);$("edUnpair").onclick=edUnpair;
   $("edB").addEventListener("keyup",edPlace);$("edB").addEventListener("click",edPlace);$("edB").addEventListener("input",edPlace);
   $("edTB").addEventListener("mousedown",e=>{const b=e.target.closest("[data-ec]");if(!b)return;e.preventDefault();edFmt(b.dataset.ec)});
-  $("edFo").onclick=()=>{const f=$("edFind");f.hidden=!f.hidden;if(!f.hidden)$("edFq").focus()};
-  $("edFx").onclick=()=>{$("edFind").hidden=true;FIND=[];FIDX=-1;$("edFc").textContent=""};
-  $("edFq").oninput=()=>{FIDX=-1;edFindRun()};
-  $("edFq").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();edFindStep(e.shiftKey?-1:1)}};
-  $("edFn").onclick=()=>edFindStep(1);$("edFp").onclick=()=>edFindStep(-1);
+  $("edTB").addEventListener("mousedown",e=>{const a=e.target.closest(".ed2-tbar");if(!a)return;e.preventDefault();$("edTS").scrollBy({left:a.id==="edTL"?-140:140,behavior:"smooth"})});
   $("edPlus").onclick=()=>{$("edPM").hidden=!$("edPM").hidden};
   $("edPM").onclick=e=>{const b=e.target.closest("[data-eplus]");if(!b)return;$("edPM").hidden=true;if(b.dataset.eplus==="hr"){edHrInsert();return}edPickImage(async f=>{const url=await edUpload(f,"posts/images",$("edMsg"));if(url)edImgInsert(url)})};
   $("edCovF").onchange=async e=>{const f=e.target.files[0];if(!f)return;const url=await edUpload(f,"posts/covers",$("edMsg"));e.target.value="";if(!url)return;
@@ -2964,15 +2960,13 @@ function edSelChange(){
   const sel=window.getSelection();
   if(!sel||!sel.rangeCount||sel.isCollapsed||!B.contains(sel.anchorNode)){tb.hidden=true;return}
   tb.hidden=false;
-  if(window.matchMedia("(pointer:coarse)").matches){
-    /* 手機：固定貼在畫面底部（鍵盤上方），不跟著選取文字走，距離一致，也不會擋到系統的複製選單 */
-    const vv=window.visualViewport,h=vv?vv.height:window.innerHeight,top=vv?vv.offsetTop:0;
-    tb.style.left="8px";tb.style.right="8px";tb.style.top="auto";tb.style.maxWidth="none";tb.style.justifyContent="center";
-    tb.style.bottom=Math.round(window.innerHeight-(top+h)+12)+"px";return
-  }
-  tb.style.right="";tb.style.bottom="";tb.style.maxWidth="";tb.style.justifyContent="";
   const r=sel.getRangeAt(0).getBoundingClientRect();
-  tb.style.top=Math.max(8,r.top-48)+"px";tb.style.left=Math.max(8,Math.min(window.innerWidth-300,r.left))+"px";
+  const vv=window.visualViewport,vh=vv?vv.height:window.innerHeight,vt=vv?vv.offsetTop:0;
+  const w=tb.offsetWidth,h=tb.offsetHeight;
+  /* 工具列放在選取文字那一排的下方；下方放不下才放到上方 */
+  let top=r.bottom+10;if(top+h>vt+vh-8)top=Math.max(8+vt,r.top-h-10);
+  tb.style.top=Math.round(top)+"px";
+  tb.style.left=Math.round(Math.max(8,Math.min(window.innerWidth-w-8,r.left)))+"px";
 }
 function edFmt(c){
   if(c==="bold")document.execCommand("bold");
@@ -2982,21 +2976,6 @@ function edFmt(c){
   else if(c==="ol")document.execCommand("insertOrderedList");
   else if(c==="link"){const sel=window.getSelection();if(!sel||!sel.rangeCount||sel.isCollapsed)return;const rg=sel.getRangeAt(0).cloneRange();const u=(prompt("輸入網址（需以 https:// 開頭）")||"").trim();if(!u)return;if(!/^https?:\/\//i.test(u)){$("edMsg").textContent="網址要以 https:// 開頭。";return}sel.removeAllRanges();sel.addRange(rg);document.execCommand("createLink",false,u)}
   else document.execCommand("formatBlock",false,"<"+c+">");
-}
-let FIND=[],FIDX=-1;
-function edFindRun(){
-  const q=$("edFq").value;FIND=[];
-  if(!q){$("edFc").textContent="";return}
-  const B=$("edB"),ql=q.toLowerCase(),w=document.createTreeWalker(B,NodeFilter.SHOW_TEXT);let n;
-  while((n=w.nextNode())){const s=n.nodeValue.toLowerCase();let i=s.indexOf(ql);while(i>=0){const r=document.createRange();r.setStart(n,i);r.setEnd(n,i+q.length);FIND.push(r);i=s.indexOf(ql,i+q.length)}}
-  $("edFc").textContent=FIND.length?"":"找不到";
-}
-function edFindStep(d){
-  edFindRun();if(!FIND.length)return;
-  FIDX=FIDX<0?(d>0?0:FIND.length-1):(FIDX+d+FIND.length)%FIND.length;
-  const r=FIND[FIDX],sel=window.getSelection();sel.removeAllRanges();sel.addRange(r.cloneRange());
-  const host=r.startContainer.parentElement;if(host)host.scrollIntoView({block:"center"});
-  $("edFc").textContent=`第 ${FIDX+1} / ${FIND.length} 處`;
 }
 function edPlace(){
   const B=$("edB"),plus=$("edPlus"),pm=$("edPM");const sel=window.getSelection();

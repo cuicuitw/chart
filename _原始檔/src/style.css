@@ -1297,7 +1297,7 @@ body.co-on .desk .gest{display:none!important}
 .adm2-clist li.sub{padding-left:24px}
 .ed2{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:24px;align-items:start;margin-top:10px}
 .ed2-main{position:relative;padding-left:40px;min-width:0}
-.ed2-title{width:100%;border:0;background:transparent;font:inherit;font-size:30px;font-weight:700;line-height:1.35;outline:none;padding:6px 0;resize:none;overflow:hidden;display:block}
+.ed2-title{width:100%;border:0;background:transparent;font:inherit;font-size:28px;font-weight:500;line-height:40px;outline:none;padding:6px 0;resize:none;overflow:hidden;display:block}
 .ed2-body{min-height:320px;outline:none;font-size:18px;font-weight:400;line-height:2;letter-spacing:.02em;padding:4px 0;word-break:break-word;color:#111}
 .ed2-body b,.ed2-body strong{font-weight:700}
 .ed2-body:empty::before{content:"開始寫你的文章…";color:#aaa}
@@ -1308,17 +1308,17 @@ body.co-on .desk .gest{display:none!important}
 .ed2-body li,.blg-body li{margin:.3em 0}
 .ed2-body u,.blg-body u{text-decoration:underline;text-underline-offset:3px}
 .ed2-body a,.blg-body a{color:#337099;text-decoration:underline}
-.ed2-find-row{margin:0 0 .4em}
-.ed2-find{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#f6f1e7;border:1px solid #cdbfa8;border-radius:10px;padding:6px 8px;margin:0 0 .6em;font-size:14px}
-.ed2-find[hidden]{display:none}
-.ed2-find input{flex:1 1 160px;min-width:0;border:1px solid #cdbfa8;border-radius:6px;padding:5px 8px;font:inherit;font-size:16px}
-#edFc{color:#776f5e;white-space:nowrap}
 .ed2-body blockquote{margin:1em 0;padding-left:16px;border-left:3px solid #e79dbd;color:#776f5e;font-style:italic}
 .ed2-body img{max-width:100%;display:block;margin:1em 0}
 .ed2-plus{position:absolute;left:0;width:30px;height:30px;border-radius:50%;border:1px solid #776f5e;background:#fff;cursor:pointer;font-size:18px;line-height:1;padding:0;z-index:6}
 .ed2-pm{position:absolute;left:0;background:#fff;border:1px solid #cdbfa8;border-radius:10px;padding:6px;box-shadow:0 6px 18px rgba(0,0,0,.1);z-index:7}
 .ed2-pm button{background:none;border:0;padding:6px 10px;border-radius:6px;cursor:pointer;font:inherit}
-.ed2-tb{position:fixed;z-index:30;background:#222;color:#fff;border-radius:8px;padding:5px;display:flex;gap:2px;flex-wrap:wrap;max-width:300px}
+.ed2-tb{position:fixed;z-index:30;background:#222;color:#fff;border-radius:8px;padding:4px;display:flex;align-items:center;gap:2px;width:min(calc(100vw - 16px),520px)}
+.ed2-tbs{flex:1 1 auto;min-width:0;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.ed2-tbs::-webkit-scrollbar{display:none}
+.ed2-tbs button,.ed2-tbar{flex:0 0 auto;white-space:nowrap}
+.ed2-tbar{background:none;border:0;color:#fff;padding:5px 8px;border-radius:6px;cursor:pointer;font:inherit;font-size:18px;line-height:1}
+.ed2-tbar:hover{background:#444}
 .ed2-tb button{background:none;border:0;color:#fff;padding:5px 8px;border-radius:6px;cursor:pointer;font:inherit;font-size:14px}
 .ed2-tb button:hover{background:#444}
 .ed2-side{display:grid;gap:12px;border-left:1px solid #eadfcf;padding-left:22px}
@@ -1502,7 +1502,7 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
 }
 @media (max-width:760px), (orientation:portrait) and (max-width:1100px){
   .ed2-main{padding-left:0}
-  .ed2-title{font-size:26px;line-height:1.4}
+  .ed2-title{font-size:28px;font-weight:500;line-height:40px}
   .ed2-body{font-size:18px;line-height:1.9;min-height:240px}
   .ed2-side label{font-size:13px;color:#776f5e}
   .ed2-side{gap:14px}
@@ -1527,7 +1527,7 @@ html::-webkit-scrollbar{display:none;width:0;height:0}
   .ed2-side .pe-btns .pill{height:40px;padding:0 16px;border:1px solid #766f5e;border-radius:8px;font-size:14px;letter-spacing:.08em;background:#fff;color:#111}
   .ed2-side .pe-btns .pill[data-es=published]{background:#e79dbd;border-color:#e79dbd;color:#fff}
   .ed2-side .pe-btns .pill[data-es=preview]{border-color:#766f5e}
-  .ed2-title{font-size:26px;line-height:1.4}
+  .ed2-title{font-size:28px;font-weight:500;line-height:40px}
   .ed2-body{min-height:340px;font-size:18px;font-weight:400;line-height:1.9}
   .ed2-body:empty::before{content:"開始寫你的文章…";color:#aaa}
   .ed2-body h2{font-size:28px;font-weight:700;margin:.8em 0 .4em}
