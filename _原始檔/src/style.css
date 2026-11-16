@@ -1298,7 +1298,7 @@ body.co-on .desk .gest{display:none!important}
 .ed2{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:24px;align-items:start;margin-top:10px}
 .ed2-main{position:relative;padding-left:40px;min-width:0}
 .ed2-title{width:100%;border:0;background:transparent;font:inherit;font-size:28px;font-weight:500;line-height:40px;outline:none;padding:6px 0;resize:none;overflow:hidden;display:block}
-.ed2-body{min-height:320px;outline:none;font-size:18px;font-weight:400;line-height:2;letter-spacing:.02em;padding:4px 0;word-break:break-word;color:#111}
+.ed2-body{min-height:320px;outline:none;font-size:18px;font-weight:400;line-height:2;padding:4px 0;word-break:break-word;color:#111}
 .ed2-body b,.ed2-body strong{font-weight:700}
 .ed2-body:empty::before{content:"開始寫你的文章…";color:#aaa}
 .ed2-body p{margin:0 0 1.1em}
