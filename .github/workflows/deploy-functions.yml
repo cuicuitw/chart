@@ -1,5 +1,11 @@
 name: Deploy blog OG function
 on:
+  push:
+    branches:
+      - admin-v2
+    paths:
+      - functions/**
+      - firebase.json
   workflow_dispatch:
 jobs:
   deploy_functions:
