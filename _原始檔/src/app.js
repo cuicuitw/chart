@@ -810,7 +810,7 @@ function postEditorOpen(p){
     const cd=e.clipboardData;if(!cd)return;
     const files=[...cd.files].filter(f=>/^image\//.test(f.type));
     if(files.length){e.preventDefault();for(const f of files){const url=await edUpload(f,"posts/images",$("edMsg"));if(url)edImgInsert(url)}edPlace();return}
-    if(/<img[\s>]/i.test(cd.getData("text/html")||"")){e.preventDefault();document.execCommand("insertText",false,cd.getData("text/plain")||"");$("edMsg").textContent="從網頁複製的圖片無法保留，請用「＋」的「圖片」上傳。"}
+    if(/<img[\s>]/i.test(cd.getData("text/html")||"")){e.preventDefault();const srcs=[...new DOMParser().parseFromString(cd.getData("text/html"),"text/html").querySelectorAll("img")].map(i=>i.getAttribute("src")||"").filter(s=>/^https?:\/\//i.test(s));let ok=0;for(const s of srcs){try{const b=await fetch(s,{mode:"cors"}).then(r=>{if(!r.ok)throw new Error();return r.blob()});if(!/^image\//.test(b.type))continue;const f=new File([b],"pasted-image",{type:b.type});const url=await edUpload(f,"posts/images",$("edMsg"));if(url){edImgInsert(url);ok++}}catch(err){}}if(!ok){document.execCommand("insertText",false,cd.getData("text/plain")||"");$("edMsg").textContent="這張圖片網站不允許直接複製，請先另存到電腦，再用「＋」的「圖片」上傳。"}}
   });
   $("edTB").addEventListener("mousedown",e=>{const b=e.target.closest("[data-ec]");if(!b)return;e.preventDefault();edFmt(b.dataset.ec)});
   $("edTB").addEventListener("mousedown",e=>{const a=e.target.closest(".ed2-tbar");if(!a)return;e.preventDefault();$("edTS").scrollBy({left:a.id==="edTL"?-140:140,behavior:"smooth"})});
