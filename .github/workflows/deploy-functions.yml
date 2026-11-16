@@ -27,3 +27,4 @@ jobs:
       - name: 部署 blog 函式
         run: npx --yes firebase-tools@13 deploy --only functions --project cuicui-chart --non-interactive --force
 # firebaseextensions API 已啟用
+# 已加入 Firebase Extensions 開發人員角色
