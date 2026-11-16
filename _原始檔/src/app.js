@@ -634,7 +634,7 @@ async function adminOpen(){
   for(let i=0;i<2&&!ok;i++){try{await fbLoad();ok=true}catch(e){FBL=null;if(i==0)await new Promise(r=>setTimeout(r,1500))}}
   if(!ok){$("admMsg").textContent="後台載入失敗，請檢查網路後再試一次。";return}
   const u=await new Promise(r=>{let un=null;un=FB.onUser(x=>{if(un)un();r(x)})});
-  if(!ADM_NAV){ADM_NAV=true;$("admPvX").onclick=()=>{$("admPv").hidden=true};$("admTog").onclick=()=>document.querySelector(".adm2-nav").classList.toggle("open");document.querySelectorAll("#vAdmin [data-an]").forEach(b=>b.addEventListener("click",()=>admGo(b.dataset.an)));document.addEventListener("selectionchange",edSelChange)}
+  if(!ADM_NAV){ADM_NAV=true;$("admPvX").onclick=()=>{$("admPv").hidden=true};$("admTog").onclick=()=>document.querySelector(".adm2-nav").classList.toggle("open");document.querySelectorAll("#vAdmin [data-an]").forEach(b=>b.addEventListener("click",()=>admGo(b.dataset.an)));document.addEventListener("selectionchange",edSelChange);window.addEventListener("scroll",edSelChange,{passive:true,capture:true});if(window.visualViewport){visualViewport.addEventListener("resize",edSelChange);visualViewport.addEventListener("scroll",edSelChange)}}
   if(!u){admGo("list",true);$("anList").innerHTML=`<button type="button" class="pill" id="admLogin">用 Google 帳號登入</button>`;$("admLogin").onclick=()=>memOpen("登入後才能使用後台。");return}
   admGo("list");
 }
@@ -732,20 +732,22 @@ function catPanel(boxId="pCatBox",after){
       try{await FB.catDel(d.dataset.cd);CAT_OPEN.delete(d.dataset.cd);await refresh()}catch(er){$("admMsg").textContent="刪除失敗，請稍後再試。"}}
   };
 }
-/* 內文格式：只保留副標 h3、內文 p、引言 blockquote、粗體 b、斜體 i、圖片 img（網址必須來自 Firebase Storage） */
+/* 內文格式：標題 h2、副標 h3、內文 p、引言 blockquote、粗體 b、斜體 i、底線 u、清單 ul/ol、連結 a（只允許 https）、圖片 img（網址必須來自 Firebase Storage） */
 function imgOut(n,to){const s=n.getAttribute("src")||"";if(!ED_IMG.test(s))return;const im=document.createElement("img");im.src=s;im.alt=(n.getAttribute("alt")||"").slice(0,200);const raw=(n.style&&n.style.width)||"",w=parseInt(raw,10);if(/%$/.test(raw)&&w>=10&&w<100)im.style.width=w+"%";const c=n.className||"";if(/\bial\b/.test(c))im.className="ial";else if(/\biar\b/.test(c))im.className="iar";to.appendChild(im)}
 function figOut(n,to){const f=document.createElement("figure");f.className="ed-fig";n.childNodes.forEach(c=>{if(c.nodeType!==1)return;if(c.tagName==="IMG")imgOut(c,f);else if(c.tagName==="FIGCAPTION"){const t2=c.textContent.trim().slice(0,200);if(t2){const fc=document.createElement("figcaption");fc.textContent=t2;f.appendChild(fc)}}});if(f.querySelector("img"))to.appendChild(f)}
 function sanitizeBody(html){
   const src=new DOMParser().parseFromString(`<body>${String(html||"")}</body>`,"text/html").body;
   const out=document.createElement("div");
-  const keep={P:1,H3:1,BLOCKQUOTE:1,B:1,I:1,BR:1,HR:1};
+  const keep={P:1,H2:1,H3:1,BLOCKQUOTE:1,B:1,I:1,U:1,UL:1,OL:1,LI:1,BR:1,HR:1};
   const walk=(from,to)=>{from.childNodes.forEach(n=>{
     if(n.nodeType===3){to.appendChild(document.createTextNode(n.nodeValue));return}
     if(n.nodeType!==1)return;
     let t=n.tagName;if(t==="DIV")t="P";if(t==="STRONG")t="B";if(t==="EM")t="I";
+    if(t==="SPAN"){const st=n.getAttribute("style")||"";if(/font-weight:\s*(bold|[6-9]00)/i.test(st))t="B";else if(/font-style:\s*italic/i.test(st))t="I"}
     if(t==="IMG"){imgOut(n,to);return}
     if(n.tagName==="FIGURE"){figOut(n,to);return}
     if(n.tagName==="DIV"&&n.classList.contains("ed-pair")){const d=document.createElement("div");d.className="ed-pair";n.childNodes.forEach(c=>{if(c.nodeType!==1)return;if(c.tagName==="IMG")imgOut(c,d);else if(c.tagName==="FIGURE")figOut(c,d);else if(c.tagName==="FIGCAPTION"){const t2=c.textContent.trim().slice(0,200);if(t2){const fc=document.createElement("figcaption");fc.textContent=t2;d.appendChild(fc)}}});if(d.children.length)to.appendChild(d);return}
+    if(t==="A"){const h=n.getAttribute("href")||"";if(/^https?:\/\//i.test(h)){const a=document.createElement("a");a.href=h;a.target="_blank";a.rel="noopener noreferrer";walk(n,a);to.appendChild(a)}else walk(n,to);return}
     if(!keep[t]){walk(n,to);return}
     const el=document.createElement(t.toLowerCase());walk(n,el);to.appendChild(el);
   })};
@@ -774,7 +776,7 @@ function postEditorOpen(p){
       <div class="ed2-size" id="edSize" hidden><button type="button" id="edPair" class="ed2-txt">併排</button><button type="button" id="edUnpair" class="ed2-txt">拆開</button></div><div class="ed2-grip" id="edGrip" aria-label="拖曳調整圖片大小" role="slider"></div>
       <button type="button" class="ed2-plus" id="edPlus" hidden aria-label="加入內容">+</button>
       <div class="ed2-pm" id="edPM" hidden><button type="button" data-eplus="img">圖片</button><button type="button" data-eplus="hr">分隔線（· · ·）</button></div>
-      <div class="ed2-tb" id="edTB" hidden role="toolbar" aria-label="文字格式"><button type="button" data-ec="h3">副標</button><button type="button" data-ec="p">內文</button><button type="button" data-ec="blockquote">引言</button><button type="button" data-ec="bold"><b>B</b></button><button type="button" data-ec="italic"><i>I</i></button></div>
+      <div class="ed2-tb" id="edTB" hidden role="toolbar" aria-label="文字格式"><button type="button" class="ed2-tbar" id="edTL" aria-label="往左捲動">‹</button><div class="ed2-tbs" id="edTS"><button type="button" data-ec="h2">標題</button><button type="button" data-ec="h3">副標</button><button type="button" data-ec="p">內文</button><button type="button" data-ec="blockquote">引言</button><button type="button" data-ec="bold"><b>B</b></button><button type="button" data-ec="italic"><i>I</i></button><button type="button" data-ec="underline"><u>U</u></button><button type="button" data-ec="ul">點列</button><button type="button" data-ec="ol">編號</button><button type="button" data-ec="link">連結</button></div><button type="button" class="ed2-tbar" id="edTR" aria-label="往右捲動">›</button></div>
       <p class="pe-hint">選取文字會出現格式工具。在空白行按「＋」可加入圖片。</p>
     </div>
     <aside class="ed2-side is-closed"><button type="button" class="ed2-stog" id="edSTog" aria-expanded="false"><span>文章設定（分類、封面、摘要、SEO）</span><i class="ed2-sico" aria-hidden="true"></i></button>
@@ -805,6 +807,7 @@ function postEditorOpen(p){
   const GEND=()=>{GD=null};G.addEventListener("pointerup",GEND);G.addEventListener("pointercancel",GEND);$("edUnpair").onclick=edUnpair;
   $("edB").addEventListener("keyup",edPlace);$("edB").addEventListener("click",edPlace);$("edB").addEventListener("input",edPlace);
   $("edTB").addEventListener("mousedown",e=>{const b=e.target.closest("[data-ec]");if(!b)return;e.preventDefault();edFmt(b.dataset.ec)});
+  $("edTB").addEventListener("mousedown",e=>{const a=e.target.closest(".ed2-tbar");if(!a)return;e.preventDefault();$("edTS").scrollBy({left:a.id==="edTL"?-140:140,behavior:"smooth"})});
   $("edPlus").onclick=()=>{$("edPM").hidden=!$("edPM").hidden};
   $("edPM").onclick=e=>{const b=e.target.closest("[data-eplus]");if(!b)return;$("edPM").hidden=true;if(b.dataset.eplus==="hr"){edHrInsert();return}edPickImage(async f=>{const url=await edUpload(f,"posts/images",$("edMsg"));if(url)edImgInsert(url)})};
   $("edCovF").onchange=async e=>{const f=e.target.files[0];if(!f)return;const url=await edUpload(f,"posts/covers",$("edMsg"));e.target.value="";if(!url)return;
@@ -846,12 +849,22 @@ function edSelChange(){
   const tb=$("edTB"),B=$("edB");if(!tb||!B)return;
   const sel=window.getSelection();
   if(!sel||!sel.rangeCount||sel.isCollapsed||!B.contains(sel.anchorNode)){tb.hidden=true;return}
+  tb.hidden=false;
   const r=sel.getRangeAt(0).getBoundingClientRect();
-  tb.hidden=false;tb.style.top=Math.max(8,r.top-48)+"px";tb.style.left=Math.max(8,Math.min(window.innerWidth-300,r.left))+"px";
+  const vv=window.visualViewport,vh=vv?vv.height:window.innerHeight,vt=vv?vv.offsetTop:0;
+  const w=tb.offsetWidth,h=tb.offsetHeight;
+  /* 工具列放在選取文字那一排的下方；下方放不下才放到上方 */
+  let top=r.bottom+10;if(top+h>vt+vh-8)top=Math.max(8+vt,r.top-h-10);
+  tb.style.top=Math.round(top)+"px";
+  tb.style.left=Math.round(Math.max(8,Math.min(window.innerWidth-w-8,r.left)))+"px";
 }
 function edFmt(c){
   if(c==="bold")document.execCommand("bold");
   else if(c==="italic")document.execCommand("italic");
+  else if(c==="underline")document.execCommand("underline");
+  else if(c==="ul")document.execCommand("insertUnorderedList");
+  else if(c==="ol")document.execCommand("insertOrderedList");
+  else if(c==="link"){const sel=window.getSelection();if(!sel||!sel.rangeCount||sel.isCollapsed)return;const rg=sel.getRangeAt(0).cloneRange();const u=(prompt("輸入網址（需以 https:// 開頭）")||"").trim();if(!u)return;if(!/^https?:\/\//i.test(u)){$("edMsg").textContent="網址要以 https:// 開頭。";return}sel.removeAllRanges();sel.addRange(rg);document.execCommand("createLink",false,u)}
   else document.execCommand("formatBlock",false,"<"+c+">");
 }
 function edPlace(){
